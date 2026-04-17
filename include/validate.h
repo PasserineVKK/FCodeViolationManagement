@@ -1,6 +1,9 @@
 #ifndef VALIDATE_H
 #define VALIDATE_H
 
+//These functions use for checking vaid only
+
+
 // ===== I. VALIDATION RELATED TO DATA TYPE ==================================
 // 1.1. Check number belong to Z sets
 int isInterger (const char *str); 
