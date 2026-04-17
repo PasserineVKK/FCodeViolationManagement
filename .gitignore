@@ -1,0 +1,12 @@
+*.exe
+*.o
+*.out
+.vscode/
+data/*
+!data/.gitkeep
+*.dev
+*.layout
+Makefile.win
+
+Thumbs.db
+.DS_Store
