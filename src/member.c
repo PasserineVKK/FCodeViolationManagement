@@ -41,9 +41,12 @@ int updateMemberTotalFine(const char *id) {
     int vCount = 0;
     loadViolations(violations, &vCount);
     //tính tổng tiền nợ
+    //chỉ tính những vi phạm chưa được thanh toán và không đang chờ xử lý
     double totalFine = 0.0;
     for(int i = 0; i < vCount; i++) {
-        if(strcmp(violations[i].studentID, id) == 0 && violations[i].isPaid == 0) {
+        if(strcmp(violations[i].studentID, id) == 0 
+        && violations[i].isPaid == 0
+        && violations[i].isPending == 0) {
             totalFine += violations[i].fine;
         }
     }

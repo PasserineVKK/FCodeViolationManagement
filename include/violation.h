@@ -13,6 +13,7 @@ typedef struct {
 	int isPaid; // 0 = Not yet, 1 = Already
 	int pelnaty; // 0 = Financial pelnaty, 1 = Kick
 	char note[100];
+	int isPending; // 0 = Not pending, 1 = Pending
 } Violation;
 
 //file

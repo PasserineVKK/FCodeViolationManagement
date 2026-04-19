@@ -14,6 +14,7 @@ typedef struct {
 	int consecutiveAbsences;
 	double totalFine;
 	int status;
+	int isPending; //0 = not pending, 1 = pending
 } Member;
 
 // file
