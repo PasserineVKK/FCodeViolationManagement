@@ -1,14 +1,15 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include "../include/member.h"
-#include "../include/auth.h"
-#include "../include/violation.h"
+#include "utils.h"
+#include "member.h"
+#include "violation.h"
+#include "auth.h"
 
 /* run this program using the console pauser or add your own getch, system("pause") or input loop */
+int main() {
 
-int main(int argc, char *argv[]) {
-	printf("Test module");
-	return 0;
-	
+    return 0;
 }
+
+
 
