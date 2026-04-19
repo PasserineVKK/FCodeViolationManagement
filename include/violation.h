@@ -12,5 +12,7 @@ typedef struct {
 	char note[100];
 } Violation;
 
+double calculateFine(int role, int reason);
+
 #endif
 
