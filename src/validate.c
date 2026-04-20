@@ -350,7 +350,7 @@ int isValidPhone (const char *s){
 // 3.4. Check valid team (only 0 or 1 or 2 or 3)
 int isValidTeam (const char *s){
 	
-	if (!isWholeNumber (s)) return 0;
+	if (!isPosInteger (s)) return 0;
 	
 	int i = 0;
 	//Skip blank
@@ -369,7 +369,7 @@ int isValidTeam (const char *s){
 // 3.5. Check valid role (only 0 or 1 or 2)
 int isValidRole (const char *s){
 	
-	if (!isWholeNumber (s)) return 0;
+	if (!isPosInteger (s)) return 0;
 	
 	int i = 0;
 	//Skip blank

@@ -14,4 +14,6 @@ void addMember(MemberManager *m);
 
 void removeMember(MemberManager *m);
 
+void updateMember(MemberManager *m);
+
 #endif
