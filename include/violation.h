@@ -22,7 +22,7 @@ int loadViolations(Violation violations[], int *count);
 int saveViolations(Violation violations[], int count);
 
 double calculateFine(int role, int reason);
->>>>>>> feature/calculateFine
+
 
 #endif
 
