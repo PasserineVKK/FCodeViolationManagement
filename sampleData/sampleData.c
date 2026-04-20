@@ -15,7 +15,7 @@ void seedSampleData(Member members[], int *mCount,
     // 3 MEMBERS
     // =============================================================
 
-    // --- Member 0: Regular member, Academic, bình thường ---
+    // --- Member 0: Regular member, Academic, no violations ---
     strcpy(members[0].fullName,    "Nguyen Van An");
     strcpy(members[0].email,       "anNV@fpt.edu.vn");
     strcpy(members[0].phoneNumber, "0901234561");
@@ -28,7 +28,7 @@ void seedSampleData(Member members[], int *mCount,
     members[0].status               = 1;       // Active
     members[0].isPending            = 0;       
 
-    // --- Member 1: Leader, HR, vắng 3 buổi liên tiếp -> chờ BCN confirm kick ---
+    // --- Member 1: Leader, HR, absent 3 times in a row -> pending kick ---
     strcpy(members[1].fullName,    "Tran Thi Bich");
     strcpy(members[1].email,       "bichTT@fpt.edu.vn");
     strcpy(members[1].phoneNumber, "0901234562");
@@ -36,12 +36,12 @@ void seedSampleData(Member members[], int *mCount,
     members[1].team                 = 2; // HR
     members[1].role                 = 1; // Leader/Vice -> fine = 50,000
     members[1].violationCount       = 3;
-    members[1].consecutiveAbsences  = 3; // Đủ điều kiện Out CLB
+    members[1].consecutiveAbsences  = 3; 
     members[1].totalFine            = 100000.0; 
     members[1].status               = 1;  
-    members[1].isPending            = 1;  // Đang chờ xử lý kick
+    members[1].isPending            = 1;  
 
-    // --- Member 2: BCN, Planning, cảnh báo gần Out ---
+    // --- Member 2: BCN, Planning, warning ---
     strcpy(members[2].fullName,    "Le Hoang Cuong");
     strcpy(members[2].email,       "cuongLH@fpt.edu.vn");
     strcpy(members[2].phoneNumber, "0901234563");
@@ -77,12 +77,12 @@ void seedSampleData(Member members[], int *mCount,
     strcpy(violations[2].violationID, "VIO003");
     violations[2].reason = 2; violations[2].isPaid = 1;
 
-    // SE200002 (vắng 3 buổi liên tiếp)
+    // SE200002 
     for(int i=3; i<6; i++) {
         strcpy(violations[i].studentID, "SE200002");
         violations[i].fine = 50000.0;
-        violations[i].isPaid = 0; // Chưa đóng tiền nên mới cộng dồn fine
-        violations[i].pelnaty = 1; // Đánh dấu lỗi chuyên cần
+        violations[i].isPaid = 0;
+        violations[i].pelnaty = 1; 
     }
     strcpy(violations[3].violationID, "VIO004");
     violations[3].isPending = 0; strcpy(violations[3].note, "Absence 1");
@@ -91,7 +91,7 @@ void seedSampleData(Member members[], int *mCount,
     violations[4].isPending = 0; strcpy(violations[4].note, "Absence 2");
 
     strcpy(violations[5].violationID, "VIO006");
-    violations[5].isPending = 1; // Lần vắng thứ 3 chốt hạ trạng thái pending
+    violations[5].isPending = 1; 
     strcpy(violations[5].note, "Absence 3 - pending kick");
 
     // SE200003
@@ -136,7 +136,7 @@ void seedSampleData(Member members[], int *mCount,
  
     *aCount = 3;
 
-    //Lưu dữ liệu mẫu vào file
+    //save to files
     saveToFile("sampleData/members.dat", members, sizeof(Member), *mCount);
     saveToFile("sampleData/violations.dat", violations, sizeof(Violation), *vCount);
     saveToFile("sampleData/accounts.dat", accounts, sizeof(Account), *aCount);
