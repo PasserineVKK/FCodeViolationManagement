@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <string.h>
-#include "auth.h"
-#include "fileio.h"
+#include "../include/auth.h"
+#include "../include/fileio.h"
 
 //file
 int loadAccounts(Account accounts[], int *count) {

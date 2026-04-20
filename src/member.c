@@ -1,8 +1,8 @@
 #include <stdio.h>
 #include <string.h>
-#include "member.h"
-#include "violation.h"
-#include "fileio.h"
+#include "../include/member.h"
+#include "../include/violation.h"
+#include "../include/fileio.h"
 
 //file
 int loadMembers(Member members[], int *count) {
