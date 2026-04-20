@@ -39,8 +39,23 @@ displayOneMemberInfo (Member member) {
         member.violationCount,
         member.consecutiveAbsences,
         member.totalFine,
-        member.status);
+        member.isPending);
     printf("┗━━━━━━━━━━━━┻━━━━━━━━━━━━━━━━━━━━━━┻━━━━━━━━━━━━━━━━━━━━━━━━━┻━━━━━━━━━━━━━━┻━━━━━━┻━━━━━━┻━━━━━━━━━━━━━━━━━┻━━━━━━━━━━━━━━━━━━━━━━┻━━━━━━━━━━━━┻━━━━━━━━━━━━┛\n");
+
+}
+
+// Count unpaid violations for a member
+int  countUnpaidViolations(const char *id, Violation violations[], int vCount) {
+	int unpaidCount = 0;
+	for (int i = 0; i < vCount; i++) {
+		if(strcmp(violations[i].studentID, id) == 0 
+        && violations[i].isPaid == 0
+        && violations[i].isPending == 0) {
+            unpaidCount++;
+        }
+	}
+	return unpaidCount;
+
 }
 
 //update: update tổng tiền nợ cho thành viên
@@ -140,7 +155,7 @@ void addMember(Member members[], int *count) {
 			mem.violationCount = 0;
 			mem.consecutiveAbsences = 0;
 			mem.totalFine = 0;
-			mem.status = 1;
+			mem.isPending = 0;
 
 			// add member to member list
 			members[(*count)++] = mem;

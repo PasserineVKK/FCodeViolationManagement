@@ -10,13 +10,16 @@
 
 int main(int argc, char *argv[]) {
 	printf("Test module");
-	printf("%d", isPosInteger("123"));
 	
+	int mCount = 0, vCount = 0, aCount = 0;
+
 	Member members[MAX_MEMBERS];
-	int mCount = 0;
+	Violation violations[MAX_VIOLATIONS];
+	Account accounts[MAX_ACCOUNTS];
+
 	loadMembers(members, &mCount);
-	addMember(members, &mCount);
-	removeMember(members, &mCount);
+	loadViolations(violations, &vCount);
+	loadAccounts(accounts, &aCount);
 	
 	return 0;
 	
