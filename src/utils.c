@@ -4,7 +4,7 @@
 #include <ctype.h>
 
 // 123456789.1234 to 123,456,789.123
-void formatCurrency(double amount, char* outputString, size_t availableLen){
+int formatCurrency(double amount, char* outputString, size_t availableLen){
 	char temp[64];
 	// 1. Prepare
 	
@@ -21,7 +21,7 @@ void formatCurrency(double amount, char* outputString, size_t availableLen){
 	// check available len for string
 	if ((size_t)newLen > availableLen){
 		snprintf(outputString, availableLen, "Error: Format currency");
-		return;
+		return 0;
 	}
 	
 	//j is the current writting index in outputString
@@ -43,11 +43,11 @@ void formatCurrency(double amount, char* outputString, size_t availableLen){
 		outputString[j--] = temp[i];
 		count++;
 	}
-	
+	return 1;
 	
 }
 
-void normalizeName(char* name){
+int normalizeName(char* name){
     int n = strlen(name);
     int j = 0;
     int writeSpace = 0; // check 
@@ -71,5 +71,6 @@ void normalizeName(char* name){
         }
     }
     name[j] = '\0'; // end of full name
+    return 1;
 }
 

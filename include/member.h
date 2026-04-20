@@ -1,7 +1,7 @@
 #ifndef MEMBER_H
 #define MEMBER_H
 #define MAX_MEMBERS   1000
-#define MEMBERS_FILE  "data/members.dat"
+#define MEMBERS_FILE  "../data/members.dat"
 
 typedef struct {
 	char fullName[100];
@@ -26,5 +26,7 @@ int  searchMemberById(Member members[], int count, const char *id);
 
 // Recalculates totalFine from unpaid violations, returns 1 on success
 int  updateMemberTotalFine(const char *id);
+
+int updateConsecutiveAbsences(Member members[], int count, const char *id);
 
 #endif

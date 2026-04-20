@@ -4,6 +4,8 @@
 #include "../include/violation.h"
 #include "../include/fileio.h"
 
+Member memberList[MAX_MEMBERS];
+
 //file
 int loadMembers(Member members[], int *count) {
     return loadFromFile(MEMBERS_FILE, members, sizeof(Member), MAX_MEMBERS, count);
@@ -23,7 +25,6 @@ int searchMemberById(Member members[], int count, const char *id) {
     return -1;
 }
 
-//update: update tổng tiền nợ cho thành viên
 int updateMemberTotalFine(const char *id) {
     Member members[MAX_MEMBERS];
     int mCount = 0;
@@ -53,4 +54,17 @@ int updateMemberTotalFine(const char *id) {
     members[mIndex].totalFine = totalFine;
     saveMembers(members, mCount);
     return 1;
+}
+
+
+int updateConsecutiveAbsences(Member members[], int count, const char *id) {
+    int index = searchMemberById(members, count, id);
+
+    if (index != -1) {
+        members[index].consecutiveAbsences++;
+     	//-> function trigger warning if absence = 2 may be insert here
+     	return 1;
+    } else {
+        return 0;
+    }
 }
