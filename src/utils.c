@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <ctype.h>
 
 // 123456789.1234 to 123,456,789.123
 void formatCurrency(double amount, char* outputString, size_t availableLen){
@@ -45,3 +46,30 @@ void formatCurrency(double amount, char* outputString, size_t availableLen){
 	
 	
 }
+
+void normalizeName(char* name){
+    int n = strlen(name);
+    int j = 0;
+    int writeSpace = 0; // check 
+	// i: iterator
+	// j: writter. j write letter and space, and decide a letter is upper or lower.
+    for (int i = 0; i < n; i++) {
+        if (!isspace(name[i])) {
+            // if this letter is first letter -> upper
+            // if this letter after space -> add space and upper
+            if (j == 0 || writeSpace) {
+                if (writeSpace) name[j++] = ' ';
+                name[j++] = toupper(name[i]);
+            } else {
+            // if not both first letter and after space -> lower
+                name[j++] = tolower(name[i]);
+            }
+            writeSpace = 0;
+        } else {
+            // mark that space must be written after
+            if (j > 0) writeSpace = 1;
+        }
+    }
+    name[j] = '\0'; // end of full name
+}
+
