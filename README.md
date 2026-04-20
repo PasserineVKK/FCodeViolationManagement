@@ -69,29 +69,75 @@ To run the system, ensure you have a C compiler (like GCC) installed.
 * **Filenames:** Use lowercase with underscores if needed.
     * *Example:* `fileio.c`, `auth.h`.
 
-## 2. Functions & Error Handling
-* **Function Structure:** Functions should focus on a single responsibility.
-* **Return Values:** Functions that perform actions (Save, Add, Delete) must return an `int` error code:
-    * `1`: Success.
-    * `0`: General Error 
-    * `-1`: Duplicate ID.
-    * `-2`: File Access Error.
-    * `-3`: Input Invalid.
-
 
 ## 3. Memory Management
 * **Static Allocation:** Use static arrays with predefined sizes for simplicity.
 * **Global Variables:** Avoid global variables unless absolutely necessary (e.g., the main database array).
 
+
 ## 4. Git Workflow
-* **Branching Strategy:**
-    * `main`: Stable code only.
-    * `feature/<feature-name>`: Individual work branches.
-* **Atomic Commits:** Each commit should represent a single, logical change.
-* **Commit Message Format:** `[Action] Description` (In English).
-    * `[Add] member struct and header guards`
-    * `[Fix] login validation logic`
-    * `[Update] README with installation steps`
+
+
+
+### 4.1. Branching Strategy
+
+* **`master`**: The primary branch containing production-ready code. Direct commits to this branch are strictly prohibited.
+* **`develop`**: The integration branch for features. All completed features are merged here for testing before moving to `master`.
+* **`feature/`**: Used for developing new features or enhancements.
+    * *Naming Convention:* `feature/<feature-name>`
+* **`fix/`**: Used for quick patches to production bugs.
+    * *Naming Convention:* `fix/<short-description>`
+* **`refactor/`**: Used for code restructuring without changing functionality.
+
+### 4.2. Development Process
+
+1.  **Sync with Remote:**
+    Always start by updating your local `develop` branch to avoid conflicts later.
+    ```bash
+    git checkout develop
+    git pull origin develop
+    ```
+
+2.  **Create a Feature Branch:**
+    ```bash
+    git checkout -b feature/validate
+    ```
+
+3.  **Work and Commit:**
+    Make small, frequent commits using **Conventional Commits** standards:
+    * `feat`: A new feature
+    * `fix`: A bug fix.
+    * `docs`: Documentation changes only.
+    * `style`: Changes that do not affect the meaning of the code (white-space, formatting).
+    * `update`: Changes of existed feature, for example. the way to display data in terminal
+    
+
+    ```bash
+    git add .
+    git commit -m "feat: validate input data"
+    ```
+
+4.  **Push to Remote:**
+    ```bash
+    git push origin feature/validate
+    ```
+
+5.  **Open a Pull Request (PR):**
+    * Target branch: `develop` ← Source branch: `feature/validate`.
+    * Assign at least one **Reviewer**.
+    * Link the PR to the relevant task/issue ID.
+
+6.  **Code Review & Merge:**
+    * Address any comments from reviewers.
+    * Once approved, the branch will be merged (preferably using **Squash and Merge**).
+    * Delete the feature branch locally and on remote after a successful merge.
+
+### 4.3. Golden Rules
+
+* **Never** use `git push --force` on shared branches (`main`, `develop`).
+* **Pull before you push:** Always sync with the remote repository to handle conflicts locally.
+* **Meaningful Commits:** Ensure commit messages describe *what* changed and *why*.
+* **No Broken Code:** Never merge a PR that fails build tests or contains syntax errors.
 
 ## 5. Documentation & Comments
 * **Language:** All comments and documentation must be in English.
