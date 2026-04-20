@@ -23,6 +23,26 @@ int searchMemberById(Member members[], int count, const char *id) {
     return -1;
 }
 
+displayOneMemberInfo (Member member) {
+    printf("\n┏━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━┳━━━━━━┳━━━━━━┳━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━┳━━━━━━━━━━━━┓\n");
+    printf("┃ %-11s ┃ %-20s ┃ %-25s ┃ %-12s ┃ %-5s ┃ %-5s ┃ %-15s ┃ %-20s ┃ %-11s ┃ %-10s ┃\n",
+        "Student ID", "Name", "Email", "Phone", "Team", "Role", "Violation Count", "Consecutive Absences", "Total Fine", "Status");
+    printf("┣━━━━━━━━━━━━╋━━━━━━━━━━━━━━━━━━━━━━╋━━━━━━━━━━━━━━━━━━━━━━━━━╋━━━━━━━━━━━━━━╋━━━━━━╋━━━━━━╋━━━━━━━━━━━━━━━━━╋━━━━━━━━━━━━━━━━━━━━━━╋━━━━━━━━━━━━╋━━━━━━━━━━━━┫\n");
+
+    printf("┃ %-11s ┃ %-20s ┃ %-25s ┃ %-12s ┃ %-5d ┃ %-5d ┃ %-15d ┃ %-20d ┃ %-11.2f ┃ %-10d ┃\n",
+        member.studentID,
+        member.fullName,
+        member.email,
+        member.phoneNumber,
+        member.team, 
+        member.role, 
+        member.violationCount,
+        member.consecutiveAbsences,
+        member.totalFine,
+        member.status);
+    printf("┗━━━━━━━━━━━━┻━━━━━━━━━━━━━━━━━━━━━━┻━━━━━━━━━━━━━━━━━━━━━━━━━┻━━━━━━━━━━━━━━┻━━━━━━┻━━━━━━┻━━━━━━━━━━━━━━━━━┻━━━━━━━━━━━━━━━━━━━━━━┻━━━━━━━━━━━━┻━━━━━━━━━━━━┛\n");
+}
+
 //update: update tổng tiền nợ cho thành viên
 int updateMemberTotalFine(const char *id) {
     Member members[MAX_MEMBERS];
@@ -172,35 +192,13 @@ void removeMember(Member members[], int *count) {
 		inputStudentID(id, "Nhap studentID can xoa: ");
 
 		//Find member by ID and remove by shift left array
-		for (int i = 0; i < *count; i++) {
-			if (strcmp(members[i].studentID, id) == 0) {
-				
-				//Save position to show student info before remove
-				pos = i;
-				break;
-			}
-		}
+		pos = searchMemberById(members, *count, id);
+    
 
 		if (pos != -1) {
 			// Show student
 			printf("\nStudent found:\n");
-			printf("\n┏━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━┳━━━━━━┳━━━━━━┳━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━┳━━━━━━━━━━━━┓\n");
-			printf("┃ %-11s ┃ %-20s ┃ %-25s ┃ %-12s ┃ %-5s ┃ %-5s ┃ %-15s ┃ %-20s ┃ %-11s ┃ %-10s ┃\n",
-				"Student ID", "Name", "Email", "Phone", "Team", "Role", "Violation Count", "Consecutive Absences", "Total Fine", "Status");
-			printf("┣━━━━━━━━━━━━╋━━━━━━━━━━━━━━━━━━━━━━╋━━━━━━━━━━━━━━━━━━━━━━━━━╋━━━━━━━━━━━━━━╋━━━━━━╋━━━━━━╋━━━━━━━━━━━━━━━━━╋━━━━━━━━━━━━━━━━━━━━━━╋━━━━━━━━━━━━╋━━━━━━━━━━━━┫\n");
-
-			printf("┃ %-11s ┃ %-20s ┃ %-25s ┃ %-12s ┃ %-5s ┃ %-5s ┃ %-15d ┃ %-20d ┃ %-11.2f ┃ %-10s ┃\n",
-				members[pos].studentID,
-				members[pos].fullName,
-				members[pos].email,
-				members[pos].phoneNumber,
-				members[pos].team, 
-				members[pos].role, 
-				members[pos].violationCount,
-				members[pos].consecutiveAbsences,
-				members[pos].totalFine,
-				members[pos].status);
-			printf("┗━━━━━━━━━━━━┻━━━━━━━━━━━━━━━━━━━━━━┻━━━━━━━━━━━━━━━━━━━━━━━━━┻━━━━━━━━━━━━━━┻━━━━━━┻━━━━━━┻━━━━━━━━━━━━━━━━━┻━━━━━━━━━━━━━━━━━━━━━━┻━━━━━━━━━━━━┻━━━━━━━━━━━━┛\n");
+			displayOneMemberInfo(members[pos]);
 
 			//Confirm to remove member
 			int confirm;
@@ -261,9 +259,9 @@ Input ID => Find by ID => If found, show member info
 => If yes, update by assign new value to target member 
 => Save to file
 */
-void updateMember(Member members[], int *count){
+void updateMember(Member members[], int *mCount, Violation violations[], int vCount) {
 	//Check if member list is empty
-	if (*count == 0) {
+	if (*mCount == 0) {
 		printf("No members available to update.\n");
 		return;
 	}
@@ -272,49 +270,25 @@ void updateMember(Member members[], int *count){
 	char email[50];
 	char phoneNumber[11];
 	char studentID[9]; //SE000000
-	char team [2]; // 0 = Academic, 1 = Planning, 2 = HR, 3 = Media
-	char role [2];
-	int violationCount;
-	int consecutiveAbsences;
+	int team; // 0 = Academic, 1 = Planning, 2 = HR, 3 = Media
+	int role; // 0 = Member, 1 = Leader/Vice, 2 = BOD
 
-	char id[9]; 
 	int pos;
 
 	int  continueUpdate = 1;
 	while (continueUpdate) {
 		pos = -1; //Reset position before find member
-		inputStudentID(id, "Nhap studentID can cap nhat: ");
+		inputStudentID(studentID, "Nhap studentID can cap nhat: ");
 
 		//Find member by ID and update by assign new value to target member
-		for (int i = 0; i < *count; i++) {
-			if (strcmp(members[i].studentID, id) == 0) {
-				//Save position to show student info before update
-				pos = i;
-				break;
-			}
-		}
+		pos = searchMemberById(members, *mCount, studentID);
 
+        //If found 
 		if (pos != -1) {
 			// Show student
 			printf("\nStudent found:\n");
-			printf("\n┏━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━┳━━━━━━┳━━━━━━┳━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━┳━━━━━━━━━━━━┓\n");
-			printf("┃ %-11s ┃ %-20s ┃ %-25s ┃ %-12s ┃ %-5s ┃ %-5s ┃ %-15s ┃ %-20s ┃ %-11s ┃ %-10s ┃\n",
-				"Student ID", "Name", "Email", "Phone", "Team", "Role", "Violation Count", "Consecutive Absences", "Total Fine", "Status");
-			printf("┣━━━━━━━━━━━━╋━━━━━━━━━━━━━━━━━━━━━━╋━━━━━━━━━━━━━━━━━━━━━━━━━╋━━━━━━━━━━━━━━╋━━━━━━╋━━━━━━╋━━━━━━━━━━━━━━━━━╋━━━━━━━━━━━━━━━━━━━━━━╋━━━━━━━━━━━━╋━━━━━━━━━━━━┫\n");
-
-			printf("┃ %-11s ┃ %-20s ┃ %-25s ┃ %-12s ┃ %-5s ┃ %-5s ┃ %-15d ┃ %-20d ┃ %-11.2f ┃ %-10s ┃\n",
-				members[pos].studentID,
-				members[pos].fullName,
-				members[pos].email,
-				members[pos].phoneNumber,
-				members[pos].team, 
-				members[pos].role,
-				members[pos].violationCount,
-				members[pos].consecutiveAbsences,
-				members[pos].totalFine,
-				members[pos].status);
-				printf("┗━━━━━━━━━━━━┻━━━━━━━━━━━━━━━━━━━━━━┻━━━━━━━━━━━━━━━━━━━━━━━━━┻━━━━━━━━━━━━══┻══════┻══════┻═════════════════┻══════════════════════┻════════════┻════════════┛\n");
-
+			displayOneMemberInfo(members[pos]);
+            
 			//Ask which field want to update
 			int fieldChoice;
 			do {
@@ -342,16 +316,108 @@ void updateMember(Member members[], int *count){
 
 				case 4:
 					//Input new team info
-	 				inputMemberTeam(team, "Enter New Team (0-3): ");
+	 				inputMemberTeam(&team, "Enter New Team (0-3): ");
 					break;
 					
 				case 5:
 					//Input new role info
-					inputMemberRole(role, "Enter New Role (0-2): ");
+					inputMemberRole(&role, "Enter New Role (0-2): ");
 					break;	
 			}
+            
+            //Confirm to update member
+            int confirm;
+			do {
+				inputYesNo(&confirm,
+						"\nUpdate this member?\n1: Yes\n0: No\n=> Your choice: ");
+			
+			} while (!isOneOrZero(confirm));
+
+            if (confirm == 1) {
+                //Call save member to file function
+                switch (fieldChoice) {
+                    case 1:
+                        strcpy(members[pos].fullName, fullName);
+                        break;
+
+                    case 2:	
+                        strcpy(members[pos].email, email);
+                        break;
+                    
+                    case 3:
+                        strcpy(members[pos].phoneNumber, phoneNumber);
+                        break;
+
+                    case 4:
+                        members[pos].team = team; //Assign new team
+                        break;
+                        
+                    case 5:
+                        int oldRole = members[pos].role; //Save old role before assign new role
+                        members[pos].role = role; //Assign new role
+                                            
+                        //If member change from Member to Leader/Vice or BCN
+                        if (oldRole == 0 && role > 0) {
+                            
+                            //Replace new fines for all unpaid and not pending violation of this member
+                            for (int i = 0; i < vCount; i++) {
+                                if (strcmp(violations[i].studentID, studentID) == 0 
+                                && violations[i].isPaid == 0
+                                && violations[i].isPending == 0
+                                && violations[i].fine != 0) { 
+                                
+                                    double newFine = calculateFine(role, violations[i].reason);
+
+                                    //Leader/Vice or BOD have higher fine than Member 30.000 per violation
+                                    violations[i].fine = newFine; 
+                                }
+                            }
+                            
+                            //Update total fine for this member after change role
+                            members[pos].totalFine = updateMemberTotalFine(studentID); 
+                        }
+
+                        //If member change from Leader/Vice or BCN to Member
+                        else if (oldRole > 0 && role == 0) {
+                            
+                            //Replace new fines for all unpaid and not pending violation of this member
+                            for (int i = 0; i < vCount; i++) {
+                                if (strcmp(violations[i].studentID, studentID) == 0 
+                                && violations[i].isPaid == 0
+                                && violations[i].isPending == 0
+                                && violations[i].fine != 0) {
+                                
+                                    double newFine = calculateFine(role, violations[i].reason);
+                                    //Leader/Vice or BOD have higher fine than Member 30.000 per violation
+                                    violations[i].fine = newFine; 
+                                }
+                            }
+                            //Update total fine for this member after change role
+                            members[pos].totalFine = updateMemberTotalFine(studentID); 
+                        }
+
+                        break;	
+                }
+
+            }
+        }
+    
+        else {
+            printf("Member not found!\n");
+        }   
+        
+        // ===== CONTINUE =====
+		int choice;
+		do {
+			inputYesNo(&choice,
+			         "\nDo you want to update another member?\n1: Yes\n0: No\n=> Your choice: ");
+		
+		} while (!isOneOrZero(choice));
+
+		if (choice == 0) {
+			continueUpdate = 0;
 		}
-	}			
+    }    			
 }
 
 
