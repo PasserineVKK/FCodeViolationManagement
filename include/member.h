@@ -27,4 +27,9 @@ int  searchMemberById(Member members[], int count, const char *id);
 // Recalculates totalFine from unpaid violations, returns 1 on success
 int  updateMemberTotalFine(const char *id);
 
+void addMember(Member members[], int *count);
+
+void removeMember(Member members[], int *count);
+
+void updateMember(Member members[], int *count);
 #endif
