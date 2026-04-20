@@ -5,7 +5,7 @@
 #include "../include/violation.h"
 #include "../include/fileio.h"
 
-const Violation violations[MAX_VIOLATIONS];
+Violation violations[MAX_VIOLATIONS];
 int total_violation;
 // file
 int loadViolations(Violation violations[], int *count)

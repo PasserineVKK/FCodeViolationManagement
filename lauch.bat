@@ -1,2 +1,3 @@
-gcc src/*.c -Iinclude -o main.exe
+gcc src/*.c src/view/*.c -Iinclude -Iview -o main.exe
+
 .\main.exe

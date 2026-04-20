@@ -10,6 +10,7 @@
 #define REASON_MEETING_ABSENCE 1
 #define REASON_NO_CLUB_ACTIVITY 2
 #define REASON_VIOLENCE 3
+
 typedef struct
 {
 	char violationID[50];
