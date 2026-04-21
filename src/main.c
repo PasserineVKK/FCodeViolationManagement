@@ -1,5 +1,9 @@
 #include <stdio.h>
 #include <stdlib.h>
+<<<<<<< feature/violationView
+
+#include "../include/view/viewUtil.h"
+=======
 #include "../include/utils.h"
 #include "../include/member.h"
 #include "../include/auth.h"
@@ -24,4 +28,9 @@ int main(int argc, char *argv[]) {
 	return 0;
 	
 }
+>>>>>>> develop
 
+int main()
+{
+    return 0;
+}
