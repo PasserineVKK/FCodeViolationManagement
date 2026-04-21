@@ -2,7 +2,9 @@
 #include <string.h>
 #include "../include/member.h"
 #include "../include/violation.h"
+#include "../include/validate.h"
 #include "../include/fileio.h"
+#include "../include/consoleInput.h"
 
 //file
 int loadMembers(Member members[], int *count) {
@@ -23,7 +25,8 @@ int searchMemberById(Member members[], int count, const char *id) {
     return -1;
 }
 
-displayOneMemberInfo (Member member) {
+void displayOneMemberInfo (Member member) {
+
     printf("\n┏━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━┳━━━━━━┳━━━━━━┳━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━┳━━━━━━━━━━━━┓\n");
     printf("┃ %-11s ┃ %-20s ┃ %-25s ┃ %-12s ┃ %-5s ┃ %-5s ┃ %-15s ┃ %-20s ┃ %-11s ┃ %-10s ┃\n",
         "Student ID", "Name", "Email", "Phone", "Team", "Role", "Violation Count", "Consecutive Absences", "Total Fine", "Status");
@@ -125,18 +128,16 @@ void addMember(Member members[], int *count) {
 		inputMemberPhone(phoneNumber, "Enter phone number: ");
 		
 		//Input team info
-		inputMemberTeam(team, "Enter team (0-3): ");
+		inputMemberTeam(&team, "Enter team (0-3): ");
 
 		//Input role info
-		inputMemberRole(role, "Enter role (0-2): ");
+		inputMemberRole(&role, "Enter role (0-2): ");
 
 		//Confirm to add member
 		int confirm;
-		do {
-			inputYesNo(&confirm,
-			         "\nAdd this member?\n1: Yes\n0: No\n=> Your choice: ");
 		
-		} while (!isOneOrZero(confirm));
+		inputYesNo(&confirm, "\nAdd this member?\n1: Yes\n0: No\n=> Your choice: ");
+		
 
 		if (confirm == 1) {
 
@@ -173,12 +174,8 @@ void addMember(Member members[], int *count) {
 
 		// ===== CONTINUE =====
 		int choice;
-		do {
-			inputYesNo(&choice,
-			         "\nDo you want to add another member?\n1: Yes\n0: No\n=> Your choice: ");
+		inputYesNo(&choice,"\nDo you want to add another member?\n1: Yes\n0: No\n=> Your choice: ");
 		
-		} while (!isOneOrZero(choice));
-
 		if (choice == 0) {
 			continueAdd = 0;
 		}
@@ -216,12 +213,8 @@ void removeMember(Member members[], int *count) {
 
 			//Confirm to remove member
 			int confirm;
-			do {
-				inputYesNo(&confirm,
-						"\nRemove this member?\n1: Yes\n0: No\n=> Your choice: ");
+			inputYesNo(&confirm, "\nRemove this member?\n1: Yes\n0: No\n=> Your choice: ");
 			
-			} while (!isOneOrZero(confirm));
-
 			//Start to remove
 			if (confirm == 1) {
 
@@ -251,11 +244,8 @@ void removeMember(Member members[], int *count) {
 
 		// ===== CONTINUE =====
 		int choice;
-		do {
-			inputYesNo(&choice,
-			         "\nDo you want to remove another member?\n1: Yes\n0: No\n=> Your choice: ");
 		
-		} while (!isOneOrZero(choice));
+		inputYesNo(&choice, "\nDo you want to remove another member?\n1: Yes\n0: No\n=> Your choice: ");
 
 		if (choice == 0) {
 			continueRemove = 0;
@@ -341,11 +331,8 @@ void updateMember(Member members[], int *mCount, Violation violations[], int vCo
             
             //Confirm to update member
             int confirm;
-			do {
-				inputYesNo(&confirm,
-						"\nUpdate this member?\n1: Yes\n0: No\n=> Your choice: ");
+			inputYesNo(&confirm, "\nUpdate this member?\n1: Yes\n0: No\n=> Your choice: ");
 			
-			} while (!isOneOrZero(confirm));
 
             if (confirm == 1) {
                 //Call save member to file function
@@ -422,11 +409,7 @@ void updateMember(Member members[], int *mCount, Violation violations[], int vCo
         
         // ===== CONTINUE =====
 		int choice;
-		do {
-			inputYesNo(&choice,
-			         "\nDo you want to update another member?\n1: Yes\n0: No\n=> Your choice: ");
-		
-		} while (!isOneOrZero(choice));
+		inputYesNo(&choice, "\nDo you want to update another member?\n1: Yes\n0: No\n=> Your choice: ");
 
 		if (choice == 0) {
 			continueUpdate = 0;

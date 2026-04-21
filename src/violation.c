@@ -18,7 +18,6 @@ int saveViolations(Violation violations[], int count)
     return saveToFile(VIOLATIONS_FILE, violations, sizeof(Violation), count);
 }
 
-<<<<<<< feature/violationView
 double calculateFine(int role, int reason)
 {
     double fineAmount = 0;
@@ -30,7 +29,8 @@ double calculateFine(int role, int reason)
         fineAmount = 50000;
 
     return fineAmount;
-=======
+}
+
 int checkOutCondition(const Violation violations[], int count, const char *id) {
 	int i;
 	int meetingAbsenceCount = 0;
@@ -57,16 +57,6 @@ int checkOutCondition(const Violation violations[], int count, const char *id) {
 	}
 
 	return 0;
-}
-
-double calculateFine(int role, int reason){
-	double fineAmount = 0;
-	if (reason == 3) fineAmount = 0;
-	else if (role == 0) fineAmount = 20000;
-	else fineAmount = 50000;
-	
-	return fineAmount;
->>>>>>> develop
 }
 
 void refreshFineAfterRolechange(char *id, int role)
