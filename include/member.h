@@ -4,8 +4,10 @@
 #define MAX_MEMBERS 1000
 #define MEMBERS_FILE "data/members.dat"
 
+#include "../include/violation.h"
+#include "../include/auth.h"
 
-#include "violation.h"
+
 
 typedef struct
 {
@@ -26,7 +28,10 @@ int loadMembers(Member members[], int *count);
 int saveMembers(Member members[], int count);
 
 // Returns index in array, -1 if not found
-int searchMemberById(Member members[], int count, const char *id);
+int searchMemberByIdInM(Member members[], int count, const char *id);
+int searchMemberByIdInV(Violation violations[], int count, const char *id);
+int searchMemberByIdInA(Account accounts[], int count, const char *id);
+
 
 // Recalculates totalFine from unpaid violations, returns 1 on success
 int updateMemberTotalFine(Member members[], int mCount, Violation violations[], int vCount, const char *id);

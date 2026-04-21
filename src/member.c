@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 #include "../include/member.h"
+#include "../include/auth.h"
 #include "../include/violation.h"
 #include "../include/validate.h"
 #include "../include/fileio.h"
@@ -18,7 +19,7 @@ int saveMembers(Member members[], int count) {
 }
 
 //search
-int searchMemberById(Member members[], int count, const char *id) {
+int searchMemberByIdInM(Member members[], int count, const char *id) {
     for (int i = 0; i < count; i++) {
         if (strcmp(members[i].studentID, id) == 0) {
             return i;
@@ -66,7 +67,7 @@ int  countUnpaidViolations(const char *id, Violation violations[], int vCount) {
 //updateTotalFine
 
 int updateMemberTotalFine(Member members[], int mCount, Violation violations[], int vCount, const char *id) {
-	int memberIndex = searchMemberById(members, mCount, id);
+    int memberIndex = searchMemberByIdInM(members, mCount, id);
 	if (memberIndex == -1) {
 		printf("Member not found!\n");
 		return 0; 
@@ -165,7 +166,7 @@ void addMember(Member members[], int *count) {
 			//Print success message
 			printf("Member added successfully!\n");
 
-			//*************************Give back account info to user
+			//**********************Not yet: Give back account info to user
 
 		} else {
 			printf("Member not added.\n");
@@ -199,10 +200,10 @@ void removeMember(Member members[], int *count) {
 	int  continueRemove = 1;
 	while (continueRemove) {
 		pos = -1; //Reset position before find member
-		inputStudentID(id, "Nhap studentID can xoa: ");
+		inputStudentID(id, "Enter student ID to remove: ");
 
 		//Find member by ID and remove by shift left array
-		pos = searchMemberById(members, *count, id);
+		pos = searchMemberByIdInM(members, *count, id);
     
 
 		if (pos != -1) {
@@ -230,7 +231,7 @@ void removeMember(Member members[], int *count) {
 				//Print success message
 				printf("Member removed successfully!\n");
 
-				//****************Xóa thêm thông tin account và violation liên quan đến member này 
+				//****************Not yet: remove all violation and account of this member
 
 			} else {
 				printf("Member not removed.\n");
@@ -281,10 +282,10 @@ void updateMember(Member members[], int *mCount, Violation violations[], int vCo
 	int  continueUpdate = 1;
 	while (continueUpdate) {
 		pos = -1; //Reset position before find member
-		inputStudentID(studentID, "Nhap studentID can cap nhat: ");
+		inputStudentID(studentID, "Enter student ID to update: ");
 
 		//Find member by ID and update by assign new value to target member
-		pos = searchMemberById(members, *mCount, studentID);
+		pos = searchMemberByIdInM(members, *mCount, studentID);
 
         //If found 
 		if (pos != -1) {
@@ -334,7 +335,6 @@ void updateMember(Member members[], int *mCount, Violation violations[], int vCo
 			
 
             if (confirm == 1) {
-                //Call save member to file function
                 switch (fieldChoice) {
                     case 1:
                         strcpy(members[pos].fullName, fullName);
@@ -349,63 +349,57 @@ void updateMember(Member members[], int *mCount, Violation violations[], int vCo
                         break;
 
                     case 4:
-                        members[pos].team = team; //Assign new team
+                        members[pos].team = team; 
                         break;
                         
 
                     case 5:
-					{
-						
-					
-                        int oldRole = members[pos].role; //Save old role before assign new role
-                        members[pos].role = role; //Assign new role
-                                            
-                        //If member change from Member to Leader/Vice or BCN
-                        if (oldRole == 0 && role > 0) {
-                            
-                            //Replace new fines for all unpaid and not pending violation of this member
-                            for (int i = 0; i < vCount; i++) {
-                                if (strcmp(violations[i].studentID, studentID) == 0 
-                                && violations[i].isPaid == 0
-                                && violations[i].isPending == 0
-                                && violations[i].fine != 0) { 
-                                
-                                    double newFine = calculateFine(role, violations[i].reason);
+                        {
+							int oldRole = members[pos].role; //Save old role before assign new role
+							members[pos].role = role; //Assign new role
+												
+							//If member change from Member to Leader/Vice or BCN
+							if (oldRole == 0 && role > 0) {
+								
+								//Replace new fines for all unpaid and not pending violation of this member
+								for (int i = 0; i < vCount; i++) {
+									if (strcmp(violations[i].studentID, studentID) == 0 
+									&& violations[i].isPaid == 0
+									&& violations[i].isPending == 0
+									&& violations[i].fine != 0) { 
+									
+										double newFine = calculateFine(role, violations[i].reason);
 
-                                    //Leader/Vice or BOD have higher fine than Member 30.000 per violation
-                                    violations[i].fine = newFine; 
-                                }
-                            }
-                            
-                            //Update total fine for this member after change role
-							//muốn lấy totalfine sau cập nhật thì phải gọi hàm updateMemberTotalFine để tính lại tổng tiền phạt dựa trên các vi phạm chưa thanh toán và không đang chờ xử lý của thành viên đó
-							//sau đó mới gán lại cho members[pos].totalFine, nếu không sẽ bị sai tổng tiền phạt sau khi cập nhật role vì calculateFine chỉ tính theo từng vi phạm chứ không tính tổng tiền phạt hiện tại của thành viên đó
-                            members[pos].totalFine = updateMemberTotalFine(members, *mCount, violations, vCount, studentID); 
-                        }
+										//Leader/Vice or BOD have higher fine than Member 30.000 per violation
+										violations[i].fine = newFine; 
+									}
+								}
+								
+								//Update total fine for this member after change role
+								updateMemberTotalFine(members, *mCount, violations, vCount, studentID); 
+							}
 
-                        //If member change from Leader/Vice or BCN to Member
-                        else if (oldRole > 0 && role == 0) {
-                            
-                            //Replace new fines for all unpaid and not pending violation of this member
-                            for (int i = 0; i < vCount; i++) {
-                                if (strcmp(violations[i].studentID, studentID) == 0 
-                                && violations[i].isPaid == 0
-                                && violations[i].isPending == 0
-                                && violations[i].fine != 0) {
-                                
-                                    double newFine = calculateFine(role, violations[i].reason);
-                                    //Leader/Vice or BOD have higher fine than Member 30.000 per violation
-                                    violations[i].fine = newFine; 
-                                }
-                            }
-                            //Update total fine for this member after change role
-                            members[pos].totalFine = updateMemberTotalFine(members, *mCount, violations, vCount, studentID); 
-                        }
+							//If member change from Leader/Vice or BCN to Member
+							else if (oldRole > 0 && role == 0) {
+								
+								//Replace new fines for all unpaid and not pending violation of this member
+								for (int i = 0; i < vCount; i++) {
+									if (strcmp(violations[i].studentID, studentID) == 0 
+									&& violations[i].isPaid == 0
+									&& violations[i].isPending == 0
+									&& violations[i].fine != 0) {
+									
+										double newFine = calculateFine(role, violations[i].reason);
+										//Leader/Vice or BOD have higher fine than Member 30.000 per violation
+										violations[i].fine = newFine; 
+									}
+								}
+								//Update total fine for this member after change role
+								updateMemberTotalFine(members, *mCount, violations, vCount, studentID); 
+							}
 
-
-                        break;	
-
-                }
+							break;
+						}	
                 }
 
             }
