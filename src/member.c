@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 #include "../include/member.h"
+#include "../include/auth.h"
 #include "../include/violation.h"
 #include "../include/validate.h"
 #include "../include/fileio.h"
@@ -16,9 +17,27 @@ int saveMembers(Member members[], int count) {
 }
 
 //search
-int searchMemberById(Member members[], int count, const char *id) {
+int searchMemberByIdInM(Member members[], int count, const char *id) {
     for (int i = 0; i < count; i++) {
         if (strcmp(members[i].studentID, id) == 0) {
+            return i;
+        }
+    }
+    return -1;
+}
+
+int searchMemberByIdInV(Violation violations[], int count, const char *id) {
+    for (int i = 0; i < count; i++) {
+        if (strcmp(violations[i].studentID, id) == 0) {
+            return i;
+        }
+    }
+    return -1;
+}
+
+int searchMemberByIdInA(Account accounts[], int count, const char *id) {
+    for (int i = 0; i < count; i++) {
+        if (strcmp(accounts[i].studentID, id) == 0) {
             return i;
         }
     }
@@ -70,7 +89,7 @@ int updateMemberTotalFine(const char *id) {
         printf("Error loading members data.\n");
         return 0;
     }
-    int mIndex = searchMemberById(members, mCount, id);
+    int mIndex = searchMemberByIdInM(members, mCount, id);
     if(mIndex == -1) {
         printf("Member with ID %s not found.\n", id);
         return 0;
@@ -199,7 +218,7 @@ void removeMember(Member members[], int *count) {
 		inputStudentID(id, "Nhap studentID can xoa: ");
 
 		//Find member by ID and remove by shift left array
-		pos = searchMemberById(members, *count, id);
+		pos = searchMemberByIdInM(members, *count, id);
     
 
 		if (pos != -1) {
@@ -281,7 +300,7 @@ void updateMember(Member members[], int *mCount, Violation violations[], int vCo
 		inputStudentID(studentID, "Nhap studentID can cap nhat: ");
 
 		//Find member by ID and update by assign new value to target member
-		pos = searchMemberById(members, *mCount, studentID);
+		pos = searchMemberByIdInM(members, *mCount, studentID);
 
         //If found 
 		if (pos != -1) {
