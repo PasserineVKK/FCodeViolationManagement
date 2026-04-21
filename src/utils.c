@@ -43,8 +43,62 @@ int formatCurrency(double amount, char* outputString, size_t availableLen){
 		outputString[j--] = temp[i];
 		count++;
 	}
+
 	return 1;
 	
+
+
+}
+
+const char *translateRole(int role) {
+	switch (role) {
+		case 0:
+			return "Member";
+		case 1:
+			return "Leader/Vice";
+		case 2:
+			return "Board of Directors";
+		default:
+			return "Unknown Role";
+	}
+}
+
+const char *translateTeam(int team) {
+	switch (team) {
+		case 0:
+			return "Academic";
+		case 1:
+			return "Planning";
+		case 2:
+			return "HR";
+		case 3:
+			return "Media";
+		default:
+			return "Unknown Team";
+	}
+}
+
+const char *translateIsPaid(int isPaid) {
+	switch (isPaid) {
+		case 0:
+			return "Not Paid";
+		case 1:
+			return "Paid";
+		default:
+			return "Unknown Payment Status";
+	}
+}
+
+const char *translatePenalty(int penalty) {
+	switch (penalty) {
+		case 0:
+			return "Disciplinary Fine";
+		case 1:
+			return "Removal From Club";
+		default:
+			return "Unknown Penalty";
+	}
+
 }
 
 int normalizeName(char* name){
