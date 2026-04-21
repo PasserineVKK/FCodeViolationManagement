@@ -14,8 +14,17 @@ int saveAccounts(Account accounts[], int count) {
     return saveToFile(ACCOUNTS_FILE, accounts, sizeof(Account), count);
 }
 
+int searchMemberByIdInA(Account accounts[], int count, const char *id) {
+    for (int i = 0; i < count; i++) {
+        if (strcmp(accounts[i].studentID, id) == 0) {
+            return i;
+        }
+    }
+    return -1;
+}
+
 //Return role of logged in account
-void login(Account accounts[], int aCount){
+int login(Account accounts[], int aCount){
 
     printf("===== LOGIN =====\n");
 
@@ -57,8 +66,10 @@ void login(Account accounts[], int aCount){
         saveAccounts(accounts, aCount);
         printf("This account is now locked due to 3 failed login attempts.\n");
         return -1;
-    }  
+    }
 
+    // Successful login, return role
+    return accounts[aIndex].role;
 }
 
 //Logout by go to login screen 
@@ -73,7 +84,7 @@ void changePassword(Account accounts[], int aCount){
 
     //Input student ID which want to change password
     inputStudentID(studentID, "Enter student ID: ");
-    int aIndex = searchMemberById(accounts, aCount, studentID);
+    int aIndex = searchMemberByIdInA(accounts, aCount, studentID);
 
     //Check if student ID exists in accounts list
     if (aIndex == -1) {
@@ -89,9 +100,5 @@ void changePassword(Account accounts[], int aCount){
             failCount++;
         }
     } while (failCount < 3);
-
-    //Check if account is locked after 3 failed attempts    if (failCount >= 3) {
-        printf("Failed to change password due to 3 incorrect old password attempts.\n");
-        return; 
 }
 

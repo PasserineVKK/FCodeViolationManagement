@@ -18,6 +18,16 @@ int saveViolations(Violation violations[], int count)
     return saveToFile(VIOLATIONS_FILE, violations, sizeof(Violation), count);
 }
 
+
+int searchMemberByIdInV(Violation violations[], int count, const char *id) {
+    for (int i = 0; i < count; i++) {
+        if (strcmp(violations[i].studentID, id) == 0) {
+            return i;
+        }
+    }
+    return -1;
+}
+
 double calculateFine(int role, int reason)
 {
     double fineAmount = 0;

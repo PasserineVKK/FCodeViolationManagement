@@ -2,7 +2,6 @@
 #define ACCOUNT_H
 #define MAX_ACCOUNTS 1000
 #define ACCOUNTS_FILE "data/accounts.dat"
-#include "../include/member.h"
 
 typedef struct
 {
@@ -16,8 +15,11 @@ typedef struct
 int loadAccounts(Account accounts[], int *count);
 int saveAccounts(Account accounts[], int count);
 
+int searchMemberByIdInA(Account accounts[], int count, const char *id);
+
+
 //Return role of logged in account
-void login(Account accounts[], int aCount);
+int login(Account accounts[], int aCount);
 
 //Logout by go to login screen 
 void logout();

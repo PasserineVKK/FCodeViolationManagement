@@ -26,24 +26,6 @@ int searchMemberByIdInM(Member members[], int count, const char *id) {
     return -1;
 }
 
-int searchMemberByIdInV(Violation violations[], int count, const char *id) {
-    for (int i = 0; i < count; i++) {
-        if (strcmp(violations[i].studentID, id) == 0) {
-            return i;
-        }
-    }
-    return -1;
-}
-
-int searchMemberByIdInA(Account accounts[], int count, const char *id) {
-    for (int i = 0; i < count; i++) {
-        if (strcmp(accounts[i].studentID, id) == 0) {
-            return i;
-        }
-    }
-    return -1;
-}
-
 void displayOneMemberInfo (Member member) {
 
     printf("\n┏━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━┳━━━━━━┳━━━━━━┳━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━┳━━━━━━━━━━━━┓\n");
@@ -80,35 +62,23 @@ int  countUnpaidViolations(const char *id, Violation violations[], int vCount) {
 
 }
 
-//update: update tổng tiền nợ cho thành viên
 //updateTotalFine
-int updateMemberTotalFine(const char *id) {
-    Member members[MAX_MEMBERS];
-    int mCount = 0;
-    if(loadMembers(members, &mCount) == -1 && mCount == 0) {
-        printf("Error loading members data.\n");
-        return 0;
-    }
-    int mIndex = searchMemberByIdInM(members, mCount, id);
-    if(mIndex == -1) {
-        printf("Member with ID %s not found.\n", id);
-        return 0;
-    }
-    Violation violations[MAX_VIOLATIONS];
-    int vCount = 0;
-    loadViolations(violations, &vCount);
-    //Calculate total fine for the member who has the same studentID and has unpaid and not pending violations
-    double totalFine = 0.0;
-    for(int i = 0; i < vCount; i++) {
-        if(strcmp(violations[i].studentID, id) == 0 
-        && violations[i].isPaid == 0
-        && violations[i].isPending == 0) {
-            totalFine += violations[i].fine;
-        }
-    }
-    members[mIndex].totalFine = totalFine;
-    saveMembers(members, mCount);
-    return 1;
+int updateMemberTotalFine(Member members[], int mCount, Violation violations[], int vCount, const char *id) {
+    int memberIndex = searchMemberByIdInM(members, mCount, id);
+	if (memberIndex == -1) {
+		printf("Member not found!\n");
+		return 0; 
+	}
+	double totalFine = 0;
+	for (int i = 0; i < vCount; i++) {
+		if (strcmp(violations[i].studentID, id) == 0 
+		&& violations[i].isPaid == 0
+		&& violations[i].isPending == 0) {
+			totalFine += violations[i].fine;
+		}
+	}
+	members[memberIndex].totalFine = totalFine;
+	return 1;
 }
 
 
@@ -181,7 +151,7 @@ void addMember(Member members[], int *count) {
 			//Print success message
 			printf("Member added successfully!\n");
 
-			//*************************Give back account info to user
+			//**********************Not yet: Give back account info to user
 
 		} else {
 			printf("Member not added.\n");
@@ -215,7 +185,7 @@ void removeMember(Member members[], int *count) {
 	int  continueRemove = 1;
 	while (continueRemove) {
 		pos = -1; //Reset position before find member
-		inputStudentID(id, "Nhap studentID can xoa: ");
+		inputStudentID(id, "Enter student ID to remove: ");
 
 		//Find member by ID and remove by shift left array
 		pos = searchMemberByIdInM(members, *count, id);
@@ -246,7 +216,7 @@ void removeMember(Member members[], int *count) {
 				//Print success message
 				printf("Member removed successfully!\n");
 
-				//****************Xóa thêm thông tin account và violation liên quan đến member này 
+				//****************Not yet: remove all violation and account of this member
 
 			} else {
 				printf("Member not removed.\n");
@@ -297,7 +267,7 @@ void updateMember(Member members[], int *mCount, Violation violations[], int vCo
 	int  continueUpdate = 1;
 	while (continueUpdate) {
 		pos = -1; //Reset position before find member
-		inputStudentID(studentID, "Nhap studentID can cap nhat: ");
+		inputStudentID(studentID, "Enter student ID to update: ");
 
 		//Find member by ID and update by assign new value to target member
 		pos = searchMemberByIdInM(members, *mCount, studentID);
@@ -350,7 +320,6 @@ void updateMember(Member members[], int *mCount, Violation violations[], int vCo
 			
 
             if (confirm == 1) {
-                //Call save member to file function
                 switch (fieldChoice) {
                     case 1:
                         strcpy(members[pos].fullName, fullName);
@@ -365,11 +334,11 @@ void updateMember(Member members[], int *mCount, Violation violations[], int vCo
                         break;
 
                     case 4:
-                        members[pos].team = team; //Assign new team
+                        members[pos].team = team; 
                         break;
                         
                     case 5:
-						{
+                        {
 							int oldRole = members[pos].role; //Save old role before assign new role
 							members[pos].role = role; //Assign new role
 												
@@ -391,7 +360,7 @@ void updateMember(Member members[], int *mCount, Violation violations[], int vCo
 								}
 								
 								//Update total fine for this member after change role
-								updateMemberTotalFine(studentID); 
+								updateMemberTotalFine(members, *mCount, violations, vCount, studentID); 
 							}
 
 							//If member change from Leader/Vice or BCN to Member
@@ -410,7 +379,7 @@ void updateMember(Member members[], int *mCount, Violation violations[], int vCo
 									}
 								}
 								//Update total fine for this member after change role
-								updateMemberTotalFine(studentID); 
+								updateMemberTotalFine(members, *mCount, violations, vCount, studentID); 
 							}
 
 							break;
