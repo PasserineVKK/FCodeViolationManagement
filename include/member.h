@@ -16,7 +16,7 @@ typedef struct
 	int violationCount;
 	int consecutiveAbsences;
 	double totalFine;
-	int isPending; //0 = not pending, 1 = pending
+	int isPending; // 0 = not pending, 1 = pending
 } Member;
 
 // file
@@ -30,10 +30,10 @@ int searchMemberById(Member members[], int count, const char *id);
 int updateMemberTotalFine(const char *id);
 
 // Display member info in table format
-void displayOneMemberInfo (Member member);
+void displayOneMemberInfo(Member member);
 
 // Count unpaid violations for a member
-int  countUnpaidViolations(const char *id, Violation violations[], int vCount);
+int countUnpaidViolations(const char *id, Violation violations[], int vCount);
 
 // Features 2.1: Add member
 void addMember(Member members[], int *count);
@@ -46,7 +46,5 @@ void updateMember(Member members[], int *mCount, Violation violations[], int vCo
 
 // Features 2.7: Show member list
 void showTotalFineByRole(Member members[], int count);
-
-
 
 #endif

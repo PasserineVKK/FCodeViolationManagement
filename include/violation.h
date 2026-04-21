@@ -11,6 +11,12 @@
 #define REASON_NO_CLUB_ACTIVITY 2
 #define REASON_VIOLENCE 3
 
+#define PENDING 1
+#define NOT_PENDING 0
+
+#define ALREADY_PAID 1
+#define NOT_PAY 0
+
 typedef struct
 {
 	char violationID[50];
@@ -30,7 +36,10 @@ int saveViolations(Violation violations[], int count);
 int checkOutCondition(const Violation violations[], int count, const char *id);
 
 double calculateFine(int role, int reason);
+void refreshFineAfterRolechange(char *memberId, int role);
 
-void refreshFineAfterRolechange(char *id, int role);
+Violation *findViolationById(const char *violationId, Violation violations[], int count);
+
+void updateIsPaidField(char *violationId, Violation violations[], int count, int value);
 
 #endif

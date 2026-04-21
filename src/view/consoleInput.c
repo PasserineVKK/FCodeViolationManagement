@@ -264,12 +264,11 @@ void inputMemberTeam(int *target, const char *prompt)
 
 void getPosIntInRange(const char *prompt, int *n, int start, int end)
 {
-    int n;
     while (1)
     {
-        inputPosInteger(&n, prompt);
-        if (n >= start && n <= end)
+        inputPosInteger(n, prompt);
+        if (*n >= start && *n <= end)
             break;
-        printf("Wrong input. Please try again!");
+        printf("Wrong input. Please try again!\n");
     }
 }
