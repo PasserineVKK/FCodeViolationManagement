@@ -6,6 +6,8 @@
 #include "../include/fileio.h"
 #include "../include/consoleInput.h"
 
+Member memberList[MAX_MEMBERS];
+
 //file
 int loadMembers(Member members[], int *count) {
     return loadFromFile(MEMBERS_FILE, members, sizeof(Member), MAX_MEMBERS, count);
@@ -62,6 +64,7 @@ int  countUnpaidViolations(const char *id, Violation violations[], int vCount) {
 }
 
 //updateTotalFine
+
 int updateMemberTotalFine(Member members[], int mCount, Violation violations[], int vCount, const char *id) {
 	int memberIndex = searchMemberById(members, mCount, id);
 	if (memberIndex == -1) {
@@ -78,8 +81,20 @@ int updateMemberTotalFine(Member members[], int mCount, Violation violations[], 
 	}
 	members[memberIndex].totalFine = totalFine;
 	return 1;
+
 }
 
+int updateConsecutiveAbsences(Member members[], int count, const char *id) {
+    int index = searchMemberById(members, count, id);
+
+    if (index != -1) {
+        members[index].consecutiveAbsences++;
+     	//-> function trigger warning if absence = 2 may be insert here
+     	return 1;
+    } else {
+        return 0;
+    }
+}
 
 // ===== Feature 2.1: ADD MEMBER =====
 void addMember(Member members[], int *count) {
@@ -337,7 +352,11 @@ void updateMember(Member members[], int *mCount, Violation violations[], int vCo
                         members[pos].team = team; //Assign new team
                         break;
                         
+
                     case 5:
+					{
+						
+					
                         int oldRole = members[pos].role; //Save old role before assign new role
                         members[pos].role = role; //Assign new role
                                             
@@ -383,7 +402,10 @@ void updateMember(Member members[], int *mCount, Violation violations[], int vCo
                             members[pos].totalFine = updateMemberTotalFine(members, *mCount, violations, vCount, studentID); 
                         }
 
+
                         break;	
+
+                }
                 }
 
             }
@@ -421,4 +443,5 @@ void showTotalFineByRole(Member members[], int mCount) {
 
     printf("┗━━━━━━━━━━━━━━━━━━━━━━┻━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛\n");
 }
+
 

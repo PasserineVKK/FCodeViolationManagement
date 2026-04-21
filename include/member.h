@@ -1,7 +1,9 @@
 #ifndef MEMBER_H
 #define MEMBER_H
+
 #define MAX_MEMBERS 1000
 #define MEMBERS_FILE "data/members.dat"
+
 
 #include "violation.h"
 
@@ -27,7 +29,7 @@ int saveMembers(Member members[], int count);
 int searchMemberById(Member members[], int count, const char *id);
 
 // Recalculates totalFine from unpaid violations, returns 1 on success
-int  updateMemberTotalFine(Member members[], int mCount, Violation violations[], int vCount, const char *id);
+int updateMemberTotalFine(Member members[], int mCount, Violation violations[], int vCount, const char *id);
 
 // Display member info in table format
 void displayOneMemberInfo (Member member);
@@ -48,5 +50,7 @@ void updateMember(Member members[], int *mCount, Violation violations[], int vCo
 void showTotalFineByRole(Member members[], int count);
 
 
+
+int updateConsecutiveAbsences(Member members[], int count, const char *id);
 
 #endif
