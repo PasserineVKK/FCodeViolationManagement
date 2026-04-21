@@ -77,3 +77,47 @@ void displayViolationByStudentId(char *id, Violation violations[], int size)
             displayViolation(&violations[i]);
     displayViolationFooter();
 }
+
+void displayViolationsByPelnatyStatus(Violation violations[], int size, int pelnatyStatus)
+{
+    if (pelnatyStatus != PENALTY_FINANCIAL || pelnatyStatus != PENALTY_KICK)
+    {
+        return;
+    }
+
+    displayHeader();
+    for (int i = 0; i < size; i++)
+    {
+        if (violations[i].pelnaty == pelnatyStatus)
+        {
+            displayViolation(&violations[i]);
+        }
+    }
+    displayFooter();
+}
+
+void displayViolationsByReason(Violation violations[], int size, int reason)
+{
+    displayHeader();
+    for (int i = 0; i < size; i++)
+    {
+        if (violations[i].reason == reason)
+        {
+            displayViolation(&violations[i]);
+        }
+    }
+    displayFooter();
+}
+
+void displayViolationsByPaidStatus(Violation violations[], int size, int isPaid)
+{
+    displayHeader();
+    for (int i = 0; i < size; i++)
+    {
+        if (violations[i].isPaid == isPaid)
+        {
+            displayViolation(&violations[i]);
+        }
+    }
+    displayFooter();
+}

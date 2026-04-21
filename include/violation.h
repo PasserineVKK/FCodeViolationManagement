@@ -17,6 +17,9 @@
 #define ALREADY_PAID 1
 #define NOT_PAY 0
 
+#define PENALTY_FINANCIAL 0
+#define PENALTY_KICK 1
+
 typedef struct
 {
 	char violationID[50];
