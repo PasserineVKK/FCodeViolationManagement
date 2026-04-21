@@ -41,4 +41,7 @@ void inputMemberTeam (int *target, const char * prompt);
 
 // =========================================================================
 
+//Input password
+void inputPassword (char *target, const char * prompt);
+
 #endif
