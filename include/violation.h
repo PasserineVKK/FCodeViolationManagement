@@ -1,7 +1,7 @@
-#include <time.h>
 #ifndef VIOLATION_H
 #define VIOLATION_H
 #define MAX_VIOLATIONS 5000
+#include <time.h>
 #define VIOLATIONS_FILE "data/violations.dat"
 
 #include <time.h>
