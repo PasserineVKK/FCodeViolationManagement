@@ -79,7 +79,6 @@ const char *translateIsPaid(int isPaid) {
 		case 0:
 			return "Not Paid";
 		case 1:
-		case 2:
 			return "Paid";
 		default:
 			return "Unknown Payment Status";
@@ -91,7 +90,6 @@ const char *translatePenalty(int penalty) {
 		case 0:
 			return "Disciplinary Fine";
 		case 1:
-		case 2:
 			return "Removal From Club";
 		default:
 			return "Unknown Penalty";
