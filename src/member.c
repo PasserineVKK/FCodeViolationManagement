@@ -87,10 +87,6 @@ void addMember(Member members[], int *count) {
         printf("Member list is full!\n");
         return;
     }
-	if (*count >= 1000) {
-		printf("Member list is full!\n");
-		return;
-	}
 
 	char fullName[50];
 	char email[50];
