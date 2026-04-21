@@ -65,33 +65,23 @@ int  countUnpaidViolations(const char *id, Violation violations[], int vCount) {
 
 //updateTotalFine
 
-int updateMemberTotalFine(const char *id) {
-    Member members[MAX_MEMBERS];
-    int mCount = 0;
-    if(loadMembers(members, &mCount) == -1 && mCount == 0) {
-        printf("Error loading members data.\n");
-        return 0;
-    }
-    int mIndex = searchMemberById(members, mCount, id);
-    if(mIndex == -1) {
-        printf("Member with ID %s not found.\n", id);
-        return 0;
-    }
-    Violation violations[MAX_VIOLATIONS];
-    int vCount = 0;
-    loadViolations(violations, &vCount);
-    //Calculate total fine for the member who has the same studentID and has unpaid and not pending violations
-    double totalFine = 0.0;
-    for(int i = 0; i < vCount; i++) {
-        if(strcmp(violations[i].studentID, id) == 0 
-        && violations[i].isPaid == 0
-        && violations[i].isPending == 0) {
-            totalFine += violations[i].fine;
-        }
-    }
-    members[mIndex].totalFine = totalFine;
-    saveMembers(members, mCount);
-    return 1;
+int updateMemberTotalFine(Member members[], int mCount, Violation violations[], int vCount, const char *id) {
+	int memberIndex = searchMemberById(members, mCount, id);
+	if (memberIndex == -1) {
+		printf("Member not found!\n");
+		return 0; 
+	}
+	double totalFine = 0;
+	for (int i = 0; i < vCount; i++) {
+		if (strcmp(violations[i].studentID, id) == 0 
+		&& violations[i].isPaid == 0
+		&& violations[i].isPending == 0) {
+			totalFine += violations[i].fine;
+		}
+	}
+	members[memberIndex].totalFine = totalFine;
+	return 1;
+
 }
 
 int updateConsecutiveAbsences(Member members[], int count, const char *id) {
@@ -364,54 +354,58 @@ void updateMember(Member members[], int *mCount, Violation violations[], int vCo
                         
 
                     case 5:
-						{
-							int oldRole = members[pos].role; //Save old role before assign new role
-							members[pos].role = role; //Assign new role
-												
-							//If member change from Member to Leader/Vice or BCN
-							if (oldRole == 0 && role > 0) {
-								
-								//Replace new fines for all unpaid and not pending violation of this member
-								for (int i = 0; i < vCount; i++) {
-									if (strcmp(violations[i].studentID, studentID) == 0 
-									&& violations[i].isPaid == 0
-									&& violations[i].isPending == 0
-									&& violations[i].fine != 0) { 
-									
-										double newFine = calculateFine(role, violations[i].reason);
+					{
+						
+					
+                        int oldRole = members[pos].role; //Save old role before assign new role
+                        members[pos].role = role; //Assign new role
+                                            
+                        //If member change from Member to Leader/Vice or BCN
+                        if (oldRole == 0 && role > 0) {
+                            
+                            //Replace new fines for all unpaid and not pending violation of this member
+                            for (int i = 0; i < vCount; i++) {
+                                if (strcmp(violations[i].studentID, studentID) == 0 
+                                && violations[i].isPaid == 0
+                                && violations[i].isPending == 0
+                                && violations[i].fine != 0) { 
+                                
+                                    double newFine = calculateFine(role, violations[i].reason);
 
-										//Leader/Vice or BOD have higher fine than Member 30.000 per violation
-										violations[i].fine = newFine; 
-									}
-								}
-								
-								//Update total fine for this member after change role
-								updateMemberTotalFine(studentID); 
-							}
+                                    //Leader/Vice or BOD have higher fine than Member 30.000 per violation
+                                    violations[i].fine = newFine; 
+                                }
+                            }
+                            
+                            //Update total fine for this member after change role
+							//muốn lấy totalfine sau cập nhật thì phải gọi hàm updateMemberTotalFine để tính lại tổng tiền phạt dựa trên các vi phạm chưa thanh toán và không đang chờ xử lý của thành viên đó
+							//sau đó mới gán lại cho members[pos].totalFine, nếu không sẽ bị sai tổng tiền phạt sau khi cập nhật role vì calculateFine chỉ tính theo từng vi phạm chứ không tính tổng tiền phạt hiện tại của thành viên đó
+                            members[pos].totalFine = updateMemberTotalFine(members, *mCount, violations, vCount, studentID); 
+                        }
 
-							//If member change from Leader/Vice or BCN to Member
-							else if (oldRole > 0 && role == 0) {
-								
-								//Replace new fines for all unpaid and not pending violation of this member
-								for (int i = 0; i < vCount; i++) {
-									if (strcmp(violations[i].studentID, studentID) == 0 
-									&& violations[i].isPaid == 0
-									&& violations[i].isPending == 0
-									&& violations[i].fine != 0) {
-									
-										double newFine = calculateFine(role, violations[i].reason);
-										//Leader/Vice or BOD have higher fine than Member 30.000 per violation
-										violations[i].fine = newFine; 
-									}
-								}
-								//Update total fine for this member after change role
-								updateMemberTotalFine(studentID); 
-							}
+                        //If member change from Leader/Vice or BCN to Member
+                        else if (oldRole > 0 && role == 0) {
+                            
+                            //Replace new fines for all unpaid and not pending violation of this member
+                            for (int i = 0; i < vCount; i++) {
+                                if (strcmp(violations[i].studentID, studentID) == 0 
+                                && violations[i].isPaid == 0
+                                && violations[i].isPending == 0
+                                && violations[i].fine != 0) {
+                                
+                                    double newFine = calculateFine(role, violations[i].reason);
+                                    //Leader/Vice or BOD have higher fine than Member 30.000 per violation
+                                    violations[i].fine = newFine; 
+                                }
+                            }
+                            //Update total fine for this member after change role
+                            members[pos].totalFine = updateMemberTotalFine(members, *mCount, violations, vCount, studentID); 
+                        }
 
 
-							break;
-						}	
+                        break;	
 
+                }
                 }
 
             }

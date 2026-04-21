@@ -29,7 +29,7 @@ int saveMembers(Member members[], int count);
 int searchMemberById(Member members[], int count, const char *id);
 
 // Recalculates totalFine from unpaid violations, returns 1 on success
-int updateMemberTotalFine(const char *id);
+int updateMemberTotalFine(Member members[], int mCount, Violation violations[], int vCount, const char *id);
 
 // Display member info in table format
 void displayOneMemberInfo (Member member);
