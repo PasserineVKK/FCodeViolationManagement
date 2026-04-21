@@ -7,10 +7,12 @@
 // ===== I. INPUT INT, FLOAT, YES/NO OPTION ================================
 
 // 1.1. Input integer
-void inputPosInteger (int *target, const char * prompt){
-	char buf[50];
+void inputPosInteger(int *target, const char *prompt)
+{
+    char buf[50];
 
-    while (1) {
+    while (1)
+    {
         printf("%s", prompt);
 
         if (!fgets(buf, sizeof(buf), stdin))
@@ -18,7 +20,8 @@ void inputPosInteger (int *target, const char * prompt){
 
         buf[strcspn(buf, "\n")] = '\0';
 
-        if (!isPosInteger(buf)) {
+        if (!isPosInteger(buf))
+        {
             printf("? Please enter a valid integer.\n");
             continue;
         }
@@ -29,10 +32,12 @@ void inputPosInteger (int *target, const char * prompt){
 }
 
 // 1.2. Input real number
-void inputPosFloat(float *target, const char *prompt) {
+void inputPosFloat(float *target, const char *prompt)
+{
     char buf[50];
 
-    while (1) {
+    while (1)
+    {
         printf("%s", prompt);
 
         if (!fgets(buf, sizeof(buf), stdin))
@@ -40,7 +45,8 @@ void inputPosFloat(float *target, const char *prompt) {
 
         buf[strcspn(buf, "\n")] = '\0';
 
-        if (!isPosFloat(buf)) {
+        if (!isPosFloat(buf))
+        {
             printf("? Please enter a valid positive float.\n");
             continue;
         }
@@ -51,10 +57,12 @@ void inputPosFloat(float *target, const char *prompt) {
 }
 
 // 1.3 Input yes no option
-void inputYesNo (int *option, const char * prompt){
+void inputYesNo(int *option, const char *prompt)
+{
     char buf[10];
 
-    while (1) {
+    while (1)
+    {
         printf("%s", prompt);
 
         if (!fgets(buf, sizeof(buf), stdin))
@@ -62,7 +70,8 @@ void inputYesNo (int *option, const char * prompt){
 
         buf[strcspn(buf, "\n")] = '\0';
 
-        if (!isOneOrZero(buf)) {
+        if (!isOneOrZero(buf))
+        {
             printf("? Please enter a valid yes/no option (0 or 1).\n");
             continue;
         }
@@ -74,13 +83,14 @@ void inputYesNo (int *option, const char * prompt){
 
 // =========================================================================
 
-
 // ===== II. INPUT MEMBER INFO ================================
 // 2.1 Input member name
-void inputMemberName (char *target, const char * prompt){
+void inputMemberName(char *target, const char *prompt)
+{
     char buf[50];
 
-    while (1) {
+    while (1)
+    {
         printf("%s", prompt);
 
         if (!fgets(buf, sizeof(buf), stdin))
@@ -88,12 +98,14 @@ void inputMemberName (char *target, const char * prompt){
 
         // Check '\n', if don't have, string longer than buffer can get => fail
         if (!strchr(buf, '\n'))
-            //Read all until '\n' to make buffer clean for next input
-            while (getchar() != '\n');    
+            // Read all until '\n' to make buffer clean for next input
+            while (getchar() != '\n')
+                ;
 
         buf[strcspn(buf, "\n")] = '\0';
 
-        if (!isValidName(buf)) {
+        if (!isValidName(buf))
+        {
             printf("? Please enter a valid name.\n");
             continue;
         }
@@ -103,11 +115,13 @@ void inputMemberName (char *target, const char * prompt){
     }
 }
 
-//2.2 Input  email
-void inputMemberEmail (char *target, const char * prompt){
+// 2.2 Input  email
+void inputMemberEmail(char *target, const char *prompt)
+{
     char buf[50];
 
-    while (1) {
+    while (1)
+    {
         printf("%s", prompt);
 
         if (!fgets(buf, sizeof(buf), stdin))
@@ -115,12 +129,14 @@ void inputMemberEmail (char *target, const char * prompt){
 
         // Check '\n', if don't have, string longer than buffer can get => fail
         if (!strchr(buf, '\n'))
-            //Read all until '\n' to make buffer clean for next input
-            while (getchar() != '\n');    
+            // Read all until '\n' to make buffer clean for next input
+            while (getchar() != '\n')
+                ;
 
         buf[strcspn(buf, "\n")] = '\0';
 
-        if (!isValidEmail(buf)) {
+        if (!isValidEmail(buf))
+        {
             printf("? Please enter a valid email.\n");
             continue;
         }
@@ -131,10 +147,12 @@ void inputMemberEmail (char *target, const char * prompt){
 }
 
 // 2.3 Input student ID
-void inputStudentID (char *target, const char * prompt){
+void inputStudentID(char *target, const char *prompt)
+{
     char buf[9];
 
-    while (1) {
+    while (1)
+    {
         printf("%s", prompt);
 
         if (!fgets(buf, sizeof(buf), stdin))
@@ -142,7 +160,8 @@ void inputStudentID (char *target, const char * prompt){
 
         buf[strcspn(buf, "\n")] = '\0';
 
-        if (!isValidMemberID(buf)) {
+        if (!isValidMemberID(buf))
+        {
             printf("?Please enter a valid student ID.\n");
             continue;
         }
@@ -152,11 +171,13 @@ void inputStudentID (char *target, const char * prompt){
     }
 }
 
-//2.4 Input new phone number
-void inputMemberPhone (char *target, const char * prompt){
+// 2.4 Input new phone number
+void inputMemberPhone(char *target, const char *prompt)
+{
     char buf[11];
 
-    while (1) {
+    while (1)
+    {
         printf("%s", prompt);
 
         if (!fgets(buf, sizeof(buf), stdin))
@@ -164,12 +185,14 @@ void inputMemberPhone (char *target, const char * prompt){
 
         // Check '\n', if don't have, string longer than buffer can get => fail
         if (!strchr(buf, '\n'))
-            //Read all until '\n' to make buffer clean for next input
-            while (getchar() != '\n');    
+            // Read all until '\n' to make buffer clean for next input
+            while (getchar() != '\n')
+                ;
 
         buf[strcspn(buf, "\n")] = '\0';
 
-        if (!isValidPhone(buf)) {
+        if (!isValidPhone(buf))
+        {
             printf("? Please enter a valid phone number.\n");
             continue;
         }
@@ -180,9 +203,11 @@ void inputMemberPhone (char *target, const char * prompt){
 }
 
 // 2.5 Input member role
-void inputMemberRole (int *target, const char * prompt){
+void inputMemberRole(int *target, const char *prompt)
+{
     char buf[2];
-    while (1) {
+    while (1)
+    {
         printf("%s", prompt);
 
         if (!fgets(buf, sizeof(buf), stdin))
@@ -190,11 +215,13 @@ void inputMemberRole (int *target, const char * prompt){
 
         buf[strcspn(buf, "\n")] = '\0';
 
-        if (!isPosInteger(buf)) {
+        if (!isPosInteger(buf))
+        {
             printf("? Please enter a valid integer.\n");
             continue;
         }
-        if (!isValidRole(buf)) {
+        if (!isValidRole(buf))
+        {
             printf("? Please enter a valid role (0-2).\n");
             continue;
         }
@@ -204,10 +231,12 @@ void inputMemberRole (int *target, const char * prompt){
     }
 }
 
-//2.6 Input member team
-void inputMemberTeam (int *target, const char * prompt){
+// 2.6 Input member team
+void inputMemberTeam(int *target, const char *prompt)
+{
     char buf[2];
-    while (1) {
+    while (1)
+    {
         printf("%s", prompt);
 
         if (!fgets(buf, sizeof(buf), stdin))
@@ -215,11 +244,13 @@ void inputMemberTeam (int *target, const char * prompt){
 
         buf[strcspn(buf, "\n")] = '\0';
 
-        if (!isPosInteger(buf)) {
+        if (!isPosInteger(buf))
+        {
             printf("? Please enter a valid integer.\n");
             continue;
         }
-        if (!isValidTeam(buf)) {
+        if (!isValidTeam(buf))
+        {
             printf("? Please enter a valid team (0-3).\n");
             continue;
         }
@@ -230,3 +261,15 @@ void inputMemberTeam (int *target, const char * prompt){
 }
 
 // =========================================================================
+
+void getPosIntInRange(const char *prompt, int *n, int start, int end)
+{
+    int n;
+    while (1)
+    {
+        inputPosInteger(&n, prompt);
+        if (n >= start && n <= end)
+            break;
+        printf("Wrong input. Please try again!");
+    }
+}
