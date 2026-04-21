@@ -1,5 +1,3 @@
-<<<<<<< feature/violationView
-=======
 #include <stdio.h>
 #include <stdlib.h>
 #include <locale.h>
@@ -11,4 +9,3 @@ const char *translateRole(int role);
 const char *translateTeam(int team);
 const char *translateIsPaid(int isPaid);
 const char *translatePenalty(int penalty);
->>>>>>> develop
