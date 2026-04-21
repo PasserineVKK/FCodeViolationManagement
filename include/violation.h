@@ -20,6 +20,7 @@ typedef struct {
 //file
 int loadViolations(Violation violations[], int *count);
 int saveViolations(Violation violations[], int count);
+int checkOutCondition(const Violation violations[], int count, const char *id);
 
 double calculateFine(int role, int reason);
 

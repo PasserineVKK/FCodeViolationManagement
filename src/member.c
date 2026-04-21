@@ -59,6 +59,7 @@ int  countUnpaidViolations(const char *id, Violation violations[], int vCount) {
 }
 
 //update: update tổng tiền nợ cho thành viên
+//updateTotalFine
 int updateMemberTotalFine(const char *id) {
     Member members[MAX_MEMBERS];
     int mCount = 0;
@@ -71,12 +72,10 @@ int updateMemberTotalFine(const char *id) {
         printf("Member with ID %s not found.\n", id);
         return 0;
     }
-    //tải vi pham của thành viên
     Violation violations[MAX_VIOLATIONS];
     int vCount = 0;
     loadViolations(violations, &vCount);
-    //tính tổng tiền nợ
-    //chỉ tính những vi phạm chưa được thanh toán và không đang chờ xử lý
+    //Calculate total fine for the member who has the same studentID and has unpaid and not pending violations
     double totalFine = 0.0;
     for(int i = 0; i < vCount; i++) {
         if(strcmp(violations[i].studentID, id) == 0 
