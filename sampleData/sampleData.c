@@ -25,7 +25,6 @@ void seedSampleData(Member members[], int *mCount,
     members[0].violationCount       = 3;
     members[0].consecutiveAbsences  = 1;
     members[0].totalFine            = 40000.0; 
-    members[0].status               = 1;       // Active
     members[0].isPending            = 0;       
 
     // --- Member 1: Leader, HR, absent 3 times in a row -> pending kick ---
@@ -38,7 +37,6 @@ void seedSampleData(Member members[], int *mCount,
     members[1].violationCount       = 3;
     members[1].consecutiveAbsences  = 3; 
     members[1].totalFine            = 100000.0; 
-    members[1].status               = 1;  
     members[1].isPending            = 1;  
 
     // --- Member 2: BCN, Planning, warning ---
@@ -51,7 +49,6 @@ void seedSampleData(Member members[], int *mCount,
     members[2].violationCount       = 3;
     members[2].consecutiveAbsences  = 2; 
     members[2].totalFine            = 50000.0; 
-    members[2].status               = 1;
     members[2].isPending            = 0;
 
     *mCount = 3;
@@ -137,9 +134,9 @@ void seedSampleData(Member members[], int *mCount,
     *aCount = 3;
 
     //save to files
-    saveToFile("sampleData/members.dat", members, sizeof(Member), *mCount);
-    saveToFile("sampleData/violations.dat", violations, sizeof(Violation), *vCount);
-    saveToFile("sampleData/accounts.dat", accounts, sizeof(Account), *aCount);
+    saveToFile("data/members.dat", members, sizeof(Member), *mCount);
+    saveToFile("data/violations.dat", violations, sizeof(Violation), *vCount);
+    saveToFile("data/accounts.dat", accounts, sizeof(Account), *aCount);
 
-    printf("Created sample data with Pending status in sampleData/ folder.\n");
+    printf("Created sample data with Pending status in data/ folder.\n");
 }

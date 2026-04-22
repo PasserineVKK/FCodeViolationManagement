@@ -7,27 +7,31 @@
 #include "../include/violation.h"
 #include "../include/validate.h"
 #include "../include/consoleInput.h"
+#include "../sampleData/sampleData.h"
 
 
 /* run this program using the console pauser or add your own getch, system("pause") or input loop */
 
 int main(int argc, char *argv[]) {
-	printf("Test module");
 	
-	int mCount = 0, vCount = 0, aCount = 0;
-
-	Member members[MAX_MEMBERS];
-	Violation violations[MAX_VIOLATIONS];
-	Account accounts[MAX_ACCOUNTS];
-
+	int mCount = 1000, vCount = 1000, aCount = 1000; //set to max, then reset later
+	char studentID[10];
+	
+	// set the array to be empty.
+	Member members[MAX_MEMBERS] = {0};
+	Violation violations[MAX_VIOLATIONS] = {0};
+	Account accounts[MAX_ACCOUNTS] = {0};
+	
+	//seedSampleData(members, &mCount , violations, &vCount, accounts, &aCount);
+	//------use above command if you've not created seed data
+	
 	mCount = loadMembers(members, &mCount);
 	vCount = loadViolations(violations, &vCount);
 	aCount = loadAccounts(accounts, &aCount);
 	
 	
-	int menuRole = -1; // 
+	int menuRole = -1; 
 	int choice = -1;
-	char studentID[10];
 	menuRole = login(accounts, studentID, aCount);
 	
 	switch (menuRole) {
@@ -121,6 +125,8 @@ int main(int argc, char *argv[]) {
 					case 9: 
 						// reset pass
 						break;
+					case 10:
+						break;	
 					default:
 						printf("Invalid option, please try again.");
 				}
