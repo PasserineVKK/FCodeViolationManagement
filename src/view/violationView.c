@@ -3,8 +3,8 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "../include/view/violationView.h"
-#include "../include/view/viewUtil.h"
+#include "../../include/view/violationView.h"
+#include "../../include/view/viewUtil.h"
 
 void displayViolationHeader()
 {
