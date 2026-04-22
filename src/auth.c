@@ -54,10 +54,11 @@ int login(Account accounts[], int aCount){
     do {
         printf("Enter password: ");
         scanf("%s", password);
-        if (strcmp(password, accounts[aIndex].password) != 0) {
-            printf("Incorrect password. Please try again.\n");
-            failCount++;
+        if (strcmp(password, accounts[aIndex].password) == 0) {
+            break;
         }
+        printf("Incorrect password. Please try again.\n");
+        failCount++;
     } while (failCount < 3);
 
     //Check if account is locked after 3 failed attempts
