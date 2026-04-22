@@ -5,6 +5,8 @@
 #include "../include/violation.h"
 #include "../include/fileio.h"
 
+#include "../include/view/consoleInput.h"
+
 Violation violations[MAX_VIOLATIONS];
 int total_violation;
 // file
@@ -104,4 +106,52 @@ void updateIsPaidField(char *violationId, Violation violations[], int count, int
 
 	v->isPaid = value;
 	updateMemberTotalFine(v->studentID);
+}
+
+void createViolationID(int index, int buffer)
+{
+	sprintf(buffer, "VI%04d", index);
+	return buffer;
+}
+
+void getReason(int *reason)
+{
+	printf("Chọn lý do vi phạm:\n");
+	printf("%d - Not uniform\n", REASON_NOT_UNIFORM);
+	printf("%d - Meeting absence\n", REASON_MEETING_ABSENCE);
+	printf("%d - Not join in Club activity\n", REASON_NO_CLUB_ACTIVITY);
+	printf("%d - Violence\n", REASON_VIOLENCE);
+	getPosIntInRange("Nhập số: ", reason, REASON_NOT_UNIFORM, REASON_VIOLENCE);
+}
+
+const char *getNote(char *note, int size)
+{
+	printf("Ghi chú (nếu có): ");
+	getchar();
+	fgets(note, size, stdin);
+	note[strcspn(note, "\n")] = '\0';
+}
+
+void createNewViolation(Violation violations[], int count, Member *m)
+{
+	if (m == NULL)
+		return;
+	Violation *v = &violations[count];
+	getReason(v->reason);
+	v->violationTime = time(NULL);
+	v->fine = calculateFine(m->role, v->reason);
+
+	v->isPaid = NOT_PAY;
+	v->isPending = PENDING;
+	v->pelnaty = PENALTY_FINANCIAL;
+
+	getNote(&v->note, 50);
+	createViolationID(count, v->violationID);
+
+	int confirm;
+	inputYesNo(&confirm, "Are your sure to create this violation!");
+	if (confirm)
+		count++;
+
+	m->consecutiveAbsences++;
 }

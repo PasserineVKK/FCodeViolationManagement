@@ -42,7 +42,7 @@ double calculateFine(int role, int reason);
 void refreshFineAfterRolechange(char *memberId, int role);
 
 Violation *findViolationById(const char *violationId, Violation violations[], int count);
-
 void updateIsPaidField(char *violationId, Violation violations[], int count, int value);
+void createNewViolation(Violation violations[], int count, Member *m);
 
 #endif
