@@ -86,7 +86,7 @@ int updateMemberTotalFine(Member members[], int mCount, Violation violations[], 
 }
 
 int updateConsecutiveAbsences(Member members[], int count, const char *id) {
-    int index = searchMemberById(members, count, id);
+    int index = searchMemberByIdInM(members, count, id);
 
     if (index != -1) {
         members[index].consecutiveAbsences++;
