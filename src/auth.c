@@ -80,25 +80,34 @@ void changePassword(Account accounts[], int aCount){
     char studentID[9]; // SE000000\0
 
     char oldPassword[30];
-    int failCount = 0;
 
     //Input student ID which want to change password
     inputStudentID(studentID, "Enter student ID: ");
     int aIndex = searchMemberByIdInA(accounts, aCount, studentID);
 
-    //Check if student ID exists in accounts list
-    if (aIndex == -1) {
-        printf("Student ID not found. Please try again.\n");
-        return;
-    }
-    //Enter password 
+    //Enter old password
     do {
         printf("Enter old password: ");
         scanf("%s", oldPassword);
-        if (strcmp(oldPassword, accounts[aIndex].password) != 0) {
-            printf("Incorrect old password. Please try again.\n");
-            failCount++;
+        
+        //Check if old password is correct
+        if (strcmp(oldPassword, accounts[aIndex].password) == 0) {
+            break;
         }
-    } while (failCount < 3);
+
+        printf("Incorrect old password. Please try again.\n");
+    } while (1);
+
+    //Enter new password
+    char newPassword[30];
+    printf("Enter new password: ");
+    scanf("%s", newPassword);
+
+    //Update new password to account and save to file
+    strcpy(accounts[aIndex].password, newPassword);
+    saveAccounts(accounts, aCount);
+    printf("Password changed successfully.\n");
+    
+    return;
 }
 

@@ -86,7 +86,7 @@ int updateMemberTotalFine(Member members[], int mCount, Violation violations[], 
 }
 
 int updateConsecutiveAbsences(Member members[], int count, const char *id) {
-    int index = searchMemberById(members, count, id);
+    int index = searchMemberByIdInM(members, count, id);
 
     if (index != -1) {
         members[index].consecutiveAbsences++;
@@ -98,8 +98,8 @@ int updateConsecutiveAbsences(Member members[], int count, const char *id) {
 }
 
 // ===== Feature 2.1: ADD MEMBER =====
-void addMember(Member members[], int *count) {
-    if (*count >= MAX_MEMBERS) {
+void addMember(Member members[], int *mCount, Account accounts[], int aCount) {
+    if (*mCount >= MAX_MEMBERS) {
         printf("Member list is full!\n");
         return;
     }
@@ -148,25 +148,40 @@ void addMember(Member members[], int *count) {
 			strcpy(mem.studentID, studentID);
 			strcpy(mem.email, email);
 			strcpy(mem.phoneNumber, phoneNumber);
-
 			mem.team = team;
 			mem.role = role;
-
 			mem.violationCount = 0;
 			mem.consecutiveAbsences = 0;
 			mem.totalFine = 0;
 			mem.isPending = 0;
 
+			//Create account for this member with default password "123456"
+			Account acc;
+
+			strcpy(acc.studentID, studentID);
+			strcpy(acc.password, studentID); //Default password is student ID
+			acc.role = role;
+			acc.isLocked = 0;
+			acc.failCount = 0;
+
 			// add member to member list
-			members[(*count)++] = mem;
+			members[(*mCount)++] = mem;
+			// add account to account list
+			accounts[aCount++] = acc;
 
 			//Call save member to file function
-			saveMembers(members, *count);
+			saveMembers(members, *mCount);
+			//Call save account to file function
+			saveAccounts(accounts, aCount); 
 
 			//Print success message
 			printf("Member added successfully!\n");
 
-			//**********************Not yet: Give back account info to user
+			//Give back account info to user
+			printf("\nAccount information for this member:\n");
+			printf("Student ID: %s\n", acc.studentID);
+			printf("Password: %s\n", acc.password);
+
 
 		} else {
 			printf("Member not added.\n");
@@ -187,9 +202,9 @@ void addMember(Member members[], int *count) {
 Input ID => Find by ID => If found, show member info 
 => Confirm to remove => If yes, remove by shift left array => Save to file
 */
-void removeMember(Member members[], int *count) {
+void removeMember(Member members[], int *mCount, Account accounts[], int *aCount, Violation violations[], int *vCount) {
 	//Check if member list is empty
-	if (*count == 0) {
+	if (*mCount == 0) {
 		printf("No members available to remove.\n");
 		return;
 	}
@@ -199,17 +214,17 @@ void removeMember(Member members[], int *count) {
 
 	int  continueRemove = 1;
 	while (continueRemove) {
-		pos = -1; //Reset position before find member
+		int mIndex = -1, vIndex = -1, aIndex = -1; //Reset position before find member
 		inputStudentID(id, "Enter student ID to remove: ");
 
-		//Find member by ID and remove by shift left array
-		pos = searchMemberByIdInM(members, *count, id);
+		//Find member by ID in member list
+		mIndex = searchMemberByIdInM(members, *mCount, id);
     
 
-		if (pos != -1) {
+		if (mIndex != -1) {
 			// Show student
 			printf("\nStudent found:\n");
-			displayOneMemberInfo(members[pos]);
+			displayOneMemberInfo(members[mIndex]);
 
 			//Confirm to remove member
 			int confirm;
@@ -218,20 +233,46 @@ void removeMember(Member members[], int *count) {
 			//Start to remove
 			if (confirm == 1) {
 
-				for (int i = pos; i < *count - 1; i++){
+				// Search member in violation list and account list 
+				vIndex = searchMemberByIdInV(violations, *vCount, id);
+		 		aIndex = searchMemberByIdInA(accounts, *aCount, id);
+
+				// Remove in member list by shift left array
+				for (int i = mIndex; i < *mCount - 1; i++){
 					//Shift left array
 					members[i] = members[i + 1];
 				}
+
+				// Remove in account list by shift left array
+				for (int i = aIndex; i < *aCount - 1; i++){
+					//Shift left array
+					accounts[i] = accounts[i + 1];
+				}
+
 				//Decrease member size
-				(*count)--;
+				(*mCount)--;
+				//Decrease account size
+				(*aCount)--;
 
 				//Call save member to file function
-				saveMembers(members, *count);
+				saveMembers(members, *mCount);
+				//Call save account to file function
+				saveAccounts(accounts, *aCount);
+
+				// Remove in violation list by shift left array if found
+				// If vIndex == -1 => This member has no violation record 
+				// => No need to remove in violation list
+				if (vIndex != -1) {
+					for (int i = vIndex; i < *vCount - 1; i++){
+						//Shift left array
+						violations[i] = violations[i + 1];
+					}
+					(*vCount)--;
+					saveViolations(violations, *vCount);
+				}
 
 				//Print success message
 				printf("Member removed successfully!\n");
-
-				//****************Not yet: remove all violation and account of this member
 
 			} else {
 				printf("Member not removed.\n");
