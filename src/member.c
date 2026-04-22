@@ -83,8 +83,8 @@ int updateMemberTotalFine(Member members[], int mCount, Violation violations[], 
 
 
 // ===== Feature 2.1: ADD MEMBER =====
-void addMember(Member members[], int *count) {
-    if (*count >= MAX_MEMBERS) {
+void addMember(Member members[], int *mCount, Account accounts[], int aCount) {
+    if (*mCount >= MAX_MEMBERS) {
         printf("Member list is full!\n");
         return;
     }
@@ -133,25 +133,40 @@ void addMember(Member members[], int *count) {
 			strcpy(mem.studentID, studentID);
 			strcpy(mem.email, email);
 			strcpy(mem.phoneNumber, phoneNumber);
-
 			mem.team = team;
 			mem.role = role;
-
 			mem.violationCount = 0;
 			mem.consecutiveAbsences = 0;
 			mem.totalFine = 0;
 			mem.isPending = 0;
 
+			//Create account for this member with default password "123456"
+			Account acc;
+
+			strcpy(acc.studentID, studentID);
+			strcpy(acc.password, studentID); //Default password is student ID
+			acc.role = role;
+			acc.isLocked = 0;
+			acc.failCount = 0;
+
 			// add member to member list
-			members[(*count)++] = mem;
+			members[(*mCount)++] = mem;
+			// add account to account list
+			accounts[aCount++] = acc;
 
 			//Call save member to file function
-			saveMembers(members, *count);
+			saveMembers(members, *mCount);
+			//Call save account to file function
+			saveAccounts(accounts, aCount); 
 
 			//Print success message
 			printf("Member added successfully!\n");
 
-			//**********************Not yet: Give back account info to user
+			//Give back account info to user
+			printf("\nAccount information for this member:\n");
+			printf("Student ID: %s\n", acc.studentID);
+			printf("Password: %s\n", acc.password);
+
 
 		} else {
 			printf("Member not added.\n");
