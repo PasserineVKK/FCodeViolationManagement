@@ -187,9 +187,9 @@ void addMember(Member members[], int *mCount, Account accounts[], int aCount) {
 Input ID => Find by ID => If found, show member info 
 => Confirm to remove => If yes, remove by shift left array => Save to file
 */
-void removeMember(Member members[], int *count) {
+void removeMember(Member members[], int *mCount, Account accounts[], int *aCount, Violation violations[], int *vCount) {
 	//Check if member list is empty
-	if (*count == 0) {
+	if (*mCount == 0) {
 		printf("No members available to remove.\n");
 		return;
 	}
@@ -199,17 +199,17 @@ void removeMember(Member members[], int *count) {
 
 	int  continueRemove = 1;
 	while (continueRemove) {
-		pos = -1; //Reset position before find member
+		int mIndex = -1, vIndex = -1, aIndex = -1; //Reset position before find member
 		inputStudentID(id, "Enter student ID to remove: ");
 
-		//Find member by ID and remove by shift left array
-		pos = searchMemberByIdInM(members, *count, id);
+		//Find member by ID in member list
+		mIndex = searchMemberByIdInM(members, *mCount, id);
     
 
-		if (pos != -1) {
+		if (mIndex != -1) {
 			// Show student
 			printf("\nStudent found:\n");
-			displayOneMemberInfo(members[pos]);
+			displayOneMemberInfo(members[mIndex]);
 
 			//Confirm to remove member
 			int confirm;
@@ -218,20 +218,46 @@ void removeMember(Member members[], int *count) {
 			//Start to remove
 			if (confirm == 1) {
 
-				for (int i = pos; i < *count - 1; i++){
+				// Search member in violation list and account list 
+				vIndex = searchMemberByIdInV(violations, *vCount, id);
+		 		aIndex = searchMemberByIdInA(accounts, *aCount, id);
+
+				// Remove in member list by shift left array
+				for (int i = mIndex; i < *mCount - 1; i++){
 					//Shift left array
 					members[i] = members[i + 1];
 				}
+
+				// Remove in account list by shift left array
+				for (int i = aIndex; i < *aCount - 1; i++){
+					//Shift left array
+					accounts[i] = accounts[i + 1];
+				}
+
 				//Decrease member size
-				(*count)--;
+				(*mCount)--;
+				//Decrease account size
+				(*aCount)--;
 
 				//Call save member to file function
-				saveMembers(members, *count);
+				saveMembers(members, *mCount);
+				//Call save account to file function
+				saveAccounts(accounts, *aCount);
+
+				// Remove in violation list by shift left array if found
+				// If vIndex == -1 => This member has no violation record 
+				// => No need to remove in violation list
+				if (vIndex != -1) {
+					for (int i = vIndex; i < *vCount - 1; i++){
+						//Shift left array
+						violations[i] = violations[i + 1];
+					}
+					(*vCount)--;
+					saveViolations(violations, *vCount);
+				}
 
 				//Print success message
 				printf("Member removed successfully!\n");
-
-				//****************Not yet: remove all violation and account of this member
 
 			} else {
 				printf("Member not removed.\n");
