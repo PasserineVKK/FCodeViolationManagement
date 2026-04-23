@@ -97,6 +97,26 @@ int updateConsecutiveAbsences(Member members[], int count, const char *id) {
     }
 }
 
+//1.4: View member list
+void displayMemberList(Member members[], int count) {
+	printf("\n");
+    printf("┏━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━┓\n");
+    printf("┃ %-10s ┃ %-22s ┃ %-10s ┃ %-18s ┃\n",
+           "Student ID", "Full Name", "Team", "Role");
+    printf("┣━━━━━━━━━━━━╋━━━━━━━━━━━━━━━━━━━━━━━━╋━━━━━━━━━━━━╋━━━━━━━━━━━━━━━━━━━━┫\n");
+	for (int i = 0; i < count; i++) {
+        printf("┃ %-10s ┃ %-22s ┃ %-10s ┃ %-18s ┃\n",
+               members[i].studentID,
+               members[i].fullName,
+               translateTeam(members[i].team),
+               translateRole(members[i].role));
+    }
+	printf("┗━━━━━━━━━━━━┻━━━━━━━━━━━━━━━━━━━━━━━━┻━━━━━━━━━━━━┻━━━━━━━━━━━━━━━━━━━━┛\n");
+    printf("Total members: %d\n\n", count);
+	
+}
+
+
 // ===== Feature 2.1: ADD MEMBER =====
 void addMember(Member members[], int *mCount, Account accounts[], int aCount) {
     if (*mCount >= MAX_MEMBERS) {

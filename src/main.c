@@ -19,7 +19,7 @@ int main(int argc, char *argv[]) {
 	Violation violations[MAX_VIOLATIONS];
 	Account accounts[MAX_ACCOUNTS];
 
-	mCount = loadMembers(members, &mCount);
+	mCount = loadMembers(members, &mCount); 
 	vCount = loadViolations(violations, &vCount);
 	aCount = loadAccounts(accounts, &aCount);
 	
