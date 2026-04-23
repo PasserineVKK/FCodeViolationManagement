@@ -15,12 +15,19 @@ int main(int argc, char *argv[]) {
 	int mCount = 0, vCount = 0, aCount = 0;
 
 	Member members[MAX_MEMBERS];
-	Violation violations[MAX_VIOLATIONS];
+	Violation *violations = NULL;
+    int vCount = 0, vCapacity = 0;
 	Account accounts[MAX_ACCOUNTS];
 
 	mCount = loadMembers(members, &mCount);
-	vCount = loadViolations(violations, &vCount);
+	loadViolations(&violations, &vCount, &vCapacity);
 	aCount = loadAccounts(accounts, &aCount);
+    
+    // ... logic ...
+
+    if (violations != NULL) {
+        freeViolations(&violations, &vCount, &vCapacity);
+    }
 	
 	return 0;
 	

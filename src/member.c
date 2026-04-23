@@ -83,17 +83,21 @@ int updateMemberTotalFine(const char *id)
 		printf("Member with ID %s not found.\n", id);
 		return 0;
 	}
-	Violation violations[MAX_VIOLATIONS];
-	int vCount = 0;
-	loadViolations(violations, &vCount);
+	Violation *violations = NULL;
+	int vCount = 0, vCapacity = 0;
+	loadViolations(&violations, &vCount, &vCapacity);
 	// Calculate total fine for the member who has the same studentID and has unpaid and not pending violations
 	double totalFine = 0.0;
-	for (int i = 0; i < vCount; i++)
+	if (violations != NULL)
 	{
-		if (strcmp(violations[i].studentID, id) == 0 && violations[i].isPaid == 0 && violations[i].isPending == 0)
+		for (int i = 0; i < vCount; i++)
 		{
-			totalFine += violations[i].fine;
+			if (strcmp(violations[i].studentID, id) == 0 && violations[i].isPaid == 0 && violations[i].isPending == 0)
+			{
+				totalFine += violations[i].fine;
+			}
 		}
+		freeViolations(&violations, &vCount, &vCapacity);
 	}
 	members[mIndex].totalFine = totalFine;
 	saveMembers(members, mCount);
