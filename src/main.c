@@ -44,8 +44,13 @@ int main(int argc, char *argv[]) {
 		//				  If not stay login =>> check again.
 		if (isStayLogin == 0){
 			loginRole = login(accounts, studentID, aCount);
-			if (loginRole == -1) return 0;
-			// login failed ==> Program stop
+
+			if (loginRole == -1){
+				int isExit = 0;
+				inputYesNo(&isExit, "Student ID does not exist, do you want to exit? \n 1. Yes\n 0. No\n");
+				if (isExit == 1) return 0;
+				else continue;	
+			} 
 			else {
 				menuRole = loginRole;
 				memberIndex = searchMemberByIdInM(members, sizeof(members), studentID);
