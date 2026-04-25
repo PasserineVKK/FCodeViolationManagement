@@ -44,7 +44,6 @@ int main(int argc, char *argv[]) {
 		//				  If not stay login =>> check again.
 		if (isStayLogin == 0){
 			loginRole = login(accounts, studentID, aCount);
-
 			if (loginRole == -1){
 				int isExit = 0;
 				inputYesNo(&isExit, "Student ID does not exist, do you want to exit? \n 1. Yes\n 0. No\n");
@@ -59,7 +58,7 @@ int main(int argc, char *argv[]) {
 			}
 		}
 		
-		
+		system("cls");
 		switch (menuRole) {
 			case 0: {
 				
@@ -184,6 +183,7 @@ int main(int argc, char *argv[]) {
 			
 			
 		}
+		system("pause");
 	} while (1);	
 	return 0;
 }
