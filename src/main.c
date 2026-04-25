@@ -31,119 +31,158 @@ int main(int argc, char *argv[]) {
 	vCount = loadViolations(violations, &vCount);
 	aCount = loadAccounts(accounts, &aCount);
 	
+	// loginRole represent the role of this account
+	// menuRole represent which menu will be open.
 	
-	int menuRole = -1; 
-	int choice = -1;
-	menuRole = login(accounts, studentID, aCount);
-	int memberIndex = searchMemberByIdInM(members, sizeof(members), studentID);
-	switch (menuRole) {
-		case 0: {
-			do {
-				inputPosInteger(&choice, 
-				    "\n  =========================================="
-				    "\n  ¦              MEMBER MENU               ¦"
-				    "\n  =========================================="
-				    "\n  ¦  1. View Profile                       ¦"
-				    "\n  ¦  2. View Violation History             ¦"
-				    "\n  ¦  3. View Total Unpaid Fines            ¦"
-				    "\n  ¦  4. View Club Member List              ¦"
-				    "\n  ¦  5. Reset Password                     ¦"
-				    "\n  ¦  6. Log Out                            ¦"
-				    "\n  ¦  7. Exit                               ¦"
-				    "\n  =========================================="
-				    "\n  ==> Enter your selection: "
-				);
-				
-				switch (choice){
-					case 1: 
-						displayOneMemberInfo(members[memberIndex]);
-						break;
-					case 2: 
-						displayViolationByStudentId(studentID, violations, vCount);
-						break;
-					case 3: 
-						// not finish yet
-						break;
-					case 4: 
-						displayMemberList(members, mCount);
-						break;
-					case 5: 
-						changePassword(accounts, aCount);
-						break;
-					case 6: 
-						//log out
-						break;
-					case 7: 
-						// if choice = 7, save the data end return.
-						return;
-					default:
-						printf("Invalid option, please try again.");
-				}
-			} while (choice != 6);
-			break;
+	int loginRole = -1, menuRole = -1;
+	int choice = -1, isStayLogin = 0;
+	// isStayedLogin check whether user is auth-ed. 0 = No, 1 = Yes;
+	int memberIndex = -1;
+	
+	do {
+		// Firstly, auth. If stay login ==> do not check
+		//				  If not stay login =>> check again.
+		if (isStayLogin == 0){
+			loginRole = login(accounts, studentID, aCount);
+			if (loginRole == -1) return 0;
+			// login failed ==> Program stop
+			else {
+				menuRole = loginRole;
+				memberIndex = searchMemberByIdInM(members, sizeof(members), studentID);
+				isStayLogin = 1;
+			// login successfully ==> Assign value for menuRole to open menu, and memberIndex to identify user
+			}
 		}
 		
-		case 1:{
-			do {
-				inputPosInteger(&choice, 
-				    "\n  =========================================="
-				    "\n  ¦               ADMIN MENU               ¦"
-				    "\n  =========================================="
-				    "\n  ¦  1. Add New Member                     ¦"
-				    "\n  ¦  2. Edit Member Information            ¦"
-				    "\n  ¦  3. Remove Member                      ¦"
-				    "\n  ¦  4. Record Violation                   ¦"
-				    "\n  ¦  5. Mark Fine as Paid                  ¦"
-				    "\n  ¦  6. View Violation List                ¦"
-				    "\n  ¦  7. Statistics by Department           ¦"
-				    "\n  ¦  8. Reset Member's Password            ¦"
-				    "\n  ¦  9. Reset Own Password                 ¦"
-				    "\n  ¦  10. Log Out and Exit                  ¦"
-				    "\n  =========================================="
-				    "\n  ==> Enter your selection: "
-				);
-				
-				switch (choice){
-					case 1: 
-						//add mem
-						break;
-					case 2: 
-						//edit mem
-						break;
-					case 3: 
-						//del mem
-						break;
-					case 4: 
-						//add vio
-						break;
-					case 5: 
-						//mark paid
-						break;
-					case 6: 
-						//view vio
-						break;
-					case 7: 
-						//statistic
-						break;
-					case 8:
-						// reset pass
-						break;
-					case 9: 
-						// reset pass
-						break;
-					case 10:
-						break;	
-					default:
-						printf("Invalid option, please try again.");
-				}
-			} while (choice != 10);
-			break;
-		}
 		
-		case 2:
-			break; 
-	}
-	
+		switch (menuRole) {
+			case 0: {
+				
+					inputPosInteger(&choice, 
+					    "\n  =========================================="
+					    "\n  ¦              MEMBER MENU               ¦"
+					    "\n  =========================================="
+					    "\n  ¦  1. View Profile                       ¦"
+					    "\n  ¦  2. View Violation History             ¦"
+					    "\n  ¦  3. View Total Unpaid Fines            ¦"
+					    "\n  ¦  4. View Club Member List              ¦"
+					    "\n  ¦  5. Reset Password                     ¦"
+					    "\n  ¦  6. Log Out                            ¦"
+					    "\n  ¦  7. Exit                               ¦"
+					    "\n  ¦  8. Switch to Admin Menu (Admin Only)  ¦"
+					    "\n  =========================================="
+					    "\n  ==> Enter your selection: "
+					);
+					
+					switch (choice){
+						case 1: 
+							displayOneMemberInfo(members[memberIndex]);
+							break;
+						case 2: 
+							displayViolationByStudentId(studentID, violations, vCount);
+							break;
+						case 3: 
+							// not finish yet
+							break;
+						case 4: 
+							displayMemberList(members, mCount);
+							break;
+						case 5: 
+							changePassword(accounts, aCount);
+							break;
+						case 6: 
+							isStayLogin = 0;
+							loginRole = -1;
+							menuRole = -1;
+							// mark as not login, reset menu role
+							break;
+						case 7: 
+							// if choice = 7, save the data end return.
+							return 0;
+						case 8: 
+							if (loginRole == 1 || loginRole == 2){
+								menuRole = 1;
+							} else {
+								printf("Permission denied. Try again.");
+							}
+							break;
+						default:
+							printf("Invalid option, please try again.");	
+					}
+				break;
+			}
+			
+			case 1:{
+					inputPosInteger(&choice, 
+					    "\n  =========================================="
+					    "\n  ¦               ADMIN MENU               ¦"
+					    "\n  =========================================="
+					    "\n  ¦  1. Add New Member                     ¦"
+					    "\n  ¦  2. Edit Member Information            ¦"
+					    "\n  ¦  3. Remove Member                      ¦"
+					    "\n  ¦  4. Record Violation                   ¦"
+					    "\n  ¦  5. Mark Fine as Paid                  ¦"
+					    "\n  ¦  6. View Violation List                ¦"
+					    "\n  ¦  7. Statistics by Department           ¦"
+					    "\n  ¦  8. Reset Member's Password            ¦"
+					    "\n  ¦  9. Reset Own Password                 ¦"
+					    "\n  ¦  10. Log Out                           ¦"
+					    "\n  ¦  11. Exit                              ¦"
+					    "\n  ¦  12. Switch to Personal Member Menu    ¦"				    				    
+					    "\n  =========================================="
+					    "\n  ==> Enter your selection: "
+					);
+					
+					switch (choice){
+						case 1: 
+							//add mem
+							break;
+						case 2: 
+							//edit mem
+							break;
+						case 3: 
+							//del mem
+							break;
+						case 4: 
+							//add vio
+							break;
+						case 5: 
+							//mark paid
+							break;
+						case 6: 
+							//view vio
+							break;
+						case 7: 
+							//statistic
+							break;
+						case 8:
+							// reset pass
+							break;
+						case 9: 
+							// reset pass
+							break;
+						case 10:
+							isStayLogin = 0;
+							loginRole = -1;
+							menuRole = -1;
+							// mark as not login, reset menu role
+							break;	
+						case 11: 
+							return 0;
+						case 12: 
+							menuRole = 0;
+							// change menuRole ==> Open personal menu instead of admin menu
+							break;
+						default:
+							printf("Invalid option, please try again.");
+					}
+				break;
+			}
+			
+			case 2:
+				break; 
+		}
+	} while (1);	
 	return 0;
 }
 
