@@ -3,8 +3,8 @@
 
 #include <time.h>
 
-// void pauseProgram();
-// void clearScreen();
+void pauseProgram();
+void clearScreen();
 
 void getFormatTime(char *t_str, int S_size, time_t time);
 

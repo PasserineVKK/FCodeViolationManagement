@@ -6,17 +6,19 @@
 #include "../include/view/violationView.h"
 #include "../include/view/viewUtil.h"
 
+#include <stdio.h>
+
 void displayViolationHeader()
 {
-    printf("-------------------------------------------------------------------------------------------------------------\n");
+    printf("\n┏━━━━━━━━━━━━┳━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━┳━━━━━━━━━━┳━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━┓\n");
     printf("| %-10s | %-10s | %-20s | %-20s | %-8s | %-8s | %-10s | %-20s | %-10s |\n",
-           "ID", "Student", "Reason", "Time", "Fine", "Paid", "Penalty", "Note", "Pending");
-    printf("-------------------------------------------------------------------------------------------------------------\n");
+           "ID", "Name", "Email", "Phone", "Team", "Role", "Violation", "Absences", "Status");
+    printf("┣━━━━━━━━━━━━╋━━━━━━━━━━━━╋━━━━━━━━━━━━━━━━━━━━━━╋━━━━━━━━━━━━━━━━━━━━━━╋━━━━━━━━━━╋━━━━━━━━━━╋━━━━━━━━━━━━╋━━━━━━━━━━━━━━━━━━━━━━╋━━━━━━━━━━━━┫\n");
 }
 
 void displayViolationFooter()
 {
-    printf("-------------------------------------------------------------------------------------------------------------\n");
+    printf("┗━━━━━━━━━━━━┻━━━━━━━━━━━━┻━━━━━━━━━━━━━━━━━━━━━━┻━━━━━━━━━━━━━━━━━━━━━━┻━━━━━━━━━━┻━━━━━━━━━━┻━━━━━━━━━━━━┻━━━━━━━━━━━━━━━━━━━━━━┻━━━━━━━━━━━━┛\n");
 }
 
 void displayViolation(Violation *v)
@@ -85,7 +87,7 @@ void displayViolationsByPelnatyStatus(Violation violations[], int size, int peln
         return;
     }
 
-    displayHeader();
+    displayViolationHeader();
     for (int i = 0; i < size; i++)
     {
         if (violations[i].pelnaty == pelnatyStatus)
@@ -93,12 +95,12 @@ void displayViolationsByPelnatyStatus(Violation violations[], int size, int peln
             displayViolation(&violations[i]);
         }
     }
-    displayFooter();
+    displayViolationFooter();
 }
 
 void displayViolationsByReason(Violation violations[], int size, int reason)
 {
-    displayHeader();
+    displayViolationHeader();
     for (int i = 0; i < size; i++)
     {
         if (violations[i].reason == reason)
@@ -106,12 +108,12 @@ void displayViolationsByReason(Violation violations[], int size, int reason)
             displayViolation(&violations[i]);
         }
     }
-    displayFooter();
+    displayViolationFooter();
 }
 
 void displayViolationsByPaidStatus(Violation violations[], int size, int isPaid)
 {
-    displayHeader();
+    displayViolationHeader();
     for (int i = 0; i < size; i++)
     {
         if (violations[i].isPaid == isPaid)
@@ -119,5 +121,5 @@ void displayViolationsByPaidStatus(Violation violations[], int size, int isPaid)
             displayViolation(&violations[i]);
         }
     }
-    displayFooter();
+    displayViolationFooter();
 }

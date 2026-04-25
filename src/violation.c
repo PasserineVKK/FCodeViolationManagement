@@ -1,11 +1,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "../include/member.h"
 #include "../include/violation.h"
 #include "../include/fileio.h"
 
 #include "../include/view/consoleInput.h"
+
+#include "../include/member.h"
 
 // Reinit
 void ensureCapacity(Violation **violations, int *capacity, int count)
@@ -181,7 +182,6 @@ void createNewViolation(Violation **violations, int *count, int *capacity, Membe
 {
 	if (m == NULL)
 		return;
-
 	ensureCapacity(violations, capacity, *count);
 
 	Violation *v = &((*violations)[*count]);
@@ -204,6 +204,13 @@ void createNewViolation(Violation **violations, int *count, int *capacity, Membe
 		saveViolations(*violations, *count);
 	}
 
+	handleSeriousViolation(m, v);
+	updateMemberTotalFine(m->studentID);
+}
+
+void handleSeriousViolation(Member *m, Violation *v)
+{
+	int confirm;
 	if (v->reason == REASON_MEETING_ABSENCE)
 		m->consecutiveAbsences++;
 
@@ -223,7 +230,6 @@ void createNewViolation(Violation **violations, int *count, int *capacity, Membe
 
 	if (v->reason == REASON_VIOLENCE)
 		v->pelnaty = PENALTY_KICK;
-	updateMemberTotalFine(m->studentID);
 }
 
 void freeViolations(Violation **violations, int *count, int *capacity)
