@@ -14,6 +14,7 @@
 
 int main(int argc, char *argv[]) {
 	
+
 	int mCount = 1000, vCount = 1000, aCount = 1000; //set to max, then reset later
 	char studentID[10];
 	
