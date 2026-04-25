@@ -112,7 +112,8 @@ int main(int argc, char *argv[]) {
 				break;
 			}
 			
-			case 1:{
+			case 1:
+			case 2: {
 					inputPosInteger(&choice, 
 					    "\n  =========================================="
 					    "\n  ¦               ADMIN MENU               ¦"
@@ -125,10 +126,9 @@ int main(int argc, char *argv[]) {
 					    "\n  ¦  6. View Violation List                ¦"
 					    "\n  ¦  7. Statistics by Department           ¦"
 					    "\n  ¦  8. Reset Member's Password            ¦"
-					    "\n  ¦  9. Reset Own Password                 ¦"
-					    "\n  ¦  10. Log Out                           ¦"
-					    "\n  ¦  11. Exit                              ¦"
-					    "\n  ¦  12. Switch to Personal Member Menu    ¦"				    				    
+					    "\n  ¦  9. Log Out                           ¦"
+					    "\n  ¦  10. Exit                              ¦"
+					    "\n  ¦  11. Switch to Personal Member Menu    ¦"				    				    
 					    "\n  =========================================="
 					    "\n  ==> Enter your selection: "
 					);
@@ -138,38 +138,36 @@ int main(int argc, char *argv[]) {
 							addMember(members, &mCount, accounts, &aCount);
 							break;
 						case 2: 
-							//edit mem
+							updateMember(members, &mCount, violations, vCount);
 							break;
 						case 3: 
-							//del mem
+							removeMember(members, &mCount, accounts, &aCount, violations, &vCount);
 							break;
 						case 4: 
-							//add vio
+							// wait for code addViolations
 							break;
 						case 5: 
-							//mark paid
+							// wait for code markAsPaid
 							break;
 						case 6: 
-							//view vio
+							displayViolationList(violations, vCount);
+							// not sorted by team, role yet
 							break;
 						case 7: 
 							//statistic
 							break;
 						case 8:
-							// reset pass
+							// wait for code statistic totalFine by team
 							break;
-						case 9: 
-							// reset pass
-							break;
-						case 10:
+						case 9:
 							isStayLogin = 0;
 							loginRole = -1;
 							menuRole = -1;
 							// mark as not login, reset menu role
 							break;	
-						case 11: 
+						case 10: 
 							return 0;
-						case 12: 
+						case 11: 
 							menuRole = 0;
 							// change menuRole ==> Open personal menu instead of admin menu
 							break;
@@ -179,8 +177,7 @@ int main(int argc, char *argv[]) {
 				break;
 			}
 			
-			case 2:
-				break; 
+			
 		}
 	} while (1);	
 	return 0;
