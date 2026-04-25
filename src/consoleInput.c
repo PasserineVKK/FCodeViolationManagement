@@ -105,6 +105,10 @@ void inputStudentID (char *target, const char * prompt){
         printf("%s", prompt);
         if (!fgets(buf, sizeof(buf), stdin))
             continue;
+            // Check '\n', if don't have, string longer than buffer can get => fail
+        if (!strchr(buf, '\n'))
+            //Read all until '\n' to make buffer clean for next input
+            while (getchar() != '\n');  
         buf[strcspn(buf, "\n")] = '\0';
         if (!isValidMemberID(buf)) {
             printf("?Please enter a valid student ID.\n");

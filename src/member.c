@@ -119,7 +119,7 @@ void displayMemberList(Member members[], int count) {
 
 
 // ===== Feature 2.1: ADD MEMBER =====
-void addMember(Member members[], int *mCount, Account accounts[], int aCount) {
+void addMember(Member members[], int *mCount, Account accounts[], int *aCount) {
     if (*mCount >= MAX_MEMBERS) {
         printf("Member list is full!\n");
         return;
@@ -188,12 +188,12 @@ void addMember(Member members[], int *mCount, Account accounts[], int aCount) {
 			// add member to member list
 			members[(*mCount)++] = mem;
 			// add account to account list
-			accounts[aCount++] = acc;
+			accounts[(*aCount)++] = acc;
 
 			//Call save member to file function
 			saveMembers(members, *mCount);
 			//Call save account to file function
-			saveAccounts(accounts, aCount); 
+			saveAccounts(accounts, *aCount); 
 
 			//Print success message
 			printf("Member added successfully!\n");

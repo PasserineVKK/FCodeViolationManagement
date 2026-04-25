@@ -135,7 +135,7 @@ int main(int argc, char *argv[]) {
 					
 					switch (choice){
 						case 1: 
-							//add mem
+							addMember(members, &mCount, accounts, &aCount);
 							break;
 						case 2: 
 							//edit mem

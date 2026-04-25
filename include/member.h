@@ -47,7 +47,7 @@ void displayMemberList(Member members[], int count);
 int countUnpaidViolations(const char *id, Violation violations[], int vCount);
 
 // Features 2.1: Add member
-void addMember(Member members[], int *mCount, Account accounts[], int aCount);
+void addMember(Member members[], int *mCount, Account accounts[], int *aCount);
 
 // Features 2.2: Remove member
 void removeMember(Member members[], int *mCount, Account accounts[], int *aCount, Violation violations[], int *vCount);
