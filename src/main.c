@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <windows.h>
 #include "../include/view/viewUtil.h"
 #include "../include/utils.h"
 #include "../include/member.h"
@@ -8,13 +9,13 @@
 #include "../include/validate.h"
 #include "../include/consoleInput.h"
 #include "../sampleData/sampleData.h"
-
+#include "../include/view/violationView.h"
 
 /* run this program using the console pauser or add your own getch, system("pause") or input loop */
 
 int main(int argc, char *argv[]) {
 	
-
+	SetConsoleOutputCP(65001);
 	int mCount = 1000, vCount = 1000, aCount = 1000; //set to max, then reset later
 	char studentID[10];
 	
@@ -34,7 +35,7 @@ int main(int argc, char *argv[]) {
 	int menuRole = -1; 
 	int choice = -1;
 	menuRole = login(accounts, studentID, aCount);
-	
+	int memberIndex = searchMemberByIdInM(members, sizeof(members), studentID);
 	switch (menuRole) {
 		case 0: {
 			do {
@@ -47,30 +48,34 @@ int main(int argc, char *argv[]) {
 				    "\n  ¦  3. View Total Unpaid Fines            ¦"
 				    "\n  ¦  4. View Club Member List              ¦"
 				    "\n  ¦  5. Reset Password                     ¦"
-				    "\n  ¦  6. Log Out and Exit                   ¦"
+				    "\n  ¦  6. Log Out                            ¦"
+				    "\n  ¦  7. Exit                               ¦"
 				    "\n  =========================================="
 				    "\n  ==> Enter your selection: "
 				);
 				
 				switch (choice){
 					case 1: 
-						//view profile
+						displayOneMemberInfo(members[memberIndex]);
 						break;
 					case 2: 
-						//vio violation
+						displayViolationByStudentId(studentID, violations, vCount);
 						break;
 					case 3: 
-						//view unpaid fine
+						// not finish yet
 						break;
 					case 4: 
-						// view club memeber list
+						displayMemberList(members, mCount);
 						break;
 					case 5: 
-						//reset
+						changePassword(accounts, aCount);
 						break;
 					case 6: 
 						//log out
 						break;
+					case 7: 
+						// if choice = 7, save the data end return.
+						return;
 					default:
 						printf("Invalid option, please try again.");
 				}
@@ -140,5 +145,6 @@ int main(int argc, char *argv[]) {
 	}
 	
 	return 0;
-	
 }
+
+
