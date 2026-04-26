@@ -35,7 +35,7 @@ void seedSampleData(Member members[], int *mCount,
     members[1].team                 = 2; // HR
     members[1].role                 = 1; // Leader/Vice -> fine = 50,000
     members[1].violationCount       = 3;
-    members[1].consecutiveAbsences  = 3; 
+    members[1].consecutiveAbsences  = 2; 
     members[1].totalFine            = 100000.0; 
     members[1].isPending            = 1;  
 

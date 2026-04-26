@@ -4,6 +4,7 @@
 #define ACCOUNTS_FILE "data/accounts.dat"
 
 
+
 typedef struct
 {
 	char studentID[9]; // SE000000\0
