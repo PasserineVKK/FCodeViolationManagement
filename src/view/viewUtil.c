@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <time.h>
 
-#include "../include/view/viewUtil.h"
+#include "../../include/view/viewUtil.h"
 
 #ifdef _WIN32
 #define OS 0

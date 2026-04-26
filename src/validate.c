@@ -329,14 +329,18 @@ int isValidEmail (const char *s){
 
 // 3.3. Check phone
 int isValidPhone (const char *s){
-	int j = 0;
+	int i = 0;
 	
 	//Skip blank
-	while (s[j] == ' ') j++;
+	while (s[i]== ' ') i++;
+	if (strlen(s) - i != 10 ){
 	
+		printf("Invalid phone number length\n");
+	 	return 0; //wrong length of phone number
 	
+	}
 	//Check valid phone number
-	for (int i = 0; s[i] != '\0'; i++){
+	for (i; s[i] != '\0'; i++){
 		char c = s[i];
 		if (!(c >= '0' && c <= '9')) {
 			printf("Invalid phone number\n");

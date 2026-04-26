@@ -37,13 +37,17 @@ int searchMemberByIdInA(Account accounts[], int count, const char *id);
 int updateMemberTotalFine(Member members[], int mCount, Violation violations[], int vCount, const char *id);
 
 // Display member info in table format
-void displayOneMemberInfo (Member member);
+void displayOneMemberInfo(Member member);
+
+// Display member list (only name, team, role, studentID
+
+void displayMemberList(Member members[], int count);
 
 // Count unpaid violations for a member
-int  countUnpaidViolations(const char *id, Violation violations[], int vCount);
+int countUnpaidViolations(const char *id, Violation violations[], int vCount);
 
 // Features 2.1: Add member
-void addMember(Member members[], int *mCount, Account accounts[], int aCount);
+void addMember(Member members[], int *mCount, Account accounts[], int *aCount);
 
 // Features 2.2: Remove member
 void removeMember(Member members[], int *mCount, Account accounts[], int *aCount, Violation violations[], int *vCount);

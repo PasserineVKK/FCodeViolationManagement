@@ -19,7 +19,7 @@ int searchMemberByIdInA(Account accounts[], int count, const char *id);
 
 
 //Return role of logged in account
-int login(Account accounts[], int aCount);
+int login(Account accounts[], char* studentID, int aCount);
 
 //Logout by go to login screen 
 void logout();
