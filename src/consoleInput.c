@@ -50,14 +50,12 @@ int inputString(char *buf, int size, const char *prompt)
 {
     printf("%s", prompt);
 
-    if (!fgets(buf, size, stdin))
-    {
+    if (!fgets(buf, size, stdin)){
         return 0;
     }
 
     // Input too long
-    if (!strchr(buf, '\n'))
-    {
+    if (!strchr(buf, '\n')){
         while (getchar() != '\n');
 
         return 0;
@@ -104,7 +102,7 @@ void inputMemberEmail (char *target, const char * prompt){
 
 // Input student ID
 void inputStudentID (char *target, const char * prompt){
-    char buf[9];
+    char buf[10];
     while (1) {
         if (!inputString(buf, sizeof(buf), prompt)) {
             printf("Please enter a valid student ID.\n");

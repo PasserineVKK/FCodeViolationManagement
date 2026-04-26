@@ -33,11 +33,12 @@ int searchMemberByIdInM(Member members[], int count, const char *id);
 // Recalculates totalFine from unpaid violations, returns 1 on success
 int updateMemberTotalFine(Member members[], int mCount, Violation violations[], int vCount, const char *id);
 
+// Features 1.1
 // Display member info in table format
 void displayOneMemberInfo(Member member);
 
-// Display member list (only name, team, role, studentID
-
+// Features 1.4
+// Display member list (only name, team, role, studentID)
 void displayMemberList(Member members[], int count);
 
 // Count unpaid violations for a member

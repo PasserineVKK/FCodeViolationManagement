@@ -79,67 +79,23 @@ void displayViolationRow(Violation *v)
        pendingStr);
 }
 
-void displayViolation(Violation *v)
-{
-    char timeField[30];
-
-    getFormatTime(timeField, 30, v->violationTime);
-
-    const char *reasonStr;
-    switch (v->reason)
-    {
-    case 0:
-        reasonStr = "Not uniform";
-        break;
-    case 1:
-        reasonStr = "Meeting absence";
-        break;
-    case 2:
-        reasonStr = "No Club activity";
-        break;
-    case 3:
-        reasonStr = "Violence";
-        break;
-    default:
-        reasonStr = "Unknown";
-        break;
-    }
-
-    const char *paidStr = v->isPaid ? "Yes" : "No";
-    const char *penaltyStr = v->pelnaty ? "Kick" : "Financial";
-    const char *pendingStr = v->isPending ? "Pending" : "Not pending";
-
-    printf("| %-10s | %-10s | %-20s | %-20s | %-8.2f | %-8s | %-10s | %-20s | %-10s |\n",
-           v->violationID,
-           v->studentID,
-           reasonStr,
-           timeField,
-           v->fine,
-           paidStr,
-           penaltyStr,
-           v->note,
-           pendingStr);
-}
-
-void displayViolationList(Violation violations[], int size)
+void displayViolationList(Violation violations[], int vCount)
 {
     displayViolationTableHeader();
-    for (int i = 0; i < size; i++)
+    for (int i = 0; i < vCount; i++)
         displayViolationRow(&violations[i]);
     displayViolationTableFooter();
 }
 
-void displayViolationByStudentId(char *id, Violation violations[], int size)
+void displayViolationByStudentId(char *id, Violation violations[], int vCount)
 {
     displayViolationTableHeader();
-
-    for (int i = 0; i < size; i++)
+    for (int i = 0; i < vCount; i++)
     {
         if (strcmp(id, violations[i].studentID) == 0)
         {
             displayViolationRow(&violations[i]);
         }
     }
-
     displayViolationTableFooter();
 }
