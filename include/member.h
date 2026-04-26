@@ -62,4 +62,7 @@ void showTotalFineByRole(Member members[], int count);
 
 int updateConsecutiveAbsences(Member members[], int count, const char *id);
 
+// Features 2.9: Sort by violationCount
+void displayInSortByVioCount(Member members[], int mCount, int sortMode);
+
 #endif

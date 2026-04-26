@@ -13,7 +13,7 @@
 
 /* run this program using the console pauser or add your own getch, system("pause") or input loop */
 
-int main(int argc, char *argv[]) {
+int main(int argc, char *argv[]){
 	
 	SetConsoleOutputCP(65001);
 	int mCount = 1000, vCount = 1000, aCount = 1000; //set to max, then reset later
@@ -24,7 +24,7 @@ int main(int argc, char *argv[]) {
 	Violation violations[MAX_VIOLATIONS] = {0};
 	Account accounts[MAX_ACCOUNTS] = {0};
 	
-	//seedSampleData(members, &mCount , violations, &vCount, accounts, &aCount);
+	seedSampleData(members, &mCount , violations, &vCount, accounts, &aCount);
 	//------use above command if you've not created seed data
 	
 	mCount = loadMembers(members, &mCount);
@@ -92,7 +92,7 @@ int main(int argc, char *argv[]) {
 							displayMemberList(members, mCount);
 							break;
 						case 5: 
-							changePassword(accounts, aCount);
+							changePassword(accounts, aCount, studentID, menuRole);
 							break;
 						case 6: 
 							isStayLogin = 0;
@@ -129,10 +129,11 @@ int main(int argc, char *argv[]) {
 					    "\n  ¦  5. Mark Fine as Paid                  ¦"
 					    "\n  ¦  6. View Violation List                ¦"
 					    "\n  ¦  7. Statistics by Department           ¦"
-					    "\n  ¦  8. Reset Member's Password            ¦"
-					    "\n  ¦  9. Log Out                           ¦"
-					    "\n  ¦  10. Exit                              ¦"
-					    "\n  ¦  11. Switch to Personal Member Menu    ¦"				    				    
+					    "\n  ¦  8. View Members List in Sort          ¦"
+					    "\n  ¦  9. Reset Member's Password            ¦"
+					    "\n  ¦  10. Log Out                           ¦"
+					    "\n  ¦  11. Exit                              ¦"
+					    "\n  ¦  12. Switch to Personal Member Menu    ¦"				    				    
 					    "\n  =========================================="
 					    "\n  ==> Enter your selection: "
 					);
@@ -160,18 +161,28 @@ int main(int argc, char *argv[]) {
 						case 7: 
 							//statistic
 							break;
-						case 8:
-							// wait for code statistic totalFine by team
-							break;
 						case 9:
+							changePassword(accounts, aCount, studentID, menuRole);
+							break;
+						case 8:{
+							int sortMode;
+							inputYesNo(&sortMode, "Sort mode: \n 1. ASC\n 0. DESC\n Your choice: ");
+							if (sortMode == 0) sortMode = -1;
+							// sortMode only accept 1 as ASC or -1 asc DESC.
+							displayInSortByVioCount(members, mCount, sortMode);
+							break;
+						}
+							
+							
+						case 10:
 							isStayLogin = 0;
 							loginRole = -1;
 							menuRole = -1;
 							// mark as not login, reset menu role
 							break;	
-						case 10: 
-							return 0;
 						case 11: 
+							return 0;
+						case 12: 
 							menuRole = 0;
 							// change menuRole ==> Open personal menu instead of admin menu
 							break;
