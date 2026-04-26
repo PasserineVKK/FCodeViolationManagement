@@ -24,7 +24,7 @@ int main(int argc, char *argv[]) {
 	Violation violations[MAX_VIOLATIONS] = {0};
 	Account accounts[MAX_ACCOUNTS] = {0};
 	
-	//seedSampleData(members, &mCount , violations, &vCount, accounts, &aCount);
+	seedSampleData(members, &mCount , violations, &vCount, accounts, &aCount);
 	//------use above command if you've not created seed data
 	
 	mCount = loadMembers(members, &mCount);
@@ -92,7 +92,7 @@ int main(int argc, char *argv[]) {
 							displayMemberList(members, mCount);
 							break;
 						case 5: 
-							changePassword(accounts, aCount);
+							changePassword(accounts, aCount, studentID, menuRole);
 							break;
 						case 6: 
 							isStayLogin = 0;
@@ -161,7 +161,7 @@ int main(int argc, char *argv[]) {
 							//statistic
 							break;
 						case 8:
-							// wait for code statistic totalFine by team
+							changePassword(accounts, aCount, studentID, menuRole);
 							break;
 						case 9:
 							isStayLogin = 0;

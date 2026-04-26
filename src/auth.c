@@ -80,15 +80,22 @@ int login(Account accounts[], char* studentID, int aCount){
 void logout();
 
 //Change password of logged in account
-void changePassword(Account accounts[], int aCount){
+void changePassword(Account accounts[], int aCount, char* actorID, int role){
     char studentID[9]; // SE000000\0
 
     char oldPassword[30];
 
-    //Input student ID which want to change password
-    inputStudentID(studentID, "Enter student ID: ");
+	if (role == 0){
+		strcpy(studentID, actorID);
+	} else {
+		//Input student ID which want to change password
+    	inputStudentID(studentID, "Enter student ID: ");
+	}
+    
     int aIndex = searchMemberByIdInA(accounts, aCount, studentID);
 
+	// if actor is normal member OR actor is changing his/her own pass
+	if (role == 0 || strcmp(actorID, studentID) == 0)
     //Enter old password
     do {
         printf("Enter old password: ");
@@ -98,7 +105,6 @@ void changePassword(Account accounts[], int aCount){
         if (strcmp(oldPassword, accounts[aIndex].password) == 0) {
             break;
         }
-
         printf("Incorrect old password. Please try again.\n");
     } while (1);
 
