@@ -25,7 +25,6 @@ void seedSampleData(Member members[], int *mCount,
     members[0].violationCount       = 3;
     members[0].consecutiveAbsences  = 1;
     members[0].totalFine            = 40000.0; 
-    members[0].status               = 1;       // Active
     members[0].isPending            = 0;       
 
     // --- Member 1: Leader, HR, vắng 3 buổi liên tiếp -> chờ BCN confirm kick ---
@@ -38,7 +37,6 @@ void seedSampleData(Member members[], int *mCount,
     members[1].violationCount       = 3;
     members[1].consecutiveAbsences  = 3; // Đủ điều kiện Out CLB
     members[1].totalFine            = 100000.0; 
-    members[1].status               = 1;  
     members[1].isPending            = 1;  // Đang chờ xử lý kick
 
     // --- Member 2: BCN, Planning, cảnh báo gần Out ---
@@ -51,7 +49,6 @@ void seedSampleData(Member members[], int *mCount,
     members[2].violationCount       = 3;
     members[2].consecutiveAbsences  = 2; 
     members[2].totalFine            = 50000.0; 
-    members[2].status               = 1;
     members[2].isPending            = 0;
 
     *mCount = 3;

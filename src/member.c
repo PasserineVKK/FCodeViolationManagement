@@ -6,6 +6,7 @@
 #include "../include/validate.h"
 #include "../include/fileio.h"
 #include "../include/consoleInput.h"
+#include "../include/utils.h"
 
 Member memberList[MAX_MEMBERS];
 
@@ -28,28 +29,32 @@ int searchMemberByIdInM(Member members[], int count, const char *id) {
     return -1;
 }
 
-void displayOneMemberInfo (Member member) {
+void displayOneMemberInfo(Member member)
+{
+    printf("\n┏━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━┳━━━━━━┳━━━━━━┳━━━━━━━━━━┓\n");
 
-    printf("\n┏━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━┳━━━━━━┳━━━━━━┳━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━┳━━━━━━━━━━━━┓\n");
-    printf("┃ %-11s ┃ %-20s ┃ %-25s ┃ %-12s ┃ %-5s ┃ %-5s ┃ %-15s ┃ %-20s ┃ %-11s ┃ %-10s ┃\n",
-        "Student ID", "Name", "Email", "Phone", "Team", "Role", "Violation Count", "Consecutive Absences", "Total Fine", "Status");
-    printf("┣━━━━━━━━━━━━╋━━━━━━━━━━━━━━━━━━━━━━╋━━━━━━━━━━━━━━━━━━━━━━━━━╋━━━━━━━━━━━━━━╋━━━━━━╋━━━━━━╋━━━━━━━━━━━━━━━━━╋━━━━━━━━━━━━━━━━━━━━━━╋━━━━━━━━━━━━╋━━━━━━━━━━━━┫\n");
+    printf("┃ %-10s ┃ %-24s ┃ %-28s ┃ %-12s ┃ %-4s ┃ %-4s ┃ %-8s ┃\n",
+           "Student ID",
+           "Name",
+           "Email",
+           "Phone",
+           "Team",
+           "Role",
+           "Status");
 
-    printf("┃ %-11s ┃ %-20s ┃ %-25s ┃ %-12s ┃ %-5d ┃ %-5d ┃ %-15d ┃ %-20d ┃ %-11.2f ┃ %-10d ┃\n",
-        member.studentID,
-        member.fullName,
-        member.email,
-        member.phoneNumber,
-        member.team, 
-        member.role, 
-        member.violationCount,
-        member.consecutiveAbsences,
-        member.totalFine,
-        member.isPending);
-    printf("┗━━━━━━━━━━━━┻━━━━━━━━━━━━━━━━━━━━━━┻━━━━━━━━━━━━━━━━━━━━━━━━━┻━━━━━━━━━━━━━━┻━━━━━━┻━━━━━━┻━━━━━━━━━━━━━━━━━┻━━━━━━━━━━━━━━━━━━━━━━┻━━━━━━━━━━━━┻━━━━━━━━━━━━┛\n");
+    printf("┣━━━━━━━━━━━━╋━━━━━━━━━━━━━━━━━━━━━━━━━━╋━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╋━━━━━━━━━━━━━━╋━━━━━━╋━━━━━━╋━━━━━━━━━━┫\n");
 
+    printf("┃ %-10s ┃ %-24s ┃ %-28s ┃ %-12s ┃ %-4d ┃ %-4d ┃ %-8s ┃\n",
+           member.studentID,
+           member.fullName,
+           member.email,
+           member.phoneNumber,
+           member.team,
+           member.role,
+           member.isPending ? "Pending" : "Active");
+
+    printf("┗━━━━━━━━━━━━┻━━━━━━━━━━━━━━━━━━━━━━━━━━┻━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┻━━━━━━━━━━━━━━┻━━━━━━┻━━━━━━┻━━━━━━━━━━┛\n");
 }
-
 // Count unpaid violations for a member
 int  countUnpaidViolations(const char *id, Violation violations[], int vCount) {
 	int unpaidCount = 0;
@@ -97,8 +102,28 @@ int updateConsecutiveAbsences(Member members[], int count, const char *id) {
     }
 }
 
+//1.4: View member list
+void displayMemberList(Member members[], int count) {
+	printf("\n");
+    printf("┏━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━┓\n");
+    printf("┃ %-10s ┃ %-22s ┃ %-10s ┃ %-18s ┃\n",
+           "Student ID", "Full Name", "Team", "Role");
+    printf("┣━━━━━━━━━━━━╋━━━━━━━━━━━━━━━━━━━━━━━━╋━━━━━━━━━━━━╋━━━━━━━━━━━━━━━━━━━━┫\n");
+	for (int i = 0; i < count; i++) {
+        printf("┃ %-10s ┃ %-22s ┃ %-10s ┃ %-18s ┃\n",
+               members[i].studentID,
+               members[i].fullName,
+               translateTeam(members[i].team),
+               translateRole(members[i].role));
+    }
+	printf("┗━━━━━━━━━━━━┻━━━━━━━━━━━━━━━━━━━━━━━━┻━━━━━━━━━━━━┻━━━━━━━━━━━━━━━━━━━━┛\n");
+    printf("Total members: %d\n\n", count);
+	
+}
+
+
 // ===== Feature 2.1: ADD MEMBER =====
-void addMember(Member members[], int *mCount, Account accounts[], int aCount) {
+void addMember(Member members[], int *mCount, Account accounts[], int *aCount) {
     if (*mCount >= MAX_MEMBERS) {
         printf("Member list is full!\n");
         return;
@@ -128,7 +153,7 @@ void addMember(Member members[], int *mCount, Account accounts[], int aCount) {
 		inputMemberPhone(phoneNumber, "Enter phone number: ");
 		
 		//Input team info
-		inputMemberTeam(&team, "Enter team (0-3): ");
+		inputMemberTeam(&team, "Enter team (0-3): ");	
 
 		//Input role info
 		inputMemberRole(&role, "Enter role (0-2): ");
@@ -167,12 +192,12 @@ void addMember(Member members[], int *mCount, Account accounts[], int aCount) {
 			// add member to member list
 			members[(*mCount)++] = mem;
 			// add account to account list
-			accounts[aCount++] = acc;
+			accounts[(*aCount)++] = acc;
 
 			//Call save member to file function
 			saveMembers(members, *mCount);
 			//Call save account to file function
-			saveAccounts(accounts, aCount); 
+			saveAccounts(accounts, *aCount); 
 
 			//Print success message
 			printf("Member added successfully!\n");
@@ -318,28 +343,29 @@ void updateMember(Member members[], int *mCount, Violation violations[], int vCo
 	int team; // 0 = Academic, 1 = Planning, 2 = HR, 3 = Media
 	int role; // 0 = Member, 1 = Leader/Vice, 2 = BOD
 
-	int pos;
+	int mIndex;
 
 	int  continueUpdate = 1;
 	while (continueUpdate) {
-		pos = -1; //Reset position before find member
+		mIndex = -1; //Reset position before find member
 		inputStudentID(studentID, "Enter student ID to update: ");
 
 		//Find member by ID and update by assign new value to target member
-		pos = searchMemberByIdInM(members, *mCount, studentID);
+		mIndex = searchMemberByIdInM(members, *mCount, studentID);
 
         //If found 
-		if (pos != -1) {
+		if (mIndex != -1) {
 			// Show student
 			printf("\nStudent found:\n");
-			displayOneMemberInfo(members[pos]);
+			displayOneMemberInfo(members[mIndex]);
             
 			//Ask which field want to update
 			int fieldChoice;
 			do {
 				printf("\nWhich field do you want to update?\n");
 				printf("1: Name\n2: Email\n3: Phone Number\n4: Team\n5: Role\n=> Your choice: ");
-				inputPosInteger(&fieldChoice, "=> Your choice (only 1-5): ");
+				inputIntegerInRage(&fieldChoice, 1, 5, "=> Your choice (only 1-5): ");
+				while (getchar() != '\n');
 
 			} while (fieldChoice < 1 || fieldChoice > 5);
 
@@ -373,31 +399,31 @@ void updateMember(Member members[], int *mCount, Violation violations[], int vCo
             //Confirm to update member
             int confirm;
 			inputYesNo(&confirm, "\nUpdate this member?\n1: Yes\n0: No\n=> Your choice: ");
-			
+			while (getchar() != '\n');
 
             if (confirm == 1) {
                 switch (fieldChoice) {
                     case 1:
-                        strcpy(members[pos].fullName, fullName);
+                        strcpy(members[mIndex].fullName, fullName);
                         break;
 
                     case 2:	
-                        strcpy(members[pos].email, email);
+                        strcpy(members[mIndex].email, email);
                         break;
                     
                     case 3:
-                        strcpy(members[pos].phoneNumber, phoneNumber);
+                        strcpy(members[mIndex].phoneNumber, phoneNumber);
                         break;
 
                     case 4:
-                        members[pos].team = team; 
+                        members[mIndex].team = team; 
                         break;
                         
 
                     case 5:
                         {
-							int oldRole = members[pos].role; //Save old role before assign new role
-							members[pos].role = role; //Assign new role
+							int oldRole = members[mIndex].role; //Save old role before assign new role
+							members[mIndex].role = role; //Assign new role
 												
 							//If member change from Member to Leader/Vice or BCN
 							if (oldRole == 0 && role > 0) {
@@ -453,6 +479,7 @@ void updateMember(Member members[], int *mCount, Violation violations[], int vCo
         // ===== CONTINUE =====
 		int choice;
 		inputYesNo(&choice, "\nDo you want to update another member?\n1: Yes\n0: No\n=> Your choice: ");
+		while (getchar() != '\n');
 
 		if (choice == 0) {
 			continueUpdate = 0;

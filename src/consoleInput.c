@@ -4,229 +4,146 @@
 #include <string.h>
 #include "../include/validate.h"
 
-// ===== I. INPUT INT, FLOAT, YES/NO OPTION ================================
-
-// 1.1. Input integer
-void inputPosInteger (int *target, const char * prompt){
-	char buf[50];
-
+void inputIntegerInRage (int *target, int min, int max, const char * prompt){
+    char buf[50];
     while (1) {
         printf("%s", prompt);
-
         if (!fgets(buf, sizeof(buf), stdin))
             continue;
-
+        
         buf[strcspn(buf, "\n")] = '\0';
 
-        if (!isPosInteger(buf)) {
-            printf("? Please enter a valid integer.\n");
+        if (!isIntegerBelongRange(buf, min, max)) {
+            printf("Please enter a valid integer only from %d to %d.\n", min, max);
             continue;
         }
-
         *target = atoi(buf);
         return;
     }
 }
 
-// 1.2. Input real number
-void inputPosFloat(float *target, const char *prompt) {
+void inputDoubleInRange (double *target, double min, double max, const char * prompt){
     char buf[50];
-
     while (1) {
         printf("%s", prompt);
-
         if (!fgets(buf, sizeof(buf), stdin))
             continue;
-
+        
         buf[strcspn(buf, "\n")] = '\0';
 
-        if (!isPosFloat(buf)) {
-            printf("? Please enter a valid positive float.\n");
+        if (!isDoubleBelongRange(buf, min, max)) {
+            printf("Please enter a valid number only from %.2f to %.2f.\n", min, max);
             continue;
         }
-
         *target = atof(buf);
         return;
     }
 }
 
-// 1.3 Input yes no option
+// Input yes no option
 void inputYesNo (int *option, const char * prompt){
-    char buf[10];
-
-    while (1) {
-        printf("%s", prompt);
-
-        if (!fgets(buf, sizeof(buf), stdin))
-            continue;
-
-        buf[strcspn(buf, "\n")] = '\0';
-
-        if (!isOneOrZero(buf)) {
-            printf("? Please enter a valid yes/no option (0 or 1).\n");
-            continue;
-        }
-
-        *option = atoi(buf);
-        return;
-    }
+    inputIntegerInRage (option, 0, 1, prompt);
 }
 
-// =========================================================================
+//Input string 
+int inputString(char *buf, int size, const char *prompt)
+{
+    printf("%s", prompt);
 
+    if (!fgets(buf, size, stdin))
+    {
+        return 0;
+    }
 
-// ===== II. INPUT MEMBER INFO ================================
-// 2.1 Input member name
+    // Input too long
+    if (!strchr(buf, '\n'))
+    {
+        while (getchar() != '\n');
+
+        return 0;
+    }
+
+    buf[strcspn(buf, "\n")] = '\0';
+
+    return 1;
+}
+
+// Input member name
 void inputMemberName (char *target, const char * prompt){
     char buf[50];
-
     while (1) {
-        printf("%s", prompt);
-
-        if (!fgets(buf, sizeof(buf), stdin))
-            continue;
-
-        // Check '\n', if don't have, string longer than buffer can get => fail
-        if (!strchr(buf, '\n'))
-            //Read all until '\n' to make buffer clean for next input
-            while (getchar() != '\n');    
-
-        buf[strcspn(buf, "\n")] = '\0';
-
-        if (!isValidName(buf)) {
-            printf("? Please enter a valid name.\n");
+        if (!inputString(buf, sizeof(buf), prompt)) {
+            printf("Please enter a valid name.\n");
             continue;
         }
-
+        if (!isValidName(buf)) {
+            printf("Please enter a valid name.\n");
+            continue;
+        }
         strcpy(target, buf);
         return;
     }
 }
 
-//2.2 Input  email
+// Input  email
 void inputMemberEmail (char *target, const char * prompt){
     char buf[50];
-
     while (1) {
-        printf("%s", prompt);
-
-        if (!fgets(buf, sizeof(buf), stdin))
-            continue;
-
-        // Check '\n', if don't have, string longer than buffer can get => fail
-        if (!strchr(buf, '\n'))
-            //Read all until '\n' to make buffer clean for next input
-            while (getchar() != '\n');    
-
-        buf[strcspn(buf, "\n")] = '\0';
-
-        if (!isValidEmail(buf)) {
-            printf("? Please enter a valid email.\n");
+        if (!inputString(buf, sizeof(buf), prompt)) {
+            printf("Please enter a valid name.\n");
             continue;
         }
-
+        if (!isValidEmail(buf)) {
+            printf("Please enter a valid email.\n");
+            continue;
+        }
         strcpy(target, buf);
         return;
     }
 }
 
-// 2.3 Input student ID
+// Input student ID
 void inputStudentID (char *target, const char * prompt){
     char buf[9];
-
     while (1) {
-        printf("%s", prompt);
-
-        if (!fgets(buf, sizeof(buf), stdin))
-            continue;
-
-        buf[strcspn(buf, "\n")] = '\0';
-
-        if (!isValidMemberID(buf)) {
-            printf("?Please enter a valid student ID.\n");
+        if (!inputString(buf, sizeof(buf), prompt)) {
+            printf("Please enter a valid student ID.\n");
             continue;
         }
 
+        if (!isValidStudentID(buf)) {
+            printf("Please enter a valid student ID.\n");
+            continue;
+        }
         strcpy(target, buf);
         return;
     }
 }
 
-//2.4 Input new phone number
+// Input new phone number
 void inputMemberPhone (char *target, const char * prompt){
     char buf[11];
-
     while (1) {
-        printf("%s", prompt);
-
-        if (!fgets(buf, sizeof(buf), stdin))
-            continue;
-
-        // Check '\n', if don't have, string longer than buffer can get => fail
-        if (!strchr(buf, '\n'))
-            //Read all until '\n' to make buffer clean for next input
-            while (getchar() != '\n');    
-
-        buf[strcspn(buf, "\n")] = '\0';
-
-        if (!isValidPhone(buf)) {
-            printf("? Please enter a valid phone number.\n");
+        if (!inputString(buf, sizeof(buf), prompt)) {
+            printf("Please enter a valid phone number.\n");
             continue;
         }
 
+        if (!isValidPhone(buf)) {
+            printf("Please enter a valid phone number.\n");
+            continue;
+        }
         strcpy(target, buf);
         return;
     }
 }
 
-// 2.5 Input member role
+// Input member role
 void inputMemberRole (int *target, const char * prompt){
-    char buf[2];
-    while (1) {
-        printf("%s", prompt);
-
-        if (!fgets(buf, sizeof(buf), stdin))
-            continue;
-
-        buf[strcspn(buf, "\n")] = '\0';
-
-        if (!isPosInteger(buf)) {
-            printf("? Please enter a valid integer.\n");
-            continue;
-        }
-        if (!isValidRole(buf)) {
-            printf("? Please enter a valid role (0-2).\n");
-            continue;
-        }
-
-        *target = atoi(buf);
-        return;
-    }
+    inputIntegerInRage (target, 0, 2, prompt);
 }
 
-//2.6 Input member team
+// Input member team
 void inputMemberTeam (int *target, const char * prompt){
-    char buf[2];
-    while (1) {
-        printf("%s", prompt);
-
-        if (!fgets(buf, sizeof(buf), stdin))
-            continue;
-
-        buf[strcspn(buf, "\n")] = '\0';
-
-        if (!isPosInteger(buf)) {
-            printf("? Please enter a valid integer.\n");
-            continue;
-        }
-        if (!isValidTeam(buf)) {
-            printf("? Please enter a valid team (0-3).\n");
-            continue;
-        }
-
-        *target = atoi(buf);
-        return;
-    }
+    inputIntegerInRage (target, 0, 3, prompt);
 }
-
-// =========================================================================

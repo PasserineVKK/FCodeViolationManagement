@@ -24,15 +24,15 @@ int searchMemberByIdInA(Account accounts[], int count, const char *id) {
 }
 
 //Return role of logged in account
-int login(Account accounts[], int aCount){
+int login(Account accounts[], char* studentID, int aCount){
 
     printf("===== LOGIN =====\n");
 
-	char studentID[9]; // SE000000\0
+	//char studentID[9]; // SE000000\0
 	char password[30];
 	int role;	   // 0 = Member, 1 = BOD
-	int isLocked;  // 1 = This account locked after 3 failed trials
-	int failCount; // consecutive failed trials
+	int isLocked = 0;  // 1 = This account locked after 3 failed trials
+	int failCount = 0; // consecutive failed trials
 
     //Input student ID
     inputStudentID(studentID, "Enter student ID: ");
@@ -54,6 +54,9 @@ int login(Account accounts[], int aCount){
     do {
         printf("Enter password: ");
         scanf("%s", password);
+        //clear stadin
+        int c;
+		while ((c = getchar()) != '\n' && c != EOF);
         if (strcmp(password, accounts[aIndex].password) == 0) {
             break;
         }
