@@ -377,6 +377,7 @@ int main(int argc, char *argv[])
 			}
 			case 14:
 				printf("In progress!");
+				break;
 			case 15:
 				char violationId[10];
 				inputString(violationId, 10, "Enter violation id");
