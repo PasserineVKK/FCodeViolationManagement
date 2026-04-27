@@ -8,7 +8,6 @@
 #include "../include/consoleInput.h"
 #include "../include/utils.h"
 
-Member memberList[MAX_MEMBERS];
 
 //file
 int loadMembers(Member members[], int *count) {
@@ -29,9 +28,7 @@ int searchMemberByIdInM(Member members[], int count, const char *id) {
     return -1;
 }
 
-void displayOneMemberInfo(Member member)
-{
-    printf("\n┏━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━┳━━━━━━┳━━━━━━┳━━━━━━━━━━┓\n");
+void displayOneMemberInfo(Member member) {
 
     printf("┃ %-10s ┃ %-24s ┃ %-28s ┃ %-12s ┃ %-4s ┃ %-4s ┃ %-8s ┃\n",
            "Student ID",
@@ -57,6 +54,7 @@ void displayOneMemberInfo(Member member)
 }
 // Count unpaid violations for a member
 int  countUnpaidViolations(const char *id, Violation violations[], int vCount) {
+	
 	int unpaidCount = 0;
 	for (int i = 0; i < vCount; i++) {
 		if(strcmp(violations[i].studentID, id) == 0 
@@ -506,4 +504,67 @@ void showTotalFineByRole(Member members[], int mCount) {
     printf("┗━━━━━━━━━━━━━━━━━━━━━━┻━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛\n");
 }
 
+void displayInSortByVioCount(Member members[], int mCount, int sortMode){
+	// 1. Prepare. Create a copy list, do not search on the origin
+	Member sortList[mCount];
+	for (int i = 0; i < mCount; i++){
+		sortList[i] = members[i];
+	}
+	Member temp = {0};
+	int minIndex = 0, maxIndex = mCount - 1;
+	
+	// 2. Double selection sort
+	// Decrease loop number by 1/2, using both min and max 
+	
+	int start = 0, end = mCount - 1;
+	while (start < end){
+		minIndex = start; maxIndex = end;
+		for (int j = start; j <= end; j++){
+			if (sortList[j].violationCount <= sortList[minIndex].violationCount){
+				minIndex = j;
+			}
+			
+			if (sortList[j].violationCount >= sortList[maxIndex].violationCount){
+				maxIndex = j;
+			}
+		}
+		
+		temp = sortList[maxIndex];
+		sortList[maxIndex]=sortList[end];
+		sortList[end]=temp;
+		end--;
+		
+		if (maxIndex != start){
+			temp = sortList[minIndex];
+			sortList[minIndex]=sortList[start];
+			sortList[start]=temp;
+			start++;
+		}
+	}
+	
+	// 3. Display after sort
+	int i, len;
+	if (sortMode ==1){
+		i = 0;
+		len = mCount - 1;
+	} else {
+		i = mCount - 1; 
+		len = 0;
+	}
+	printf("\n");
+    printf("┏━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━┓\n");
+    printf("┃ %-10s ┃ %-22s ┃ %-10s ┃ %-18s ┃ %-18s ┃\n",
+           "Student ID", "Full Name", "Team", "Role", "Violations");
+    printf("┣━━━━━━━━━━━━╋━━━━━━━━━━━━━━━━━━━━━━━━╋━━━━━━━━━━━━╋━━━━━━━━━━━━━━━━━━━━┕�━━━━━━━━━━━━━━━━━━━━┫\n");
+	for (i; i != len + sortMode; i=i+sortMode) {
+        printf("┃ %-10s ┃ %-22s ┃ %-10s ┃ %-18s ┃ %-18d ┃\n",
+               sortList[i].studentID,
+               sortList[i].fullName,
+               translateTeam(sortList[i].team),
+               translateRole(sortList[i].role),
+			   sortList[i].violationCount);
+    }
+	printf("┗━━━━━━━━━━━━┻━━━━━━━━━━━━━━━━━━━━━━━━┻━━━━━━━━━━━━┻━━━━━━━━━━━━━━━━━━━━┕�━━━━━━━━━━━━━━━━━━━━┛\n");
+    
+}
 

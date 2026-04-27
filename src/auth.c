@@ -77,10 +77,21 @@ int login(Account accounts[], char* studentID, int aCount){
 }
 
 //Change password of logged in account
-void changePassword(const char* studentID, Account accounts[], int aCount) {
+void changePassword(Account accounts[], int aCount, char* actorID, int role) {
 
+    printf("===== CHANGE PASSWORD =====\n");
     int aIndex = -1;
+
+    char studentID[9]; // SE000000\0
+
     char oldPassword[30];
+
+	if (role == 0){
+		strcpy(studentID, actorID);
+	} else {
+		//Input student ID which want to change password
+    	inputStudentID(studentID, "Enter student ID of the member you want to change password: ");
+	}
 
     aIndex = searchMemberByIdInA(accounts, aCount, studentID);
 
@@ -89,20 +100,22 @@ void changePassword(const char* studentID, Account accounts[], int aCount) {
         return;
     }
 
-    //Input student ID which want to change password
+    //Display student ID which want to change password
     printf("Student ID: %s\n", studentID);
 
-    //Enter old password
-    do {
-        inputPassword(oldPassword, "Enter old password: ");
-        
-        //Check if old password is correct
-        if (strcmp(oldPassword, accounts[aIndex].password) == 0) {
-            break;
-        }
-
-        printf("Incorrect old password. Please try again.\n");
-    } while (1);
+    //if actor is normal member OR actor is changing his/her own pass
+    if (role == 0 || strcmp(actorID, studentID) == 0){
+        //Enter old password
+        do {
+            inputPassword(oldPassword, "Enter old password: ");
+            
+            //Check if old password is correct
+            if (strcmp(oldPassword, accounts[aIndex].password) == 0) {
+                break;
+            }
+            printf("Incorrect old password. Please try again.\n");
+        } while (1);
+    }
 
     char newPassword[30];
     do {
@@ -126,4 +139,5 @@ void changePassword(const char* studentID, Account accounts[], int aCount) {
     
     return;
 }
+
 

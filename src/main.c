@@ -101,7 +101,7 @@ int main(int argc, char *argv[]) {
 							break;
 						case 5: 
 							printf("===== CHANGE PASSWORD =====\n");
-							changePassword(studentID, accounts, aCount);
+							changePassword(accounts, aCount, studentID, menuRole);
 							break;
 						case 6: 
 							isStayLogin = 0;
@@ -139,13 +139,14 @@ int main(int argc, char *argv[]) {
 						"\n┃  5.  Mark Fine as Paid                       ┃"
 						"\n┃  6.  View Violation List                     ┃"
 						"\n┃  7.  Statistics by Department                ┃"
-						"\n┃  8.  Change Member's Password                ┃"
-						"\n┃  9.  Log Out                                 ┃"
-						"\n┃ 10.  Exit                                    ┃"
-						"\n┃ 11.  Switch to Member Menu                   ┃"
+						"\n┃  8.  View Member in Sorted List              ┃"
+						"\n┃  9.  Change Member's Password                ┃"
+						"\n┃ 10.  Log Out                                 ┃"
+						"\n┃ 11.  Exit                                    ┃"
+						"\n┃ 12.  Switch to Member Menu                   ┃"
 						"\n┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛\n"
 					);
-					inputIntegerInRage(&choice, 1, 11, "│ ==> Enter your selection: ");
+					inputIntegerInRage(&choice, 1, 11, " ==> Enter your selection: ");
 
 					system(CLEAR);
 					switch (choice){
@@ -171,20 +172,28 @@ int main(int argc, char *argv[]) {
 						case 7: 
 							showTotalFineByRole(members, mCount);
 							break;
-						case 8:
-						    printf("===== CHANGE PASSWORD =====\n");
-							inputStudentID(studentID, "\nEnter student ID of the member you want to change password: ");
-							changePassword(studentID, accounts, aCount);
+						case 8:{
+							int sortMode;
+							inputYesNo(&sortMode, "Sort mode: \n 1. ASC\n 0. DESC\n Your choice: ");
+							if (sortMode == 0) sortMode = -1;
+							// sortMode only accept 1 as ASC or -1 asc DESC.
+							displayInSortByVioCount(members, mCount, sortMode);
 							break;
-						case 9:
+						}
+						case 9:{
+							changePassword(accounts, aCount, studentID, menuRole);
+							break;
+						}	
+							
+						case 10:
 							isStayLogin = 0;
 							loginRole = -1;
 							menuRole = -1;
 							// mark as not login, reset menu role
-							continue;;	
-						case 10: 
-							return 0;
+							continue;
 						case 11: 
+							return 0;
+						case 12: 
 							menuRole = 0;
 							// change menuRole ==> Open personal menu instead of admin menu
 							continue;

@@ -3,6 +3,8 @@
 #define MAX_ACCOUNTS 1000
 #define ACCOUNTS_FILE "data/accounts.dat"
 
+
+
 typedef struct
 {
 	char studentID[9]; // SE000000\0
@@ -22,6 +24,6 @@ int searchMemberByIdInA(Account accounts[], int count, const char *id);
 int login(Account accounts[], char* studentID, int aCount);
 
 //Change password of logged in account
-void changePassword(const char* studentID, Account accounts[], int aCount);
+void changePassword(Account accounts[], int aCount, char* actorID, int role);
 
 #endif
