@@ -5,8 +5,8 @@
 #include "../include/violation.h"
 #include "../include/auth.h"
 
-void seedSampleData(Member members[], int *mCount, 
-                    Violation violations[], int *vCount, 
+void seedSampleData(Member members[], int *mCount,
+                    Violation violations[], int *vCount,
                     Account accounts[], int *aCount);
 
 #endif

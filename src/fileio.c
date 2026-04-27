@@ -1,5 +1,5 @@
 #include <stdio.h>
-#include "../include/fileio.h"
+#include "fileio.h"
 
 int saveToFile(const char *filePath, const void *data, size_t elemSize, int count) {
     FILE *fp = fopen(filePath, "wb");
