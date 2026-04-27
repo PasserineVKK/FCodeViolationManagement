@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <time.h>
 
-#include "../../include/view/viewUtil.h"
+#include "view/viewUtil.h"
 
 #ifdef _WIN32
 #define OS 0
@@ -10,21 +10,21 @@
 #define OS 1
 #endif
 
-// void pauseProgram()
-// {
-//     if (OS == 0)
-//         system("pause");
-//     else if (OS == 1)
-//         system("read -p \" Press enter to continue \" ");
-// }
+void pauseProgram()
+{
+    if (OS == 0)
+        system("pause");
+    else if (OS == 1)
+        system("read -p \" Press enter to continue \" ");
+}
 
-// void clearScreen()
-// {
-//     if (OS == 0)
-//         system("cls");
-//     else if (OS == 1)
-//         system("clear");
-// }
+void clearScreen()
+{
+    if (OS == 0)
+        system("cls");
+    else if (OS == 1)
+        system("clear");
+}
 
 void getFormatTime(char *t_str, int size, time_t time)
 {
