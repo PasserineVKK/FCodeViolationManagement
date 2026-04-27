@@ -3,7 +3,9 @@
 
 #include "../violation.h"
 
-void displayViolationList(Violation violation[], int size);
-void displayViolationByStudentId(char *id, Violation violations[], int size);
+void displayViolationList(Violation violations[], int vCount);
+
+// Features 1.2
+void displayViolationByStudentId(char *id, Violation violations[], int vCount);
 
 #endif

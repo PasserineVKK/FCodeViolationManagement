@@ -8,40 +8,34 @@
 // => then if false, throw prompt to let user re-enter
 
 
-// ===== I. INPUT INT, FLOAT, YES/NO OPTION ================================
+//Input integer in range
+void inputIntegerInRage (int *target, int min, int max, const char * prompt);
 
-// 1.1. Input integer
-void inputPosInteger (int *target, const char * prompt);
+// Input double number in range
+void inputDoubleInRange (double *target, double min, double max, const char * prompt);
 
-// 1.2. Input real number
-void inputPosFloat (float *target, const char * prompt);
-
-// 1.3 Input yes no option
+//Input yes no option
 void inputYesNo (int *option, const char * prompt);
-// =========================================================================
 
-// ===== II. INPUT MEMBER INFO ================================
-// 2.1 Input member name
+// Input member name
 void inputMemberName (char *target, const char * prompt);
 
-//2.2 Input email
+// Input email
 void inputMemberEmail (char *target, const char * prompt);
 
-// 2.3 Input student ID
+// Input student ID
 void inputStudentID (char *target, const char * prompt);
 
-//2.4 Input new phone number
+// Input new phone number
 void inputMemberPhone (char *target, const char * prompt);
 
-// 2.5 Input member role
+// Input member role
 void inputMemberRole (int *target, const char * prompt);
 
-//2.6 Input member team
+// Input member team
 void inputMemberTeam (int *target, const char * prompt);
 
-// =========================================================================
-
-//Input password
+// Input password
 void inputPassword (char *target, const char * prompt);
 
 #endif

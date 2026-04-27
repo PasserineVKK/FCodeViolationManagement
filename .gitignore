@@ -3,6 +3,9 @@
 *.o
 *.out
 .vscode/
+
+data/
+!data/.gitkeep
 *.dev
 *.layout
 Makefile.win

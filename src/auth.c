@@ -76,11 +76,12 @@ int login(Account accounts[], char* studentID, int aCount){
     return accounts[aIndex].role;
 }
 
-//Logout by go to login screen 
-void logout();
-
 //Change password of logged in account
-void changePassword(Account accounts[], int aCount, char* actorID, int role){
+void changePassword(Account accounts[], int aCount, char* actorID, int role) {
+
+    printf("===== CHANGE PASSWORD =====\n");
+    int aIndex = -1;
+
     char studentID[9]; // SE000000\0
 
     char oldPassword[30];
@@ -89,30 +90,48 @@ void changePassword(Account accounts[], int aCount, char* actorID, int role){
 		strcpy(studentID, actorID);
 	} else {
 		//Input student ID which want to change password
-    	inputStudentID(studentID, "Enter student ID: ");
+    	inputStudentID(studentID, "Enter student ID of the member you want to change password: ");
 	}
-    
-    int aIndex = searchMemberByIdInA(accounts, aCount, studentID);
 
-	// if actor is normal member OR actor is changing his/her own pass
-	if (role == 0 || strcmp(actorID, studentID) == 0)
-    //Enter old password
+    aIndex = searchMemberByIdInA(accounts, aCount, studentID);
+
+    if (aIndex == -1) {
+        printf("Student ID not found. Please try again.\n");
+        return;
+    }
+
+    //Display student ID which want to change password
+    printf("Student ID: %s\n", studentID);
+
+    //if actor is normal member OR actor is changing his/her own pass
+    if (role == 0 || strcmp(actorID, studentID) == 0){
+        //Enter old password
+        do {
+            inputPassword(oldPassword, "Enter old password: ");
+            
+            //Check if old password is correct
+            if (strcmp(oldPassword, accounts[aIndex].password) == 0) {
+                break;
+            }
+            printf("Incorrect old password. Please try again.\n");
+        } while (1);
+    }
+
+    char newPassword[30];
     do {
-        printf("Enter old password: ");
-        scanf("%s", oldPassword);
-        
-        //Check if old password is correct
-        if (strcmp(oldPassword, accounts[aIndex].password) == 0) {
+        //Enter new password
+        inputPassword(newPassword, "Enter new password: ");
+        char confirmPassword[30];
+        inputPassword(confirmPassword, "Confirm new password: ");
+
+        //Check if new password and confirm password match
+        if (strcmp(newPassword, confirmPassword) == 0) {
             break;
         }
-        printf("Incorrect old password. Please try again.\n");
+
+        printf("New password and confirm password do not match.\n");
     } while (1);
-
-    //Enter new password
-    char newPassword[30];
-    printf("Enter new password: ");
-    scanf("%s", newPassword);
-
+    
     //Update new password to account and save to file
     strcpy(accounts[aIndex].password, newPassword);
     saveAccounts(accounts, aCount);
