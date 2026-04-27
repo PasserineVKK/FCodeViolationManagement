@@ -295,12 +295,3 @@ int isValidStudentID (const char *s){
 	
 	return 1;
 }
-
-// Check valid password
-int isValidPasword (const char *s){
-	if (strlen(s) < 6) {
-		printf("Password must be at least 6 characters long.\n");
-		return 0;
-	}
-	return 1;
-}

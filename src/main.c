@@ -100,26 +100,28 @@ int main(int argc, char *argv[]) {
 							displayMemberList(members, mCount);
 							break;
 						case 5: 
-							changePassword(accounts, aCount);
+							printf("===== CHANGE PASSWORD =====\n");
+							changePassword(studentID, accounts, aCount);
 							break;
 						case 6: 
 							isStayLogin = 0;
 							loginRole = -1;
 							menuRole = -1;
 							// mark as not login, reset menu role
-							break;
+							continue;
 						case 7: 
 							// if choice = 7, save the data end return.
 							return 0;
 						case 8: 
 							if (loginRole == 1 || loginRole == 2){
 								menuRole = 1;
+								continue;
 							} else {
-								printf("Permission denied. Try again.");
+								printf("Permission denied. Try again.\n");
+								break;
 							}
-							break;
 						default:
-							printf("Invalid option, please try again.");	
+							printf("Invalid option, please try again.\n");	
 					}
 				break;
 			}
@@ -137,7 +139,7 @@ int main(int argc, char *argv[]) {
 						"\n┃  5.  Mark Fine as Paid                       ┃"
 						"\n┃  6.  View Violation List                     ┃"
 						"\n┃  7.  Statistics by Department                ┃"
-						"\n┃  8.  Reset Member's Password                 ┃"
+						"\n┃  8.  Change Member's Password                ┃"
 						"\n┃  9.  Log Out                                 ┃"
 						"\n┃ 10.  Exit                                    ┃"
 						"\n┃ 11.  Switch to Member Menu                   ┃"
@@ -170,20 +172,22 @@ int main(int argc, char *argv[]) {
 							showTotalFineByRole(members, mCount);
 							break;
 						case 8:
-							// wait for code statistic totalFine by team
+						    printf("===== CHANGE PASSWORD =====\n");
+							inputStudentID(studentID, "\nEnter student ID of the member you want to change password: ");
+							changePassword(studentID, accounts, aCount);
 							break;
 						case 9:
 							isStayLogin = 0;
 							loginRole = -1;
 							menuRole = -1;
 							// mark as not login, reset menu role
-							break;	
+							continue;;	
 						case 10: 
 							return 0;
 						case 11: 
 							menuRole = 0;
 							// change menuRole ==> Open personal menu instead of admin menu
-							break;
+							continue;
 						default:
 							printf("Invalid option, please try again.");
 					}

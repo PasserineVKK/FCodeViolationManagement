@@ -145,3 +145,21 @@ void inputMemberRole (int *target, const char * prompt){
 void inputMemberTeam (int *target, const char * prompt){
     inputIntegerInRage (target, 0, 3, prompt);
 }
+
+
+// Input password
+void inputPassword (char *target, const char * prompt){
+    char buf[30];
+    while (1) {
+        if (!inputString(buf, sizeof(buf), prompt)) {
+            printf("Please enter a valid password.\n");
+            continue;
+        }
+        if (strlen(buf) < 6) {
+            printf("Password must be at least 6 characters long.\n");
+            continue;
+        }
+        strcpy(target, buf);
+        return;
+    }
+}

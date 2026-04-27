@@ -27,6 +27,4 @@ int isValidPhone (const char *s);
 // Check valid student ID
 int isValidStudentID (const char *s);
 
-//Check valid password
-int isValidPasword (const char *s);
 #endif
