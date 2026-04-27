@@ -94,7 +94,7 @@ int main(int argc, char *argv[]) {
 							displayViolationByStudentId(studentID, violations, vCount);
 							break;
 						case 3: 
-							// not finish yet
+							viewMyUnpaidFines(studentID, violations, vCount);
 							break;
 						case 4: 
 							displayMemberList(members, mCount);
@@ -197,6 +197,7 @@ int main(int argc, char *argv[]) {
 							menuRole = 0;
 							// change menuRole ==> Open personal menu instead of admin menu
 							continue;
+						// Trong admin menu switch(choice), thêm case tạm thời:
 						default:
 							printf("Invalid option, please try again.");
 					}
