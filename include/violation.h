@@ -35,11 +35,6 @@ void createNewViolation(Violation **violations, int *count, int *capacity, Membe
 int addViolation(Violation violations[], int *count, Violation newV);
 void deleteViolation(Violation *violation, int *count, Violation *v);
 
-<<<<<<< HEAD
-#endif
-=======
-void refreshFineAfterRolechange(char *id, int role);
 void viewMyUnpaidFines(const char *myStudentID, Violation violations[], int vCount);
 
 #endif
->>>>>>> develop

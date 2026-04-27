@@ -1,10 +1,9 @@
 #ifndef REPORT_H
 #define REPORT_H
 
-<<<<<<< HEAD
 #include "model.h"
 
-    void displayNotification(Notification *list, int count);
+void displayNotification(Notification *list, int count);
 
 void createNotification(Notification **list, int *count, int *capacity,
                         const char *receiverID, int type, const char *message, time_t deleteTime);
