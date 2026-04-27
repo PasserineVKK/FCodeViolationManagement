@@ -10,6 +10,7 @@
 #include "../include/consoleInput.h"
 #include "../sampleData/sampleData.h"
 #include "../include/view/violationView.h"
+#include "../include/report.h"
 
 #ifdef _WIN32
 #define CLEAR "cls"
@@ -170,7 +171,7 @@ int main(int argc, char *argv[]) {
 							// not sorted by team, role yet
 							break;
 						case 7: 
-							showTotalFineByRole(members, mCount);
+							showFineStatsByTeam(members, mCount, violations, vCount);
 							break;
 						case 8:{
 							int sortMode;

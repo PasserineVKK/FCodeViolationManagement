@@ -4,6 +4,8 @@
 #include "../include/member.h"
 #include "../include/violation.h"
 #include "../include/utils.h"
+#include "../include/consoleInput.h"      
+#include "../include/view/viewUtil.h" 
 
 //2.7 Show fine statistics by team
 void showFineStatsByTeam(Member members[], int mCount, Violation violations[], int vCount) {
@@ -14,8 +16,7 @@ void showFineStatsByTeam(Member members[], int mCount, Violation violations[], i
 
     for (int i = 0; i < vCount; i++) {
         Violation *v = &violations[i];
-        if (v->isPending) continue; //Not count pending violation
-
+        
         int mIdx = searchMemberByIdInM(members, mCount, v->studentID);
         if (mIdx == -1) continue; 
 

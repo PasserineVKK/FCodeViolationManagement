@@ -69,7 +69,6 @@ int  countUnpaidViolations(const char *id, Violation violations[], int vCount) {
 }
 
 //updateTotalFine
-
 int updateMemberTotalFine(Member members[], int mCount, Violation violations[], int vCount, const char *id) {
     int memberIndex = searchMemberByIdInM(members, mCount, id);
 	if (memberIndex == -1) {

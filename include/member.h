@@ -7,8 +7,6 @@
 #include "../include/violation.h"
 #include "../include/auth.h"
 
-
-
 typedef struct
 {
 	char fullName[100];
