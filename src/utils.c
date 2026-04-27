@@ -127,4 +127,3 @@ int normalizeName(char* name){
     name[j] = '\0'; // end of full name
     return 1;
 }
-

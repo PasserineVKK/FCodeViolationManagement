@@ -1,12 +1,21 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+<<<<<<< HEAD
 #include <time.h>
 
 #include "member.h"
 #include "violation.h"
 #include "fileio.h"
 #include "consoleInput.h"
+=======
+#include "../include/member.h"
+#include "../include/violation.h"
+#include "../include/fileio.h"
+#include "utils.h"
+#include "../include/consoleInput.h"      
+#include "../include/view/viewUtil.h" 
+>>>>>>> develop
 
 int loadViolations(Violation violations[], int *count)
 {
@@ -171,3 +180,100 @@ void deleteViolation(Violation *violations, int *count, Violation *v)
         }
     }
 }
+
+//1.3 View unpaid fines for a member
+void viewMyUnpaidFines(const char *myStudentID, Violation violations[], int vCount){
+    printf("\n==== Unpaid Fines ====\n");
+    printf("Student ID: %s\n", myStudentID);
+
+    const char *reasonNames[] = {"Not uniform", "Meeting absence", "Not join in Club activity", "Violence"};
+    printf("%-12s %-22s %-20s %s\n", "Violation ID", "Reason", "Time", "Fine");
+    printf("----------------------------------------------------------------------\n");
+    double total = 0.0;
+    int found = 0;
+    for (int i =0; i < vCount; i++){
+        Violation *v = &violations[i];
+        if (strcmp(v->studentID, myStudentID) != 0) continue;
+        if (v -> isPaid != 0) continue;
+
+        char timeStr[20];
+        getFormatTime(timeStr, sizeof(timeStr), v->violationTime);
+        
+        const char *reason = (v->reason >= 0 && v->reason <= 3) ? reasonNames[v->reason] : "Unknown";
+        
+        char fineStr[30];
+        formatCurrency(v->fine, fineStr, sizeof(fineStr));
+        printf("%-12s %-22s %-20s %s\n",
+               v->violationID, reason, timeStr, fineStr);
+
+        total += v->fine;
+        found++;
+    }
+    printf("----------------------------------------------------------------------\n");
+    if (found ==0){
+        printf("No unpaid fines found.\n");
+    } else {
+        char totalStr[30];
+        formatCurrency(total, totalStr, sizeof(totalStr));
+        printf("Total Unpaid Fines: %s\n", totalStr);
+    }
+    printf("========================\n");
+}
+
+//2.8 Check and warn if member reach out club condition
+// int checkAndWarnOutClub(const char *studentID, Member members [], int *mCount, Violation violations[], int *vCount) {
+//     int mIndex = searchMemberByIdInM(members, *mCount, studentID);
+//     if (mIndex == -1) return 0;
+
+//     int absences = members[mIndex].consecutiveAbsences;
+//     int hasViolence = 0;
+
+//     for (int i = *vCount - 1; i >= 0; i--) {
+//         if (strcmp(violations[i].studentID, studentID) == 0 && violations[i].reason == REASON_VIOLENCE) {
+//             hasViolence = 1;
+//             break;
+//         }
+//     }
+
+//     //case: violence -> direct out
+//     if(hasViolence){
+//         printf("\n!!! Warning: Member %s has committed violence and is subject to removal from the club. Please review the violation details and take necessary actions.\n", studentID);
+//         int confirm;
+        
+//         inputYesNo(&confirm, "Confirm to remove this member from the club?\n1: Yes\n0: No\n=> Your choice: ");
+//         if(confirm == 1){
+//             members[mIndex].isPending = 1; //set pending for out club
+//             for (int i = 0; i < *vCount; i++) {
+//                 if (strcmp(violations[i].studentID, studentID) == 0 
+//                     && violations[i].reason == REASON_VIOLENCE
+//                     && violations[i].pelnaty == 0) { 
+//                     violations[i].pelnaty = 1; //set kick for violence violation
+//                     violations[i].fine = 0; 
+//                 }
+//             }
+//             saveMembers(members, *mCount);
+//             saveViolations(violations, *vCount);
+//             printf("Added %s to pending out club list.\n", studentID);
+//             return 2;
+//         }
+//         return 1;
+//     }
+
+//     //case: Consecutive absences >= 2 -> warning
+//     //      -> if reach 3 -> bcn confirm out
+//     if(absences >= 2){
+//         printf("\n!!! Warning: Member %s has %d consecutive absences and is approaching the threshold for removal from the club. Please review the attendance records and take necessary actions.\n", studentID, absences);     
+//         if (absences >= 3){
+//             int confirm;
+//             inputYesNo(&confirm, "Confirm to remove this member from the club?\n1: Yes\n0: No\n=> Your choice: ");
+//             if(confirm == 1){
+//                 members[mIndex].isPending = 1; 
+//                 saveMembers(members, *mCount);
+//                 printf("Added %s to pending out club list.\n", studentID);
+//                 return 2;
+//             }
+//         }
+//         return 1;
+//     }
+//     return 0;
+// }
