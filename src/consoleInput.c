@@ -123,12 +123,12 @@ void inputMemberPhone (char *target, const char * prompt){
     char buf[15];
     while (1) {
         if (!inputString(buf, sizeof(buf), prompt)) {
-            printf("Please enter a valid phone number1.\n");
+            printf("Please enter a valid phone number.\n");
             continue;
         }
 
         if (!isValidPhone(buf)) {
-            printf("Please enter a valid phone number2.\n");
+            printf("Please enter a valid phone number.\n");
             continue;
         }
         strcpy(target, buf);
