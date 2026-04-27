@@ -120,7 +120,7 @@ void inputStudentID (char *target, const char * prompt){
 
 // Input new phone number
 void inputMemberPhone (char *target, const char * prompt){
-    char buf[11];
+    char buf[15];
     while (1) {
         if (!inputString(buf, sizeof(buf), prompt)) {
             printf("Please enter a valid phone number.\n");

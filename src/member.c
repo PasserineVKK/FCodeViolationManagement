@@ -29,28 +29,29 @@ int searchMemberByIdInM(Member members[], int count, const char *id) {
 }
 
 void displayOneMemberInfo(Member member) {
+	printf("┏━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━┓\n");
 
-    printf("┃ %-10s ┃ %-24s ┃ %-28s ┃ %-12s ┃ %-4s ┃ %-4s ┃ %-8s ┃\n",
-           "Student ID",
-           "Name",
-           "Email",
-           "Phone",
-           "Team",
-           "Role",
-           "Status");
+	printf("┃ %-10s ┃ %-24s ┃ %-28s ┃ %-12s ┃ %-12s ┃ %-18s ┃ %-8s ┃\n",
+		"Student ID",
+		"Name",
+		"Email",
+		"Phone",
+		"Team",
+		"Role",
+		"Status");
 
-    printf("┣━━━━━━━━━━━━╋━━━━━━━━━━━━━━━━━━━━━━━━━━╋━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╋━━━━━━━━━━━━━━╋━━━━━━╋━━━━━━╋━━━━━━━━━━┫\n");
+	printf("┣━━━━━━━━━━━━╋━━━━━━━━━━━━━━━━━━━━━━━━━━╋━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╋━━━━━━━━━━━━━━╋━━━━━━━━━━━━━━╋━━━━━━━━━━━━━━━━━━━━╋━━━━━━━━━━┫\n");
 
-    printf("┃ %-10s ┃ %-24s ┃ %-28s ┃ %-12s ┃ %-4d ┃ %-4d ┃ %-8s ┃\n",
-           member.studentID,
-           member.fullName,
-           member.email,
-           member.phoneNumber,
-           member.team,
-           member.role,
-           member.isPending ? "Pending" : "Active");
+	printf("┃ %-10s ┃ %-24s ┃ %-28s ┃ %-12s ┃ %-12s ┃ %-18s ┃ %-8s ┃\n",
+		member.studentID,
+		member.fullName,
+		member.email,
+		member.phoneNumber,
+		translateTeam(member.team),
+		translateRole(member.role),
+		member.isPending ? "Pending" : "Active");
 
-    printf("┗━━━━━━━━━━━━┻━━━━━━━━━━━━━━━━━━━━━━━━━━┻━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┻━━━━━━━━━━━━━━┻━━━━━━┻━━━━━━┻━━━━━━━━━━┛\n");
+	printf("┗━━━━━━━━━━━━┻━━━━━━━━━━━━━━━━━━━━━━━━━━┻━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┻━━━━━━━━━━━━━━┻━━━━━━━━━━━━━━┻━━━━━━━━━━━━━━━━━━━━┻━━━━━━━━━━┛\n");
 }
 // Count unpaid violations for a member
 int  countUnpaidViolations(const char *id, Violation violations[], int vCount) {
@@ -103,20 +104,26 @@ int updateConsecutiveAbsences(Member members[], int count, const char *id) {
 //1.4: View member list
 void displayMemberList(Member members[], int count) {
 	printf("\n");
-    printf("┏━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━┓\n");
-    printf("┃ %-10s ┃ %-22s ┃ %-10s ┃ %-18s ┃\n",
-           "Student ID", "Full Name", "Team", "Role");
-    printf("┣━━━━━━━━━━━━╋━━━━━━━━━━━━━━━━━━━━━━━━╋━━━━━━━━━━━━╋━━━━━━━━━━━━━━━━━━━━┫\n");
+    printf("┏━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━┓\n");
+
+	printf("┃ %-10s ┃ %-22s ┃ %-12s ┃ %-18s ┃\n",
+		"Student ID",
+		"Full Name",
+		"Team",
+		"Role");
+
+	printf("┣━━━━━━━━━━━━╋━━━━━━━━━━━━━━━━━━━━━━━━╋━━━━━━━━━━━━━━╋━━━━━━━━━━━━━━━━━━━━┫\n");
+
 	for (int i = 0; i < count; i++) {
-        printf("┃ %-10s ┃ %-22s ┃ %-10s ┃ %-18s ┃\n",
-               members[i].studentID,
-               members[i].fullName,
-               translateTeam(members[i].team),
-               translateRole(members[i].role));
-    }
-	printf("┗━━━━━━━━━━━━┻━━━━━━━━━━━━━━━━━━━━━━━━┻━━━━━━━━━━━━┻━━━━━━━━━━━━━━━━━━━━┛\n");
-    printf("Total members: %d\n\n", count);
-	
+		printf("┃ %-10s ┃ %-22s ┃ %-12s ┃ %-18s ┃\n",
+			members[i].studentID,
+			members[i].fullName,
+			translateTeam(members[i].team),
+			translateRole(members[i].role));
+	}
+
+	printf("┗━━━━━━━━━━━━┻━━━━━━━━━━━━━━━━━━━━━━━━┻━━━━━━━━━━━━━━┻━━━━━━━━━━━━━━━━━━━━┛\n");
+    printf("Total members: %d\n\n", count);	
 }
 
 
@@ -142,18 +149,27 @@ void addMember(Member members[], int *mCount, Account accounts[], int *aCount) {
 		inputMemberName(fullName, "Enter full name: ");
 
 		//Input member email
-		inputMemberEmail(email, "Enter email: ");
+		inputMemberEmail(email, "\nEnter email: ");
 
 		//Input student ID
-		inputStudentID(studentID, "Enter student ID: ");
+		inputStudentID(studentID, "\nEnter student ID: ");
 
 		//Input member phone number
-		inputMemberPhone(phoneNumber, "Enter phone number: ");
+		inputMemberPhone(phoneNumber, "\nEnter phone number: ");
 		
 		//Input team info
+		printf("\nAvailable Teams:\n");
+		printf("0. Academic\n");
+		printf("1. Planning\n");
+		printf("2. HR\n");
+		printf("3. Media\n");
 		inputMemberTeam(&team, "Enter team (0-3): ");	
 
 		//Input role info
+		printf("\nAvailable Roles:\n");
+		printf("0. Member\n");
+		printf("1. Leader/Vice\n");
+		printf("2. Board of Directors\n");
 		inputMemberRole(&role, "Enter role (0-2): ");
 
 		//Confirm to add member

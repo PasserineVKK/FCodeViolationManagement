@@ -146,7 +146,7 @@ int main(int argc, char *argv[]) {
 						"\n┃ 12.  Switch to Member Menu                   ┃"
 						"\n┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛\n"
 					);
-					inputIntegerInRage(&choice, 1, 11, " ==> Enter your selection: ");
+					inputIntegerInRage(&choice, 1, 12, " ==> Enter your selection: ");
 
 					system(CLEAR);
 					switch (choice){
