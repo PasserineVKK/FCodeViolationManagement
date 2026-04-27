@@ -7,8 +7,6 @@
 #include "../include/violation.h"
 #include "../include/auth.h"
 
-
-
 typedef struct
 {
 	char fullName[100];
@@ -52,11 +50,6 @@ void removeMember(Member members[], int *mCount, Account accounts[], int *aCount
 
 // Features 2.3: Update member
 void updateMember(Member members[], int *mCount, Violation violations[], int vCount);
-
-// Features 2.7: Show member list
-void showTotalFineByRole(Member members[], int count);
-
-
 
 int updateConsecutiveAbsences(Member members[], int count, const char *id);
 

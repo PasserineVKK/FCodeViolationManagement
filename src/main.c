@@ -10,6 +10,7 @@
 #include "../include/consoleInput.h"
 #include "../sampleData/sampleData.h"
 #include "../include/view/violationView.h"
+#include "../include/report.h"
 
 #ifdef _WIN32
 #define CLEAR "cls"
@@ -94,7 +95,7 @@ int main(int argc, char *argv[]) {
 							displayViolationByStudentId(studentID, violations, vCount);
 							break;
 						case 3: 
-							// not finish yet
+							viewMyUnpaidFines(studentID, violations, vCount);
 							break;
 						case 4: 
 							displayMemberList(members, mCount);
@@ -170,7 +171,7 @@ int main(int argc, char *argv[]) {
 							// not sorted by team, role yet
 							break;
 						case 7: 
-							showTotalFineByRole(members, mCount);
+							showFineStatsByTeam(members, mCount, violations, vCount);
 							break;
 						case 8:{
 							int sortMode;
@@ -197,6 +198,7 @@ int main(int argc, char *argv[]) {
 							menuRole = 0;
 							// change menuRole ==> Open personal menu instead of admin menu
 							continue;
+						// Trong admin menu switch(choice), thêm case tạm thời:
 						default:
 							printf("Invalid option, please try again.");
 					}

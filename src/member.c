@@ -69,7 +69,6 @@ int  countUnpaidViolations(const char *id, Violation violations[], int vCount) {
 }
 
 //updateTotalFine
-
 int updateMemberTotalFine(Member members[], int mCount, Violation violations[], int vCount, const char *id) {
     int memberIndex = searchMemberByIdInM(members, mCount, id);
 	if (memberIndex == -1) {
@@ -499,25 +498,6 @@ void updateMember(Member members[], int *mCount, Violation violations[], int vCo
 			continueUpdate = 0;
 		}
     }    			
-}
-
-// ===== Feature 2.7: SHOW TOTAL FINE BY ROLE =====
-void showTotalFineByRole(Member members[], int mCount) {
-	const char *team[] = {"Academic", "Planning", "HR", "Media"};
-	double totalFineByTeam[4] = {0};
-
-	for (int i = 0; i < mCount; i++) {		
-		totalFineByTeam[members[i].role] += members[i].totalFine;
-	}
-	printf("\n┏━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓\n");
-    printf("┃ %-20s ┃ %-40s ┃\n", "Team", "Total Fine of that team");
-    printf("┣━━━━━━━━━━━━━━━━━━━━━━╋━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫\n");
-
-    for (int i = 0; i < 4; i++) {
-        printf("┃ %-20s ┃ %-40.2f ┃\n", team[i], totalFineByTeam[i]);
-    }
-
-    printf("┗━━━━━━━━━━━━━━━━━━━━━━┻━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛\n");
 }
 
 void displayInSortByVioCount(Member members[], int mCount, int sortMode){
