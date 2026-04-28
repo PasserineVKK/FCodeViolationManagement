@@ -1,9 +1,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <ctype.h>
 
 // 123456789.1234 to 123,456,789.123
-void formatCurrency(double amount, char* outputString, size_t availableLen){
+int formatCurrency(double amount, char* outputString, size_t availableLen){
 	char temp[64];
 	// 1. Prepare
 	
@@ -20,7 +21,7 @@ void formatCurrency(double amount, char* outputString, size_t availableLen){
 	// check available len for string
 	if ((size_t)newLen > availableLen){
 		snprintf(outputString, availableLen, "Error: Format currency");
-		return;
+		return 0;
 	}
 	
 	//j is the current writting index in outputString
@@ -42,6 +43,87 @@ void formatCurrency(double amount, char* outputString, size_t availableLen){
 		outputString[j--] = temp[i];
 		count++;
 	}
+
+	return 1;
 	
-	
+
+
+}
+
+const char *translateRole(int role) {
+	switch (role) {
+		case 0:
+			return "Member";
+		case 1:
+			return "Leader/Vice";
+		case 2:
+			return "Board of Directors";
+		default:
+			return "Unknown Role";
+	}
+}
+
+const char *translateTeam(int team) {
+	switch (team) {
+		case 0:
+			return "Academic";
+		case 1:
+			return "Planning";
+		case 2:
+			return "HR";
+		case 3:
+			return "Media";
+		default:
+			return "Unknown Team";
+	}
+}
+
+const char *translateIsPaid(int isPaid) {
+	switch (isPaid) {
+		case 0:
+			return "Not Paid";
+		case 1:
+			return "Paid";
+		default:
+			return "Unknown Payment Status";
+	}
+}
+
+const char *translatePenalty(int penalty) {
+	switch (penalty) {
+		case 0:
+			return "Disciplinary Fine";
+		case 1:
+			return "Removal From Club";
+		default:
+			return "Unknown Penalty";
+	}
+
+}
+
+int normalizeName(char* name){
+    int n = strlen(name);
+    int j = 0;
+    int writeSpace = 0; // check 
+	// i: iterator
+	// j: writter. j write letter and space, and decide a letter is upper or lower.
+    for (int i = 0; i < n; i++) {
+        if (!isspace(name[i])) {
+            // if this letter is first letter -> upper
+            // if this letter after space -> add space and upper
+            if (j == 0 || writeSpace) {
+                if (writeSpace) name[j++] = ' ';
+                name[j++] = toupper(name[i]);
+            } else {
+            // if not both first letter and after space -> lower
+                name[j++] = tolower(name[i]);
+            }
+            writeSpace = 0;
+        } else {
+            // mark that space must be written after
+            if (j > 0) writeSpace = 1;
+        }
+    }
+    name[j] = '\0'; // end of full name
+    return 1;
 }
