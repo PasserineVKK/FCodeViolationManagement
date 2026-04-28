@@ -175,9 +175,9 @@ int main(int argc, char* argv[]) {
 
     seedSampleData(members, &mCount, violations, &vCount, accounts, &aCount);
 
-    // mCount = loadMembers(members, &mCount);
-    // vCount = loadViolations(violations, &vCount);
-    // aCount = loadAccounts(accounts, &aCount);
+     mCount = loadMembers(members, &mCount);
+     vCount = loadViolations(violations, &vCount);
+     aCount = loadAccounts(accounts, &aCount);
 
     // loginRole represent the role of this account
     // menuRole represent which menu will be open.
