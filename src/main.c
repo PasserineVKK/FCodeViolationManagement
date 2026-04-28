@@ -14,6 +14,7 @@
 #include "../include/view/viewUtil.h"
 #include "../include/view/violationView.h"
 #include "../include/violation.h"
+#include "../include/model.h"
 
 // #include "../sampleData/sampleData.h"
 
@@ -175,9 +176,9 @@ int main(int argc, char* argv[]) {
 
     seedSampleData(members, &mCount, violations, &vCount, accounts, &aCount);
 
-    // mCount = loadMembers(members, &mCount);
-    // vCount = loadViolations(violations, &vCount);
-    // aCount = loadAccounts(accounts, &aCount);
+     mCount = loadMembers(members, &mCount);
+     vCount = loadViolations(violations, &vCount);
+     aCount = loadAccounts(accounts, &aCount);
 
     // loginRole represent the role of this account
     // menuRole represent which menu will be open.
@@ -250,7 +251,7 @@ int main(int argc, char* argv[]) {
                         displayViolationByStudentId(studentID, violations, vCount);
                         break;
                     case 3:
-                        // not finish yet
+                        viewMyUnpaidFines(studentID, violations, vCount);
                         break;
                     case 4:
                         displayMemberList(members, mCount);
@@ -294,14 +295,15 @@ int main(int argc, char* argv[]) {
                     "\n┃  5.  Mark Fine as Paid                       ┃"
                     "\n┃  6.  View Violation List                     ┃"
                     "\n┃  7.  Statistics by Department                ┃"
-                    "\n┃  8.  View Member in Sorted List              ┃"
-                    "\n┃  9.  Change Member's Password                ┃"
-                    "\n┃ 10.  Log Out                                 ┃"
-                    "\n┃ 11.  Exit                                    ┃"
-                    "\n┃ 12.  Switch to Member Menu                   ┃"
-                    "\n┃ 13.  Add new violation                       ┃"
-                    "\n┃ 14.  Add new notification                    ┃"
-                    "\n┃ 15.  Delete violation                        ┃"
+                    "\n┃  8.  Check member reach out club condition   ┃"
+                    "\n┃  9.  View Member in Sorted List              ┃"
+                    "\n┃ 10.  Change Member's Password                ┃"
+                    "\n┃ 11.  Log Out                                 ┃"
+                    "\n┃ 12.  Exit                                    ┃"
+                    "\n┃ 13.  Switch to Member Menu                   ┃"
+                    "\n┃ 14.  Add new violation                       ┃"
+                    "\n┃ 15.  Add new notification                    ┃"
+                    "\n┃ 16.  Delete violation                        ┃"
                     "\n┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛\n");
                 inputIntegerInRange(&choice, 1, 15, " ==> Enter your selection: ");
 
@@ -329,7 +331,10 @@ int main(int argc, char* argv[]) {
                     case 7:
                         showFineStatsByTeam(members, mCount, violations, vCount);
                         break;
-                    case 8: {
+                    case 8:
+                        checkAndWarnOutClub (studentID, members, &mCount, violations, &vCount);
+                        break;
+                    case 9: {
                         int sortMode;
                         inputYesNo(
                             &sortMode,
@@ -339,41 +344,43 @@ int main(int argc, char* argv[]) {
                         displayInSortByVioCount(members, mCount, sortMode);
                         break;
                     }
-                    case 9: {
+                    case 10: {
                         changePassword(accounts, aCount, studentID, menuRole);
                         break;
                     }
 
-                    case 10:
+                    case 11:
                         isStayLogin = 0;
                         loginRole = -1;
                         menuRole = -1;
                         // mark as not login, reset menu role
                         continue;
-                    case 11:
-                        return 0;
                     case 12:
+                        return 0;
+                    case 13:
                         menuRole = 0;
                         // change menuRole ==> Open personal menu instead of
                         // admin menu
                         continue;
-                    case 13: {
+                    case 14: {
                         char studentId[10];
                         inputStudentID(studentID, "Enter student id: ");
                         Member* m = getMemberById(studentID, members, mCount);
                         createNewViolation(&violations, &vCount, &vCapacity, m);
                         break;
                     }
-                    case 14:
+                    case 15:
                         printf("In progress!");
                         break;
-                    case 15:
-                        char violationId[10];
-                        inputString(violationId, 10, "Enter violation id");
-                        Violation* v =
-                            findViolationById(violationId, violations, vCount);
-                        deleteViolation(violations, &vCount, v);
+                    case 16:{
+						
+	                        char violationId[10];
+	                        inputString(violationId, 10, "Enter violation id");
+	                        Violation* v =
+	                            findViolationById(violationId, violations, vCount);
+	                        deleteViolation(violations, &vCount, v);
                         break;
+                        }
                     default:
                         printf("Invalid option, please try again.");
                         break;
