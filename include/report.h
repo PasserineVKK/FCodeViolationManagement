@@ -17,4 +17,7 @@ Notification* findNotificationById(const char* notificationId, Notification* lis
 // 2.7 Show fine statistics by team
 void showFineStatsByTeam(Member members[], int mCount, Violation violations[], int vCount);
 
+//Feature 2.11 Show violation by time range
+int listViolationsByTimeRange(Violation violations[], int vCount, Violation results[]);
+
 #endif

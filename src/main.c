@@ -298,14 +298,15 @@ int main(int argc, char* argv[]) {
                     "\n┃  8.  Check member reach out club condition   ┃"
                     "\n┃  9.  View Member in Sorted List              ┃"
                     "\n┃ 10.  Change Member's Password                ┃"
-                    "\n┃ 11.  Log Out                                 ┃"
-                    "\n┃ 12.  Exit                                    ┃"
-                    "\n┃ 13.  Switch to Member Menu                   ┃"
-                    "\n┃ 14.  Add new violation                       ┃"
-                    "\n┃ 15.  Add new notification                    ┃"
-                    "\n┃ 16.  Delete violation                        ┃"
+                    "\n┃ 11.  View Violations by Time Range           ┃"
+                    "\n┃ 12.  Log Out                                 ┃"
+                    "\n┃ 13.  Exit                                    ┃"
+                    "\n┃ 14.  Switch to Member Menu                   ┃"
+                    "\n┃ 15.  Add new violation                       ┃"
+                    "\n┃ 16.  Add new notification                    ┃"
+                    "\n┃ 17.  Delete violation                        ┃"
                     "\n┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛\n");
-                inputIntegerInRange(&choice, 1, 15, " ==> Enter your selection: ");
+                inputIntegerInRange(&choice, 1, 17, " ==> Enter your selection: ");
 
                 clearScreen();
                 switch (choice) {
@@ -348,31 +349,35 @@ int main(int argc, char* argv[]) {
                         changePassword(accounts, aCount, studentID, menuRole);
                         break;
                     }
+                    case 11: {
+                        displayViolationsByTimeRange(violations, vCount);
+                        break;
+                    }
 
-                    case 11:
+                    case 12:
                         isStayLogin = 0;
                         loginRole = -1;
                         menuRole = -1;
                         // mark as not login, reset menu role
                         continue;
-                    case 12:
-                        return 0;
                     case 13:
+                        return 0;
+                    case 14:
                         menuRole = 0;
                         // change menuRole ==> Open personal menu instead of
                         // admin menu
                         continue;
-                    case 14: {
+                    case 15: {
                         char studentId[10];
                         inputStudentID(studentID, "Enter student id: ");
                         Member* m = getMemberById(studentID, members, mCount);
                         createNewViolation(&violations, &vCount, &vCapacity, m);
                         break;
                     }
-                    case 15:
+                    case 16:
                         printf("In progress!");
                         break;
-                    case 16:{
+                    case 17:{
 						
 	                        char violationId[10];
 	                        inputString(violationId, 10, "Enter violation id");

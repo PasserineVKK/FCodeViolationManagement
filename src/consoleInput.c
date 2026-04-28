@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
 
 #include "../include/validate.h"
 
@@ -161,6 +162,72 @@ void inputPassword(char* target, const char* prompt) {
             continue;
         }
         strcpy(target, buf);
+        return;
+    }
+}
+
+void inputValidTime(time_t* target, const char* prompt) {
+    char buf[50];
+
+    while (1) {
+        printf("%s", prompt);
+
+        if (!fgets(buf, sizeof(buf), stdin)) {
+            continue;
+        }
+
+        buf[strcspn(buf, "\n")] = '\0';
+
+        struct tm tm = {0};
+
+        int year, month, day, hour, minute;
+
+        if (sscanf(buf,
+                   "%d-%d-%d %d:%d",
+                   &year,
+                   &month,
+                   &day,
+                   &hour,
+                   &minute) != 5) {
+
+            printf("Please enter a valid time in format YYYY-MM-DD HH:MM.\n");
+            continue;
+        }
+
+        tm.tm_year = year - 1900;
+        tm.tm_mon  = month - 1;
+        tm.tm_mday = day;
+        tm.tm_hour = hour;
+        tm.tm_min  = minute;
+        tm.tm_sec  = 0;
+
+        *target = mktime(&tm);
+
+        return;
+    }
+}
+
+void inputTimeRange(time_t* start, time_t* end, const char* prompt) {
+
+    while (1) {
+
+        printf("%s\n", prompt);
+
+        inputValidTime(
+            start,
+            "Enter start time (YYYY-MM-DD HH:MM): "
+        );
+
+        inputValidTime(
+            end,
+            "Enter end time (YYYY-MM-DD HH:MM): "
+        );
+
+        if (*start > *end) {
+            printf("Start time must be before end time.\n");
+            continue;
+        }
+
         return;
     }
 }
