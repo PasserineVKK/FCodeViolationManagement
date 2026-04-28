@@ -163,6 +163,7 @@ void config() { SetConsoleOutputCP(65001); }
 
 int main(int argc, char* argv[]) {
     config();
+
     int mCount = 1000, vCount = 1000,
         aCount = 1000;  // set to max, then reset later
     int vCapacity = 3000;
@@ -211,7 +212,7 @@ int main(int argc, char* argv[]) {
             }
         }
 
-        clearScreen();
+        // clearScreen();
         switch (menuRole) {
             case 0: {
                 printf(
@@ -282,7 +283,7 @@ int main(int argc, char* argv[]) {
                     "\n┃  1.  Add New Member                          ┃"
                     "\n┃  2.  Edit Member Information                 ┃"
                     "\n┃  3.  Remove Member                           ┃"
-                    "\n┃  4.  Record Violation                        ┃"
+                    "\n┃  4.  Create new violation                    ┃"
                     "\n┃  5.  Mark Fine as Paid                       ┃"
                     "\n┃  6.  View Violation List                     ┃"
                     "\n┃  7.  Statistics by Department                ┃"
@@ -291,9 +292,7 @@ int main(int argc, char* argv[]) {
                     "\n┃ 10.  Log Out                                 ┃"
                     "\n┃ 11.  Exit                                    ┃"
                     "\n┃ 12.  Switch to Member Menu                   ┃"
-                    "\n┃ 13.  Add new violation                       ┃"
-                    "\n┃ 14.  Add new notification                    ┃"
-                    "\n┃ 15.  Delete violation                        ┃"
+                    "\n┃ 15.  Delete  violation                       ┃"
                     "\n┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛\n");
                 inputIntegerInRange(&choice, 1, 15,
                                     " ==> Enter your selection: ");
@@ -311,8 +310,8 @@ int main(int argc, char* argv[]) {
                                      violations, &vCount);
                         break;
                     case 4:
-                        recordViolationView(violations, &vCount, members,
-                                            mCount);
+                        recordViolationView(violations, &vCount, &vCapacity,
+                                            members, mCount);
                         break;
                     case 5:
                         markFineAsPaidView(violations, vCount, members, mCount);
@@ -349,16 +348,7 @@ int main(int argc, char* argv[]) {
                         return 0;
                     case 12:
                         menuRole = 0;
-                        // change menuRole ==> Open personal menu instead of
-                        // admin menu
                         continue;
-                    case 13: {
-                        char studentId[10];
-                        inputStudentID(studentID, "Enter student id: ");
-                        Member* m = getMemberById(studentID, members, mCount);
-                        createNewViolation(&violations, &vCount, &vCapacity, m);
-                        break;
-                    }
                     case 14:
                         printf("In progress!");
                         break;

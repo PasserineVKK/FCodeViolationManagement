@@ -49,9 +49,9 @@ typedef struct {
 #define ADMIN_WARNING -1
 
 typedef struct {
-    int id[6];
+    char id[6];
     int type;
-    char studentId[10];  // Only for Admin waring;
+    char memberId[10];  // Only for Admin waring;
     char content[MAX_MESSAGE_LENGTH];
     time_t deleteTime;
 } Notification;

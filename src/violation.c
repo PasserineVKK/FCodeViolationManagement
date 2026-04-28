@@ -10,7 +10,13 @@
 #include "../include/member.h"
 #include "../include/utils.h"
 #include "../include/view/viewUtil.h"
+#include "../include/view/violationView.h"
 #include "../include/violation.h"
+
+void simpleDisplayViolation(Violation* v) {
+    clearScreen();
+    displayViolationList(v, 1);
+}
 
 int loadViolations(Violation violations[], int* count) {
     return loadFromFile(VIOLATIONS_FILE, violations, sizeof(Violation),
@@ -87,6 +93,7 @@ void getReason(int* reason) {
 }
 
 int addViolation(Violation violations[], int* count, Violation newV) {
+    simpleDisplayViolation(&newV);
     if (*count >= MAX_VIOLATIONS) return 0;
     violations[*count] = newV;
     (*count)++;
@@ -99,42 +106,28 @@ void updateIsPaidField(char* violationId, Violation violations[], int count,
     if (v != NULL) v->isPaid = value;
 }
 
-void ensureCapacity(Violation** violations, int* count, int* capacity) {}
+void ensureCapacity(Violation** violations, int* count, int* capacity) {
+    printf("%d %d\n", *count, *capacity);
+    if (*count >= *capacity) {
+        *capacity = *capacity * 2;
+        Violation* anotherAddress =
+            realloc(*violations, *capacity * sizeof(Violation));
+
+        if (anotherAddress == NULL) {
+            fprintf(stderr,
+                    "NOT ENOUGH MEMORY TO ALLOCATE (REDIRECT FROM CREATE NEW "
+                    "VIOLATION LIST)!!!");
+            return;
+        }
+
+        *violations = anotherAddress;
+    }
+}
 
 void handleSeriousViolation(Member* m, Violation* v) {}
 
 void createViolationID(int index, char* buffer) {
     sprintf(buffer, "VI%04d", index);
-}
-
-void createNewViolation(Violation** violations, int* count, int* capacity,
-                        Member* m) {
-    if (m == NULL) return;
-    ensureCapacity(violations, capacity, count);
-
-    Violation* v = &((*violations)[*count]);
-    getReason(&v->reason);
-    v->violationTime = time(NULL);
-    v->fine = calculateFine(m->role, v->reason);
-
-    v->isPaid = NOT_PAY;
-    v->isPending = PENDING;
-    v->penalty = PENALTY_FINANCIAL;
-
-    inputString(v->note, 50, "Any note? Please input: ");
-    createViolationID(*count + 1, v->violationID);
-    strcpy(v->studentID, m->studentID);
-
-    int confirm;
-    inputYesNo(
-        &confirm,
-        "Are your sure to create this violation! Enter Yes (1), No (0): ");
-    if (confirm) {
-        (*count)++;
-        saveViolations(*violations, *count);
-    }
-
-    handleSeriousViolation(m, v);
 }
 
 void deleteViolation(Violation* violations, int* count, Violation* v) {
@@ -151,51 +144,69 @@ void deleteViolation(Violation* violations, int* count, Violation* v) {
     }
 }
 
-// 1.3 View unpaid fines for a member
-void viewMyUnpaidFines(const char* myStudentID, Violation violations[],
-                       int vCount) {
-    printf("\n==== Unpaid Fines ====\n");
-    printf("Student ID: %s\n", myStudentID);
+void updateViolation(Violation* v) {
+    if (v == NULL) return;
+}
 
-    const char* reasonNames[] = {"Not uniform", "Meeting absence",
-                                 "Not join in Club activity", "Violence"};
-    printf("%-12s %-22s %-20s %s\n", "Violation ID", "Reason", "Time", "Fine");
-    printf(
-        "----------------------------------------------------------------------"
-        "\n");
-    double total = 0.0;
-    int found = 0;
-    for (int i = 0; i < vCount; i++) {
-        Violation* v = &violations[i];
-        if (strcmp(v->studentID, myStudentID) != 0) continue;
-        if (v->isPaid != 0) continue;
+void recordViolationView(Violation violations[], int* vCount, int* vCapacity,
+                         Member members[], int mCount) {
+    ensureCapacity(&violations, vCount, vCapacity);
+    Violation newV;
+    char studentID[10];
+    int mIndex;
 
-        char timeStr[20];
-        getFormatTime(timeStr, sizeof(timeStr), v->violationTime);
+    printf("\n--- Record New Violation ---\n");
+    inputStudentID(studentID, "Enter Student ID: ");
 
-        const char* reason = (v->reason >= 0 && v->reason <= 3)
-                                 ? reasonNames[v->reason]
-                                 : "Unknown";
-
-        char fineStr[30];
-        formatCurrency(v->fine, fineStr, sizeof(fineStr));
-        printf("%-12s %-22s %-20s %s\n", v->violationID, reason, timeStr,
-               fineStr);
-
-        total += v->fine;
-        found++;
+    mIndex = searchMemberByIdInM(members, mCount, studentID);
+    if (mIndex == -1) {
+        printf("Error: Student ID not found.\n");
+        return;
     }
-    printf(
-        "----------------------------------------------------------------------"
-        "\n");
-    if (found == 0) {
-        printf("No unpaid fines found.\n");
-    } else {
-        char totalStr[30];
-        formatCurrency(total, totalStr, sizeof(totalStr));
-        printf("Total Unpaid Fines: %s\n", totalStr);
+
+    strcpy(newV.studentID, studentID);
+    sprintf(newV.violationID, "VIO%03d", *vCount + 1);
+
+    printf("Reasons:\n");
+    printf("%d. Not uniform\n", REASON_NOT_UNIFORM);
+    printf("%d. Meeting absence\n", REASON_MEETING_ABSENCE);
+    printf("%d. No Club activity\n", REASON_NO_CLUB_ACTIVITY);
+    printf("%d. Violence\n", REASON_VIOLENCE);
+    inputIntegerInRange(&newV.reason, 0, 3, "Enter reason: ");
+
+    newV.violationTime = time(NULL);
+    newV.fine = calculateFine(members[mIndex].role, newV.reason);
+    newV.isPaid = NOT_PAY;
+    newV.isPending = NOT_PENDING;
+    newV.penalty =
+        (newV.reason == REASON_VIOLENCE) ? PENALTY_KICK : PENALTY_FINANCIAL;
+
+    if (newV.reason == REASON_MEETING_ABSENCE) {
+        members[mIndex].consecutiveAbsences++;
+        if (members[mIndex].consecutiveAbsences >= 3) {
+            newV.penalty = PENALTY_KICK;
+            members[mIndex].isPending = 1;
+        }
     }
-    printf("========================\n");
+    // else {
+    //     members[mIndex].consecutiveAbsences = 0;
+    // }
+
+    inputString(newV.note, 50, "Enter note (optional): ");
+
+    int confirm;
+    inputYesNo(&confirm, "Confirm to record this violation? (1: Yes, 0: No): ");
+    if (confirm) {
+        if (addViolation(violations, vCount, newV)) {
+            printf("Violation recorded successfully.\n");
+            updateMemberTotalFine(members, mCount, violations, *vCount,
+                                  studentID);
+            saveViolations(violations, *vCount);
+            saveMembers(members, mCount);
+        } else {
+            printf("Error: Violation list is full.\n");
+        }
+    }
 }
 
 // 2.8 Check and warn if member reach out club condition
