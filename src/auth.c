@@ -42,13 +42,13 @@ int login(Account accounts[], char* studentID, int aCount) {
 
     // Check if student ID exists in accounts list
     if (aIndex == -1) {
-        printf("Student ID not found. Please try again.\n");
-        return -1;
+        printf("\nStudent ID not found. Please try again.\n");
+        return -2;
     }
 
     // Check if account is locked
     if (accounts[aIndex].isLocked) {
-        printf("This account is locked due to 3 failed login attempts.\n");
+        printf("\nThis account is locked due to 3 failed login attempts.\n");
         return -1;
     }
 
@@ -70,7 +70,7 @@ int login(Account accounts[], char* studentID, int aCount) {
     if (failCount >= 3) {
         accounts[aIndex].isLocked = 1;
         saveAccounts(accounts, aCount);
-        printf("This account is now locked due to 3 failed login attempts.\n");
+        printf("\nThis account is now locked due to 3 failed login attempts.\n");
         return -1;
     }
 

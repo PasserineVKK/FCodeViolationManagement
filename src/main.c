@@ -192,16 +192,27 @@ int main(int argc, char* argv[]) {
         //				  If not stay login =>> check again.
         if (isStayLogin == 0) {
             loginRole = login(accounts, studentID, aCount);
-            if (loginRole == -1) {
+            // If loginRole = -2 => Student ID not found
+            if (loginRole == -2) {
                 int isExit = 0;
-                inputYesNo(&isExit,
-                           "Student ID does not exist, do you want to exit? \n "
-                           "1. Yes\n 0. No\n");
+                inputYesNo(&isExit, "\nDo you want to exit? \n1. Yes\n 0. No\n=>Your choice: ");
+                printf ("\n");
                 if (isExit == 1)
                     return 0;
                 else
                     continue;
-            } else {
+            } 
+            // If loginRole = -1 => Account locked
+            else if (loginRole == -1) {
+                int isExit = 0;
+                inputYesNo(&isExit, "\nDo you want to exit? \n1. Yes\n 0. No\n=>Your choice: ");
+                printf ("\n");
+                if (isExit == 1)
+                    return 0;
+                else
+                    continue;
+            }
+            else {
                 menuRole = loginRole;
                 mIndex = searchMemberByIdInM(members, mCount, studentID);
                 vIndex = searchMemberByIdInV(violations, vCount, studentID);

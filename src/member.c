@@ -467,9 +467,7 @@ void updateMember(Member members[], int* mCount, Violation violations[],
         // ===== CONTINUE =====
         int choice;
         inputYesNo(&choice,
-                   "\nDo you want to update another member?\n1: Yes\n0: No\n=> "
-                   "Your choice: ");
-        while (getchar() != '\n');
+                   "\nDo you want to update another member?\n1: Yes\n0: No\n=>Your choice: ");
 
         if (choice == 0) {
             continueUpdate = 0;
