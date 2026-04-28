@@ -25,22 +25,30 @@
 
 int loadViolations(Violation violations[], int* count);
 int saveViolations(Violation violations[], int count);
+
 int checkOutCondition(const Violation violations[], int count, const char* id);
 double calculateFine(int role, int reason);
 void refreshFineAfterRolechange(char* memberId, int role,
                                 Violation violations[], int count);
+
 Violation* findViolationById(const char* violationId, Violation violations[],
                              int count);
+
 int getViolationIndexById(Violation violations[], int count,
                           const char* violationId);
+
 int searchMemberByIdInV(Violation violations[], int count, const char* id);
 void updateIsPaidField(char* violationId, Violation violations[], int count,
                        int value);
-void createNewViolation(Violation** violations, int* count, int* capacity,
-                        Member* m);
 int addViolation(Violation violations[], int* count, Violation newV);
+
 void deleteViolation(Violation* violation, int* count, Violation* v);
 
-int checkAndWarnOutClub(const char *studentID, Member members [], int *mCount, Violation violations[], int *vCount);
+// Features 2.4: Record Violation
+void recordViolationView(Violation violations[], int* vCount, int* vCapacity,
+                         Member members[], int mCount);
+
+int checkAndWarnOutClub(const char* studentID, Member members[], int* mCount,
+                        Violation violations[], int* vCount);
 
 #endif

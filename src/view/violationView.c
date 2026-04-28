@@ -7,21 +7,30 @@
 
 #include "../../include/consoleInput.h"
 #include "../../include/report.h"
+#include "../../include/utils.h"
 #include "../../include/view/viewUtil.h"
 
 void displayViolationTableHeader() {
     printf(
-        "\n┏━━━━━━━━━━━━┳━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━┳━━━━━━━━━━┳━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━┓\n");
+        "\n┏━━━━━━━━━━━━┳━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━"
+        "━━━━┳━━━━━━━━━━┳━━━━━━━━━━┳━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+        "━━━━┳━━━━━━━━━━━━━━┓\n");
     printf(
-        "┃ %-10s ┃ %-10s ┃ %-20s ┃ %-20s ┃ %-8s ┃ %-8s ┃ %-10s ┃ %-32s ┃ %-12s ┃\n",
-        "ID", "Student", "Reason", "Time", "Fine", "Paid", "Penalty", "Note", "Pending");
+        "┃ %-10s ┃ %-10s ┃ %-20s ┃ %-20s ┃ %-8s ┃ %-8s ┃ %-10s ┃ %-32s ┃ %-12s "
+        "┃\n",
+        "ID", "Student", "Reason", "Time", "Fine", "Paid", "Penalty", "Note",
+        "Pending");
     printf(
-        "┣━━━━━━━━━━━━╋━━━━━━━━━━━━╋━━━━━━━━━━━━━━━━━━━━━━╋━━━━━━━━━━━━━━━━━━━━━━╋━━━━━━━━━━╋━━━━━━━━━━╋━━━━━━━━━━━━╋━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╋━━━━━━━━━━━━━━┫\n");
+        "┣━━━━━━━━━━━━╋━━━━━━━━━━━━╋━━━━━━━━━━━━━━━━━━━━━━╋━━━━━━━━━━━━━━━━━━━━"
+        "━━╋━━━━━━━━━━╋━━━━━━━━━━╋━━━━━━━━━━━━╋━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+        "━━╋━━━━━━━━━━━━━━┫\n");
 }
 
 void displayViolationTableFooter() {
     printf(
-        "┗━━━━━━━━━━━━┻━━━━━━━━━━━━┻━━━━━━━━━━━━━━━━━━━━━━┻━━━━━━━━━━━━━━━━━━━━━━┻━━━━━━━━━━┻━━━━━━━━━━┻━━━━━━━━━━━━┻━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┻━━━━━━━━━━━━━━┛\n");
+        "┗━━━━━━━━━━━━┻━━━━━━━━━━━━┻━━━━━━━━━━━━━━━━━━━━━━┻━━━━━━━━━━━━━━━━━━━━"
+        "━━┻━━━━━━━━━━┻━━━━━━━━━━┻━━━━━━━━━━━━┻━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+        "━━┻━━━━━━━━━━━━━━┛\n");
 }
 
 void displayViolationRow(Violation* v) {
@@ -73,68 +82,6 @@ void displayViolationByStudentId(char* id, Violation violations[], int vCount) {
     displayViolationTableFooter();
 }
 
-void recordViolationView(Violation violations[], int* vCount, Member members[],
-                         int mCount) {
-    Violation newV;
-    char studentID[10];
-    int mIndex;
-
-    printf("\n--- Record New Violation ---\n");
-    inputStudentID(studentID, "Enter Student ID: ");
-
-    mIndex = searchMemberByIdInM(members, mCount, studentID);
-    if (mIndex == -1) {
-        printf("Error: Student ID not found.\n");
-        return;
-    }
-
-    strcpy(newV.studentID, studentID);
-    sprintf(newV.violationID, "VIO%03d", *vCount + 1);
-
-    printf("Reasons:\n");
-    printf("%d. Not uniform\n", REASON_NOT_UNIFORM);
-    printf("%d. Meeting absence\n", REASON_MEETING_ABSENCE);
-    printf("%d. No Club activity\n", REASON_NO_CLUB_ACTIVITY);
-    printf("%d. Violence\n", REASON_VIOLENCE);
-    inputIntegerInRange(&newV.reason, 0, 3, "Enter reason: ");
-
-    newV.violationTime = time(NULL);
-    newV.fine = calculateFine(members[mIndex].role, newV.reason);
-    newV.isPaid = NOT_PAY;
-    newV.isPending = NOT_PENDING;
-    newV.penalty =
-        (newV.reason == REASON_VIOLENCE) ? PENALTY_KICK : PENALTY_FINANCIAL;
-
-    if (newV.reason == REASON_MEETING_ABSENCE) {
-        members[mIndex].consecutiveAbsences++;
-        if (members[mIndex].consecutiveAbsences >= 3) {
-            newV.penalty = PENALTY_KICK;
-            members[mIndex].isPending = 1;
-        }
-    } else {
-        members[mIndex].consecutiveAbsences = 0;
-    }
-
-    printf("Enter note (optional): ");
-    while (getchar() != '\n');
-    fgets(newV.note, 100, stdin);
-    newV.note[strcspn(newV.note, "\n")] = 0;
-
-    int confirm;
-    inputYesNo(&confirm, "Confirm to record this violation? (1: Yes, 0: No): ");
-    if (confirm) {
-        if (addViolation(violations, vCount, newV)) {
-            printf("Violation recorded successfully.\n");
-            updateMemberTotalFine(members, mCount, violations, *vCount,
-                                  studentID);
-            saveViolations(violations, *vCount);
-            saveMembers(members, mCount);
-        } else {
-            printf("Error: Violation list is full.\n");
-        }
-    }
-}
-
 void markFineAsPaidView(Violation violations[], int vCount, Member members[],
                         int mCount) {
     char violationID[50];
@@ -166,8 +113,7 @@ void markFineAsPaidView(Violation violations[], int vCount, Member members[],
 }
 
 void displayViolationsByTimeRange(Violation violations[], int vCount) {
-
-    Violation *results = (Violation *) malloc(sizeof(Violation) * vCount);
+    Violation* results = (Violation*)malloc(sizeof(Violation) * vCount);
     int resultCount = 0;
 
     resultCount = listViolationsByTimeRange(violations, vCount, results);
@@ -177,7 +123,7 @@ void displayViolationsByTimeRange(Violation violations[], int vCount) {
         free(results);
         return;
     }
-    
+
     displayViolationTableHeader();
     for (int i = 0; i < resultCount; i++) {
         displayViolationRow(&results[i]);
@@ -187,3 +133,49 @@ void displayViolationsByTimeRange(Violation violations[], int vCount) {
     free(results);
 }
 
+// 1.3 View unpaid fines for a member
+void viewMyUnpaidFines(const char* myStudentID, Violation violations[],
+                       int vCount) {
+    printf("\n==== Unpaid Fines ====\n");
+    printf("Student ID: %s\n", myStudentID);
+
+    const char* reasonNames[] = {"Not uniform", "Meeting absence",
+                                 "Not join in Club activity", "Violence"};
+    printf("%-12s %-22s %-20s %s\n", "Violation ID", "Reason", "Time", "Fine");
+    printf(
+        "----------------------------------------------------------------------"
+        "\n");
+    double total = 0.0;
+    int found = 0;
+    for (int i = 0; i < vCount; i++) {
+        Violation* v = &violations[i];
+        if (strcmp(v->studentID, myStudentID) != 0) continue;
+        if (v->isPaid != 0) continue;
+
+        char timeStr[20];
+        getFormatTime(timeStr, sizeof(timeStr), v->violationTime);
+
+        const char* reason = (v->reason >= 0 && v->reason <= 3)
+                                 ? reasonNames[v->reason]
+                                 : "Unknown";
+
+        char fineStr[30];
+        formatCurrency(v->fine, fineStr, sizeof(fineStr));
+        printf("%-12s %-22s %-20s %s\n", v->violationID, reason, timeStr,
+               fineStr);
+
+        total += v->fine;
+        found++;
+    }
+    printf(
+        "----------------------------------------------------------------------"
+        "\n");
+    if (found == 0) {
+        printf("No unpaid fines found.\n");
+    } else {
+        char totalStr[30];
+        formatCurrency(total, totalStr, sizeof(totalStr));
+        printf("Total Unpaid Fines: %s\n", totalStr);
+    }
+    printf("========================\n");
+}
