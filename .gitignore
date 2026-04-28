@@ -8,6 +8,7 @@ data/
 !data/.gitkeep
 *.dev
 *.layout
+*.clang-format
 Makefile.win
 
 Thumbs.db
