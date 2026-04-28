@@ -1,23 +1,23 @@
+#include "../include/consoleInput.h"
+
+#include <ctype.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <ctype.h>
 #include <string.h>
-#include "validate.h"
 
-void inputIntegerInRange(int *target, int min, int max, const char *prompt)
-{
+#include "../include/validate.h"
+
+void inputIntegerInRange(int* target, int min, int max, const char* prompt) {
     char buf[50];
-    while (1)
-    {
+    while (1) {
         printf("%s", prompt);
-        if (!fgets(buf, sizeof(buf), stdin))
-            continue;
+        if (!fgets(buf, sizeof(buf), stdin)) continue;
 
         buf[strcspn(buf, "\n")] = '\0';
 
-        if (!isIntegerBelongRange(buf, min, max))
-        {
-            printf("Please enter a valid integer only from %d to %d.\n", min, max);
+        if (!isIntegerBelongRange(buf, min, max)) {
+            printf("Please enter a valid integer only from %d to %d.\n", min,
+                   max);
             continue;
         }
         *target = atoi(buf);
@@ -25,20 +25,18 @@ void inputIntegerInRange(int *target, int min, int max, const char *prompt)
     }
 }
 
-void inputDoubleInRange(double *target, double min, double max, const char *prompt)
-{
+void inputDoubleInRange(double* target, double min, double max,
+                        const char* prompt) {
     char buf[50];
-    while (1)
-    {
+    while (1) {
         printf("%s", prompt);
-        if (!fgets(buf, sizeof(buf), stdin))
-            continue;
+        if (!fgets(buf, sizeof(buf), stdin)) continue;
 
         buf[strcspn(buf, "\n")] = '\0';
 
-        if (!isDoubleBelongRange(buf, min, max))
-        {
-            printf("Please enter a valid number only from %.2f to %.2f.\n", min, max);
+        if (!isDoubleBelongRange(buf, min, max)) {
+            printf("Please enter a valid number only from %.2f to %.2f.\n", min,
+                   max);
             continue;
         }
         *target = atof(buf);
@@ -47,26 +45,21 @@ void inputDoubleInRange(double *target, double min, double max, const char *prom
 }
 
 // Input yes no option
-void inputYesNo(int *option, const char *prompt)
-{
+void inputYesNo(int* option, const char* prompt) {
     inputIntegerInRange(option, 0, 1, prompt);
 }
 
 // Input string
-int inputString(char *buf, int size, const char *prompt)
-{
+int inputString(char* buf, int size, const char* prompt) {
     printf("%s", prompt);
 
-    if (!fgets(buf, size, stdin))
-    {
+    if (!fgets(buf, size, stdin)) {
         return 0;
     }
 
     // Input too long
-    if (!strchr(buf, '\n'))
-    {
-        while (getchar() != '\n')
-            ;
+    if (!strchr(buf, '\n')) {
+        while (getchar() != '\n');
 
         return 0;
     }
@@ -77,18 +70,14 @@ int inputString(char *buf, int size, const char *prompt)
 }
 
 // Input member name
-void inputMemberName(char *target, const char *prompt)
-{
+void inputMemberName(char* target, const char* prompt) {
     char buf[50];
-    while (1)
-    {
-        if (!inputString(buf, sizeof(buf), prompt))
-        {
+    while (1) {
+        if (!inputString(buf, sizeof(buf), prompt)) {
             printf("Please enter a valid name.\n");
             continue;
         }
-        if (!isValidName(buf))
-        {
+        if (!isValidName(buf)) {
             printf("Please enter a valid name.\n");
             continue;
         }
@@ -98,18 +87,14 @@ void inputMemberName(char *target, const char *prompt)
 }
 
 // Input  email
-void inputMemberEmail(char *target, const char *prompt)
-{
+void inputMemberEmail(char* target, const char* prompt) {
     char buf[50];
-    while (1)
-    {
-        if (!inputString(buf, sizeof(buf), prompt))
-        {
+    while (1) {
+        if (!inputString(buf, sizeof(buf), prompt)) {
             printf("Please enter a valid name.\n");
             continue;
         }
-        if (!isValidEmail(buf))
-        {
+        if (!isValidEmail(buf)) {
             printf("Please enter a valid email.\n");
             continue;
         }
@@ -119,19 +104,15 @@ void inputMemberEmail(char *target, const char *prompt)
 }
 
 // Input student ID
-void inputStudentID(char *target, const char *prompt)
-{
+void inputStudentID(char* target, const char* prompt) {
     char buf[10];
-    while (1)
-    {
-        if (!inputString(buf, sizeof(buf), prompt))
-        {
+    while (1) {
+        if (!inputString(buf, sizeof(buf), prompt)) {
             printf("Please enter a valid student ID.\n");
             continue;
         }
 
-        if (!isValidStudentID(buf))
-        {
+        if (!isValidStudentID(buf)) {
             printf("Please enter a valid student ID.\n");
             continue;
         }
@@ -141,19 +122,15 @@ void inputStudentID(char *target, const char *prompt)
 }
 
 // Input new phone number
-void inputMemberPhone(char *target, const char *prompt)
-{
+void inputMemberPhone(char* target, const char* prompt) {
     char buf[15];
-    while (1)
-    {
-        if (!inputString(buf, sizeof(buf), prompt))
-        {
+    while (1) {
+        if (!inputString(buf, sizeof(buf), prompt)) {
             printf("Please enter a valid phone number.\n");
             continue;
         }
 
-        if (!isValidPhone(buf))
-        {
+        if (!isValidPhone(buf)) {
             printf("Please enter a valid phone number.\n");
             continue;
         }
@@ -163,29 +140,23 @@ void inputMemberPhone(char *target, const char *prompt)
 }
 
 // Input member role
-void inputMemberRole(int *target, const char *prompt)
-{
+void inputMemberRole(int* target, const char* prompt) {
     inputIntegerInRange(target, 0, 2, prompt);
 }
 
 // Input member team
-void inputMemberTeam(int *target, const char *prompt)
-{
+void inputMemberTeam(int* target, const char* prompt) {
     inputIntegerInRange(target, 0, 3, prompt);
 }
 
-void inputPassword(char *target, const char *prompt)
-{
+void inputPassword(char* target, const char* prompt) {
     char buf[30];
-    while (1)
-    {
-        if (!inputString(buf, sizeof(buf), prompt))
-        {
+    while (1) {
+        if (!inputString(buf, sizeof(buf), prompt)) {
             printf("Please enter a valid password.\n");
             continue;
         }
-        if (strlen(buf) < 6)
-        {
+        if (strlen(buf) < 6) {
             printf("Password must be at least 6 characters long.\n");
             continue;
         }

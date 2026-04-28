@@ -1,20 +1,17 @@
+#include "sampleData.h"
+
 #include <stdio.h>
 #include <string.h>
 #include <time.h>
 
-#include "../include/utils.h"
-#include "../include/member.h"
-#include "../include/violation.h"
 #include "../include/auth.h"
 #include "../include/fileio.h"
+#include "../include/member.h"
+#include "../include/utils.h"
+#include "../include/violation.h"
 
-#include "sampleData.h"
-
-void seedSampleData(Member members[], int *mCount,
-                    Violation violations[], int *vCount,
-                    Account accounts[], int *aCount)
-{
-
+void seedSampleData(Member members[], int* mCount, Violation violations[],
+                    int* vCount, Account accounts[], int* aCount) {
     // =============================================================
     // 3 MEMBERS
     // =============================================================
@@ -24,8 +21,8 @@ void seedSampleData(Member members[], int *mCount,
     strcpy(members[0].email, "anNV@fpt.edu.vn");
     strcpy(members[0].phoneNumber, "0901234561");
     strcpy(members[0].studentID, "SE200001");
-    members[0].team = 0; // Academic
-    members[0].role = 0; // Member -> fine = 20,000
+    members[0].team = 0;  // Academic
+    members[0].role = 0;  // Member -> fine = 20,000
     members[0].violationCount = 3;
     members[0].consecutiveAbsences = 1;
     members[0].totalFine = 40000.0;
@@ -36,8 +33,8 @@ void seedSampleData(Member members[], int *mCount,
     strcpy(members[1].email, "bichTT@fpt.edu.vn");
     strcpy(members[1].phoneNumber, "0901234562");
     strcpy(members[1].studentID, "SE200002");
-    members[1].team = 2; // HR
-    members[1].role = 1; // Leader/Vice -> fine = 50,000
+    members[1].team = 2;  // HR
+    members[1].role = 1;  // Leader/Vice -> fine = 50,000
     members[1].violationCount = 3;
     members[1].consecutiveAbsences = 2;
     members[1].totalFine = 100000.0;
@@ -48,8 +45,8 @@ void seedSampleData(Member members[], int *mCount,
     strcpy(members[2].email, "cuongLH@fpt.edu.vn");
     strcpy(members[2].phoneNumber, "0901234563");
     strcpy(members[2].studentID, "SE200003");
-    members[2].team = 1; // Planning
-    members[2].role = 2; // BCN -> fine = 50,000
+    members[2].team = 1;  // Planning
+    members[2].role = 2;  // BCN -> fine = 50,000
     members[2].violationCount = 3;
     members[2].consecutiveAbsences = 2;
     members[2].totalFine = 50000.0;
@@ -60,11 +57,10 @@ void seedSampleData(Member members[], int *mCount,
     // =============================================================
     // 9 VIOLATIONS (3 per member, mix paid/unpaid)
     // =============================================================
-    time_t base = 1745020800; // 2026-04-19 00:00 UTC
+    time_t base = 1745020800;  // 2026-04-19 00:00 UTC
 
     // SE200001
-    for (int i = 0; i < 3; i++)
-    {
+    for (int i = 0; i < 3; i++) {
         strcpy(violations[i].studentID, "SE200001");
         violations[i].fine = 20000.0;
         violations[i].isPending = 0;
@@ -85,8 +81,7 @@ void seedSampleData(Member members[], int *mCount,
     violations[2].isPaid = 1;
 
     // SE200002
-    for (int i = 3; i < 6; i++)
-    {
+    for (int i = 3; i < 6; i++) {
         strcpy(violations[i].studentID, "SE200002");
         violations[i].fine = 50000.0;
         violations[i].isPaid = 0;
@@ -105,8 +100,7 @@ void seedSampleData(Member members[], int *mCount,
     strcpy(violations[5].note, "Absence 3 - pending kick");
 
     // SE200003
-    for (int i = 6; i < 9; i++)
-    {
+    for (int i = 6; i < 9; i++) {
         strcpy(violations[i].studentID, "SE200003");
         violations[i].fine = 50000.0;
         violations[i].isPending = 0;
@@ -129,7 +123,7 @@ void seedSampleData(Member members[], int *mCount,
 
     strcpy(accounts[0].studentID, "SE200001");
     strcpy(accounts[0].password, "SE200001");
-    accounts[0].role = 0; // Member
+    accounts[0].role = 0;  // Member
     accounts[0].isLocked = 0;
     accounts[0].failCount = 0;
 
@@ -141,7 +135,7 @@ void seedSampleData(Member members[], int *mCount,
 
     strcpy(accounts[2].studentID, "SE200003");
     strcpy(accounts[2].password, "SE200003");
-    accounts[2].role = 1; // Admin/BCN
+    accounts[2].role = 1;  // Admin/BCN
     accounts[2].isLocked = 0;
     accounts[2].failCount = 0;
 
