@@ -174,7 +174,7 @@ int main(int argc, char* argv[]) {
     Violation* violations = malloc(sizeof(Violation) * vCapacity);
     Account accounts[MAX_ACCOUNTS] = {0};
 
-    seedSampleData(members, &mCount, violations, &vCount, accounts, &aCount);
+    // seedSampleData(members, &mCount, violations, &vCount, accounts, &aCount);
 
      mCount = loadMembers(members, &mCount);
      vCount = loadViolations(violations, &vCount);
