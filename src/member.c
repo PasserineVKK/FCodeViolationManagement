@@ -145,86 +145,92 @@ void addMember(Member members[], int *mCount, Account accounts[], int *aCount) {
 
 	//Use loop to let user add multiple member until they choose to stop
 	while (continueAdd) {
-		//Input member name
-		inputMemberName(fullName, "Enter full name: ");
-
-		//Input member email
-		inputMemberEmail(email, "\nEnter email: ");
-
 		//Input student ID
 		inputStudentID(studentID, "\nEnter student ID: ");
+		if (searchMemberByIdInM(members, *mCount, studentID) == -1) {
+				
+			//Input member name
+			inputMemberName(fullName, "\nEnter full name: ");
 
-		//Input member phone number
-		inputMemberPhone(phoneNumber, "\nEnter phone number: ");
-		
-		//Input team info
-		printf("\nAvailable Teams:\n");
-		printf("0. Academic\n");
-		printf("1. Planning\n");
-		printf("2. HR\n");
-		printf("3. Media\n");
-		inputMemberTeam(&team, "Enter team (0-3): ");	
+			//Input member email
+			inputMemberEmail(email, "\nEnter email: ");
 
-		//Input role info
-		printf("\nAvailable Roles:\n");
-		printf("0. Member\n");
-		printf("1. Leader/Vice\n");
-		printf("2. Board of Directors\n");
-		inputMemberRole(&role, "Enter role (0-2): ");
+			//Input member phone number
+			inputMemberPhone(phoneNumber, "\nEnter phone number: ");
+			
+			//Input team info
+			printf("\nAvailable Teams:\n");
+			printf("0. Academic\n");
+			printf("1. Planning\n");
+			printf("2. HR\n");
+			printf("3. Media\n");
+			inputMemberTeam(&team, "Enter team (0-3): ");	
 
-		//Confirm to add member
-		int confirm;
-		
-		inputYesNo(&confirm, "\nAdd this member?\n1: Yes\n0: No\n=> Your choice: ");
-		
+			//Input role info
+			printf("\nAvailable Roles:\n");
+			printf("0. Member\n");
+			printf("1. Leader/Vice\n");
+			printf("2. Board of Directors\n");
+			inputMemberRole(&role, "Enter role (0-2): ");
 
-		if (confirm == 1) {
+			//Confirm to add member
+			int confirm;
+			
+			inputYesNo(&confirm, "\nAdd this member?\n1: Yes\n0: No\n=> Your choice: ");
+			
 
-			//Ceate member struct and assign value
-			Member mem;
+			if (confirm == 1) {
 
-			strcpy(mem.fullName, fullName);
-			strcpy(mem.studentID, studentID);
-			strcpy(mem.email, email);
-			strcpy(mem.phoneNumber, phoneNumber);
-			mem.team = team;
-			mem.role = role;
-			mem.violationCount = 0;
-			mem.consecutiveAbsences = 0;
-			mem.totalFine = 0;
-			mem.isPending = 0;
+				//Ceate member struct and assign value
+				Member mem;
 
-			//Create account for this member with default password "123456"
-			Account acc;
+				strcpy(mem.fullName, fullName);
+				strcpy(mem.studentID, studentID);
+				strcpy(mem.email, email);
+				strcpy(mem.phoneNumber, phoneNumber);
+				mem.team = team;
+				mem.role = role;
+				mem.violationCount = 0;
+				mem.consecutiveAbsences = 0;
+				mem.totalFine = 0;
+				mem.isPending = 0;
 
-			strcpy(acc.studentID, studentID);
-			strcpy(acc.password, studentID); //Default password is student ID
-			acc.role = role;
-			acc.isLocked = 0;
-			acc.failCount = 0;
+				//Create account for this member with default password "123456"
+				Account acc;
 
-			// add member to member list
-			members[(*mCount)++] = mem;
-			// add account to account list
-			accounts[(*aCount)++] = acc;
+				strcpy(acc.studentID, studentID);
+				strcpy(acc.password, studentID); //Default password is student ID
+				acc.role = role;
+				acc.isLocked = 0;
+				acc.failCount = 0;
 
-			//Call save member to file function
-			saveMembers(members, *mCount);
-			//Call save account to file function
-			saveAccounts(accounts, *aCount); 
+				// add member to member list
+				members[(*mCount)++] = mem;
+				// add account to account list
+				accounts[(*aCount)++] = acc;
 
-			//Print success message
-			printf("Member added successfully!\n");
+				//Call save member to file function
+				saveMembers(members, *mCount);
+				//Call save account to file function
+				saveAccounts(accounts, *aCount); 
 
-			//Give back account info to user
-			printf("\nAccount information for this member:\n");
-			printf("Student ID: %s\n", acc.studentID);
-			printf("Password: %s\n", acc.password);
+				//Print success message
+				printf("Member added successfully!\n");
+
+				//Give back account info to user
+				printf("\nAccount information for this member:\n");
+				printf("Student ID: %s\n", acc.studentID);
+				printf("Password: %s\n", acc.password);
 
 
-		} else {
-			printf("Member not added.\n");
+			} else {
+				printf("Member not added.\n");
+			}
 		}
+		else {
+			printf("Student ID already exists! Please try again with a different ID.\n");
+		}
+		
 
 		// ===== CONTINUE =====
 		int choice;
@@ -273,8 +279,9 @@ void removeMember(Member members[], int *mCount, Account accounts[], int *aCount
 			if (confirm == 1) {
 
 				// Search member in violation list and account list 
-				vIndex = searchMemberByIdInV(violations, *vCount, id);
 		 		aIndex = searchMemberByIdInA(accounts, *aCount, id);
+
+				vIndex = searchMemberByIDInV(violations, *vCount, id);
 
 				// Remove in member list by shift left array
 				for (int i = mIndex; i < *mCount - 1; i++){
@@ -303,10 +310,14 @@ void removeMember(Member members[], int *mCount, Account accounts[], int *aCount
 				// => No need to remove in violation list
 				if (vIndex != -1) {
 					for (int i = vIndex; i < *vCount - 1; i++){
-						//Shift left array
-						violations[i] = violations[i + 1];
+						if (strcmp(id, violations[i].studentID)){
+							//Shift left
+							for (int j = i; j < *vCount - 1; j++){
+								violations [j] = violations [j+1];
+							}
+							(*vCount)--;
+						}
 					}
-					(*vCount)--;
 					saveViolations(violations, *vCount);
 				}
 
