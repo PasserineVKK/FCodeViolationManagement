@@ -26,6 +26,29 @@ int searchMemberByIdInA(Account accounts[], int count, const char* id) {
     return -1;
 }
 
+static int inputPasswordOrCancel(char* target, const char* prompt) {
+    char buf[30];
+    while (1) {
+        if (!inputString(buf, sizeof(buf), prompt)) {
+            printf("Please enter a valid password.\n");
+            continue;
+        }
+
+        if (strcmp(buf, "q") == 0 || strcmp(buf, "quit") == 0 ||
+            strcmp(buf, "back") == 0) {
+            return 0;
+        }
+
+        if (strlen(buf) < 6) {
+            printf("Password must be at least 6 characters long.\n");
+            continue;
+        }
+
+        strcpy(target, buf);
+        return 1;
+    }
+}
+
 // Return role of logged in account
 int login(Account accounts[], char* studentID, int aCount) {
     printf("===== LOGIN =====\n");
@@ -110,7 +133,11 @@ void changePassword(Account accounts[], int aCount, char* actorID, int role) {
     if (role == 0 || strcmp(actorID, studentID) == 0) {
         // Enter old password
         do {
-            inputPassword(oldPassword, "Enter old password: ");
+            printf("Enter old password (type q, quit, or back to cancel): ");
+            if (!inputPasswordOrCancel(oldPassword, "")) {
+                printf("Password change cancelled.\n");
+                return;
+            }
 
             // Check if old password is correct
             if (strcmp(oldPassword, accounts[aIndex].password) == 0) {
