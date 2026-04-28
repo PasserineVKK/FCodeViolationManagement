@@ -362,13 +362,15 @@ int main(int argc, char* argv[]) {
                     case 14:
                         printf("In progress!");
                         break;
-                    case 15:
-                        char violationId[10];
-                        inputString(violationId, 10, "Enter violation id");
-                        Violation* v =
-                            findViolationById(violationId, violations, vCount);
-                        deleteViolation(violations, &vCount, v);
+                    case 15:{
+						
+	                        char violationId[10];
+	                        inputString(violationId, 10, "Enter violation id");
+	                        Violation* v =
+	                            findViolationById(violationId, violations, vCount);
+	                        deleteViolation(violations, &vCount, v);
                         break;
+                        }
                     default:
                         printf("Invalid option, please try again.");
                         break;
