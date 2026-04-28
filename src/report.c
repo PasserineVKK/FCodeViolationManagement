@@ -34,32 +34,51 @@ void showFineStatsByTeam(Member members[], int mCount, Violation violations[],
     }
 
     printf("\n===== STATISTICS FINE BY TEAM =====\n");
-    printf("%-12s %18s %18s %18s\n", "Team", "Paid", "Unpaid", "Total");
-    printf("--------------------------------------------------------------\n");
+    printf("\n┏━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━┓\n");
+    printf("┃ %-12s ┃ %16s ┃ %16s ┃ %16s ┃\n",
+        "Team",
+        "Paid",
+        "Unpaid",
+        "Paid + Unpaid");
+
+    printf("┣━━━━━━━━━━━━━━╋━━━━━━━━━━━━━━━━━━╋━━━━━━━━━━━━━━━━━━╋━━━━━━━━━━━━━━━━━━┫\n");
 
     double grandPaid = 0, grandUnpaid = 0;
 
     for (int i = 0; i < 4; i++) {
         char paidStr[30], unpaidStr[30], totalStr[30];
+
         formatCurrency(paidByTeam[i], paidStr, sizeof(paidStr));
         formatCurrency(unpaidByTeam[i], unpaidStr, sizeof(unpaidStr));
-        formatCurrency(paidByTeam[i] + unpaidByTeam[i], totalStr,
-                       sizeof(totalStr));
+        formatCurrency(paidByTeam[i] + unpaidByTeam[i],
+                    totalStr,
+                    sizeof(totalStr));
 
-        printf("%-12s %18s %18s %18s\n", teamNames[i], paidStr, unpaidStr,
-               totalStr);
+        printf("┃ %-12s ┃ %16s ┃ %16s ┃ %16s ┃\n",
+            teamNames[i],
+            paidStr,
+            unpaidStr,
+            totalStr);
 
         grandPaid += paidByTeam[i];
         grandUnpaid += unpaidByTeam[i];
     }
 
-    printf("--------------------------------------------------------------\n");
+    printf("┣━━━━━━━━━━━━━━╋━━━━━━━━━━━━━━━━━━╋━━━━━━━━━━━━━━━━━━╋━━━━━━━━━━━━━━━━━━┫\n");
+
     char gPaid[30], gUnpaid[30], gTotal[30];
+
     formatCurrency(grandPaid, gPaid, sizeof(gPaid));
     formatCurrency(grandUnpaid, gUnpaid, sizeof(gUnpaid));
     formatCurrency(grandPaid + grandUnpaid, gTotal, sizeof(gTotal));
-    printf("%-12s %18s %18s %18s\n", "TOTAL", gPaid, gUnpaid, gTotal);
-    printf("\n");
+
+    printf("┃ %-12s ┃ %16s ┃ %16s ┃ %16s ┃\n",
+        "TOTAL",
+        gPaid,
+        gUnpaid,
+        gTotal);
+
+    printf("┗━━━━━━━━━━━━━━┻━━━━━━━━━━━━━━━━━━┻━━━━━━━━━━━━━━━━━━┻━━━━━━━━━━━━━━━━━━┛\n\n");
 }
 
 void ensureNotificationCapacity(Notification** list, int* count,

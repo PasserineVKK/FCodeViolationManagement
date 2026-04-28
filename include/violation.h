@@ -41,4 +41,6 @@ void createNewViolation(Violation** violations, int* count, int* capacity,
 int addViolation(Violation violations[], int* count, Violation newV);
 void deleteViolation(Violation* violation, int* count, Violation* v);
 
+int checkAndWarnOutClub(const char *studentID, Member members [], int *mCount, Violation violations[], int *vCount);
+
 #endif
