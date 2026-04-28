@@ -178,7 +178,7 @@ int main(int argc, char* argv[]) {
     initNotificationList();
     autoDeleteOutDateNotification();
 
-    seedSampleData(members, &mCount, violations, &vCount, accounts, &aCount);
+    //seedSampleData(members, &mCount, violations, &vCount, accounts, &aCount);
 
     mCount = loadMembers(members, &mCount);
     vCount = loadViolations(violations, &vCount);
@@ -315,7 +315,7 @@ int main(int argc, char* argv[]) {
                     "\n┃  5.  Mark Fine as Paid                       ┃"
                     "\n┃  6.  View Violation List                     ┃"
                     "\n┃  7.  Statistics by Department                ┃"
-                    "\n┃  8.  Check member reach out club condition   ┃"
+                    "\n┃  8.  Check warning/kick list                 ┃"
                     "\n┃  9.  View Member in Sorted List              ┃"
                     "\n┃ 10.  Change Member's Password                ┃"
                     "\n┃ 11.  View Violations by Time Range           ┃"
@@ -325,10 +325,10 @@ int main(int argc, char* argv[]) {
                     "\n┃ 15.  Add new notification                    ┃"
                     "\n┃ 16.  Delete violation                        ┃"
                     "\n┃ 17.  Update notification                     ┃"
-                    "\n┃ 17.  Delete notification                     ┃"
-                    "\n┃ 17.  Show all notifications                  ┃"
+                    "\n┃ 18.  Delete notification                     ┃"
+                    "\n┃ 19.  Show all notifications                  ┃"
                     "\n┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛\n");
-                inputIntegerInRange(&choice, 1, 17,
+                inputIntegerInRange(&choice, 1, 19,
                                     " ==> Enter your selection: ");
 
                 clearScreen();
@@ -359,8 +359,7 @@ int main(int argc, char* argv[]) {
                                             vCount);
                         break;
                     case 8:
-                        checkAndWarnOutClub(studentID, members, &mCount,
-                                            violations, &vCount);
+                        checkAndWarnOutClub(members, &mCount, accounts, &aCount, violations, &vCount);
                         break;
                     case 9: {
                         int sortMode;
@@ -392,7 +391,7 @@ int main(int argc, char* argv[]) {
                     case 14:
                         menuRole = 0;
                         continue;
-                    case 15:
+                    case 15: {
                         int type;
                         inputIntegerInRange(
                             &type, 0, 2,
@@ -412,14 +411,16 @@ int main(int argc, char* argv[]) {
                                                1);
                         }
                         break;
-                    case 16:
+                    }
+                    case 16: {
                         char violationId[10];
                         inputString(violationId, 10, "Enter violation id");
                         Violation* v =
                             findViolationById(violationId, violations, vCount);
                         deleteViolation(violations, &vCount, v);
                         break;
-                    case 17:
+                    }
+                    case 17: 
                         char id[6];
                         inputString(id, 6, "Enter notification id: ");
                         Notification* n = findNotificationById(id);
@@ -440,13 +441,14 @@ int main(int argc, char* argv[]) {
                         updateNotification(n, memberId, updateType,
                                            updateContent, n->deleteTime);
                         break;
-                    case 18:
+                    case 18: {
                         char removeId[6];
                         inputString(id, 6, "Enter remove notification id: ");
                         deleteNotification(findNotificationById(removeId));
                         printf("Delete notification");
                         break;
-                    case 19:
+                    }
+                    case 19: 
                         displayNotificationList();
                         break;
                     default:
