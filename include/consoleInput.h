@@ -1,6 +1,7 @@
 #ifndef CONSOLEINPUT_H
 #define CONSOLEINPUT_H
 
+#include <time.h>
 // Let the user input in valid datatype form
 // The logic: all console input is in string datatype
 //  => then validate
@@ -39,5 +40,9 @@ void inputMemberTeam(int* target, const char* prompt);
 void inputPassword(char* target, const char* prompt);
 
 int inputString(char* buf, int size, const char* prompt);
+
+void inputTimeRange(time_t* start, time_t* end, const char* prompt);
+
+void inputValidTime (time_t* target, const char* prompt);
 
 #endif

@@ -145,3 +145,18 @@ void deleteNotification(Notification* n, Notification** list, int* count) {
         }
     }
 }
+
+// List violation by time range 
+int listViolationsByTimeRange(Violation violations[], int vCount, Violation results[]){
+    time_t start, end;
+    inputTimeRange(&start, &end, "Enter time range (YYYY-MM-DD HH:MM): ");
+
+    int foundCount = 0;
+    for (int i = 0; i < vCount; i++) {
+        if (violations[i].violationTime >= start && violations[i].violationTime <= end) {
+            
+            results[foundCount++] = violations[i];
+        }
+    }
+    return foundCount;
+}
