@@ -16,6 +16,9 @@ static int capacity;
 
 #define MAX_NOTIFICATIONS 1000
 
+int listViolationsByTimeRange(Violation violations[], int vCount,
+                              Violation results[]);
+
 void initNotificationList() {
     notifications = malloc(sizeof(Notification) * MAX_NOTIFICATIONS);
     capacity = MAX_NOTIFICATIONS;
@@ -54,32 +57,48 @@ void showFineStatsByTeam(Member members[], int mCount, Violation violations[],
     }
 
     printf("\n===== STATISTICS FINE BY TEAM =====\n");
-    printf("%-12s %18s %18s %18s\n", "Team", "Paid", "Unpaid", "Total");
-    printf("--------------------------------------------------------------\n");
+    printf(
+        "\n┏━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━"
+        "━━━━┓\n");
+    printf("┃ %-12s ┃ %16s ┃ %16s ┃ %16s ┃\n", "Team", "Paid", "Unpaid",
+           "Paid + Unpaid");
+
+    printf(
+        "┣━━━━━━━━━━━━━━╋━━━━━━━━━━━━━━━━━━╋━━━━━━━━━━━━━━━━━━╋━━━━━━━━━━━━━━━━"
+        "━━┫\n");
 
     double grandPaid = 0, grandUnpaid = 0;
 
     for (int i = 0; i < 4; i++) {
         char paidStr[30], unpaidStr[30], totalStr[30];
+
         formatCurrency(paidByTeam[i], paidStr, sizeof(paidStr));
         formatCurrency(unpaidByTeam[i], unpaidStr, sizeof(unpaidStr));
         formatCurrency(paidByTeam[i] + unpaidByTeam[i], totalStr,
                        sizeof(totalStr));
 
-        printf("%-12s %18s %18s %18s\n", teamNames[i], paidStr, unpaidStr,
-               totalStr);
+        printf("┃ %-12s ┃ %16s ┃ %16s ┃ %16s ┃\n", teamNames[i], paidStr,
+               unpaidStr, totalStr);
 
         grandPaid += paidByTeam[i];
         grandUnpaid += unpaidByTeam[i];
     }
 
-    printf("--------------------------------------------------------------\n");
+    printf(
+        "┣━━━━━━━━━━━━━━╋━━━━━━━━━━━━━━━━━━╋━━━━━━━━━━━━━━━━━━╋━━━━━━━━━━━━━━━━"
+        "━━┫\n");
+
     char gPaid[30], gUnpaid[30], gTotal[30];
+
     formatCurrency(grandPaid, gPaid, sizeof(gPaid));
     formatCurrency(grandUnpaid, gUnpaid, sizeof(gUnpaid));
     formatCurrency(grandPaid + grandUnpaid, gTotal, sizeof(gTotal));
-    printf("%-12s %18s %18s %18s\n", "TOTAL", gPaid, gUnpaid, gTotal);
-    printf("\n");
+
+    printf("┃ %-12s ┃ %16s ┃ %16s ┃ %16s ┃\n", "TOTAL", gPaid, gUnpaid, gTotal);
+
+    printf(
+        "┗━━━━━━━━━━━━━━┻━━━━━━━━━━━━━━━━━━┻━━━━━━━━━━━━━━━━━━┻━━━━━━━━━━━━━━━━"
+        "━━┛\n\n");
 }
 
 void displayNotifications(int type) {
@@ -138,8 +157,8 @@ void displaySingleNotification(Notification* n) {
             break;
     }
 
-    char deleteTime[10];
-    getFormatTime(deleteTime, 10, n->deleteTime);
+    char deleteTime[20];
+    getFormatTime(deleteTime, 20, n->deleteTime);
     printf("Delete time: %s\n", deleteTime);
 }
 
@@ -238,13 +257,13 @@ Notification* notifyAdmin(const char* content, const char* adminId,
     displaySingleNotification(n);
 }
 
-Notification* warningMember(int isSave, const char* memberId,
-                            const char* content, ...) {
+Notification* warningMember(const char* content, const char* memberId,
+                            int isSave) {
     createNotification(memberId, ADMIN_WARNING, content,
                        time(NULL) + BASE_DELETE_TIME, isSave);
 }
 
-Notification* globalNotification(const char* content, ...) {
+Notification* globalNotification(const char* content) {
     createNotification(NULL, GLOBAL_NOTICE, content,
                        time(NULL) + BASE_DELETE_TIME, 1);
 }
@@ -257,4 +276,19 @@ void quickNotification(const char* content) {
 void freeNotificationList() {
     if (notifications == NULL) return;
     free(notifications);
+}
+
+int listViolationsByTimeRange(Violation violations[], int vCount,
+                              Violation results[]) {
+    time_t start, end;
+    inputTimeRange(&start, &end, "Enter time range (YYYY-MM-DD HH:MM): ");
+
+    int foundCount = 0;
+    for (int i = 0; i < vCount; i++) {
+        if (violations[i].violationTime >= start &&
+            violations[i].violationTime <= end) {
+            results[foundCount++] = violations[i];
+        }
+    }
+    return foundCount;
 }

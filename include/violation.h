@@ -43,10 +43,12 @@ void updateIsPaidField(char* violationId, Violation violations[], int count,
 int addViolation(Violation violations[], int* count, Violation newV);
 
 void deleteViolation(Violation* violation, int* count, Violation* v);
-void updateViolation(Violation* violation);
 
 // Features 2.4: Record Violation
 void recordViolationView(Violation violations[], int* vCount, int* vCapacity,
                          Member members[], int mCount);
+
+int checkAndWarnOutClub(const char* studentID, Member members[], int* mCount,
+                        Violation violations[], int* vCount);
 
 #endif

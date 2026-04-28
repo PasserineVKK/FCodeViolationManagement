@@ -90,86 +90,93 @@ void addMember(Member members[], int* mCount, Account accounts[], int* aCount) {
     int role;
 
     int continueAdd = 1;
-
     // Use loop to let user add multiple member until they choose to stop
     while (continueAdd) {
-        // Input member name
-        inputMemberName(fullName, "Enter full name: ");
-
-        // Input member email
-        inputMemberEmail(email, "\nEnter email: ");
-
         // Input student ID
         inputStudentID(studentID, "\nEnter student ID: ");
+        if (searchMemberByIdInM(members, *mCount, studentID) == -1) {
+            // Input member name
+            inputMemberName(fullName, "\nEnter full name: ");
 
-        // Input member phone number
-        inputMemberPhone(phoneNumber, "\nEnter phone number: ");
+            // Input member email
+            inputMemberEmail(email, "\nEnter email: ");
 
-        // Input team info
-        printf("\nAvailable Teams:\n");
-        printf("0. Academic\n");
-        printf("1. Planning\n");
-        printf("2. HR\n");
-        printf("3. Media\n");
-        inputMemberTeam(&team, "Enter team (0-3): ");
+            // Input member phone number
+            inputMemberPhone(phoneNumber, "\nEnter phone number: ");
 
-        // Input role info
-        printf("\nAvailable Roles:\n");
-        printf("0. Member\n");
-        printf("1. Leader/Vice\n");
-        printf("2. Board of Directors\n");
-        inputMemberRole(&role, "Enter role (0-2): ");
+            // Input team info
+            printf("\nAvailable Teams:\n");
+            printf("0. Academic\n");
+            printf("1. Planning\n");
+            printf("2. HR\n");
+            printf("3. Media\n");
+            inputMemberTeam(&team, "Enter team (0-3): ");
 
-        // Confirm to add member
-        int confirm;
+            // Input role info
+            printf("\nAvailable Roles:\n");
+            printf("0. Member\n");
+            printf("1. Leader/Vice\n");
+            printf("2. Board of Directors\n");
+            inputMemberRole(&role, "Enter role (0-2): ");
 
-        inputYesNo(&confirm,
-                   "\nAdd this member?\n1: Yes\n0: No\n=> Your choice: ");
+            // Confirm to add member
+            int confirm;
 
-        if (confirm == 1) {
-            // Ceate member struct and assign value
-            Member mem;
+            inputYesNo(&confirm,
+                       "\nAdd this member?\n1: Yes\n0: No\n=> Your choice: ");
 
-            strcpy(mem.fullName, fullName);
-            strcpy(mem.studentID, studentID);
-            strcpy(mem.email, email);
-            strcpy(mem.phoneNumber, phoneNumber);
-            mem.team = team;
-            mem.role = role;
-            mem.violationCount = 0;
-            mem.consecutiveAbsences = 0;
-            mem.totalFine = 0;
-            mem.isPending = 0;
+            if (confirm == 1) {
+                // Ceate member struct and assign value
+                Member mem;
 
-            // Create account for this member with default password "123456"
-            Account acc;
+                strcpy(mem.fullName, fullName);
+                strcpy(mem.studentID, studentID);
+                strcpy(mem.email, email);
+                strcpy(mem.phoneNumber, phoneNumber);
+                mem.team = team;
+                mem.role = role;
+                mem.violationCount = 0;
+                mem.consecutiveAbsences = 0;
+                mem.totalFine = 0;
+                mem.isPending = 0;
 
-            strcpy(acc.studentID, studentID);
-            strcpy(acc.password, studentID);  // Default password is student ID
-            acc.role = role;
-            acc.isLocked = 0;
-            acc.failCount = 0;
+                // Create account for this member with default password "123456"
+                Account acc;
 
-            // add member to member list
-            members[(*mCount)++] = mem;
-            // add account to account list
-            accounts[(*aCount)++] = acc;
+                strcpy(acc.studentID, studentID);
+                strcpy(acc.password,
+                       studentID);  // Default password is student ID
+                acc.role = role;
+                acc.isLocked = 0;
+                acc.failCount = 0;
 
-            // Call save member to file function
-            saveMembers(members, *mCount);
-            // Call save account to file function
-            saveAccounts(accounts, *aCount);
+                // add member to member list
+                members[(*mCount)++] = mem;
+                // add account to account list
+                accounts[(*aCount)++] = acc;
 
-            // Print success message
-            printf("Member added successfully!\n");
+                // Call save member to file function
+                saveMembers(members, *mCount);
+                // Call save account to file function
+                saveAccounts(accounts, *aCount);
 
-            // Give back account info to user
-            printf("\nAccount information for this member:\n");
-            printf("Student ID: %s\n", acc.studentID);
-            printf("Password: %s\n", acc.password);
+                // Print success message
+                printf("Member added successfully!\n");
 
+                // Give back account info to user
+                printf("\nAccount information for this member:\n");
+                printf("Student ID: %s\n", acc.studentID);
+                printf("Password: %s\n", acc.password);
+
+                // Print success message
+                printf("Member added successfully!\n");
+            } else {
+                printf("Member not added.\n");
+            }
         } else {
-            printf("Member not added.\n");
+            printf(
+                "Student ID already exists! Please try again with a different "
+                "ID.\n");
         }
 
         // ===== CONTINUE =====
@@ -252,11 +259,16 @@ void removeMember(Member members[], int* mCount, Account accounts[],
                 // If vIndex == -1 => This member has no violation record
                 // => No need to remove in violation list
                 if (vIndex != -1) {
-                    for (int i = vIndex; i < *vCount - 1; i++) {
+                    for (int i = vIndex; i < *vCount; i++) {
                         // Shift left array
-                        violations[i] = violations[i + 1];
+                        if (strcmp(violations[i].studentID, id) == 0) {
+                            for (int j = i; j < *vCount; j++) {
+                                violations[j] = violations[j + 1];
+                            }
+                            (*vCount)--;
+                            i--;
+                        }
                     }
-                    (*vCount)--;
                     saveViolations(violations, *vCount);
                 }
 
@@ -368,7 +380,6 @@ void updateMember(Member members[], int* mCount, Violation violations[],
             inputYesNo(
                 &confirm,
                 "\nUpdate this member?\n1: Yes\n0: No\n=> Your choice: ");
-            while (getchar() != '\n');
 
             if (confirm == 1) {
                 switch (fieldChoice) {
@@ -442,9 +453,14 @@ void updateMember(Member members[], int* mCount, Violation violations[],
                                                   vCount, studentID);
                         }
 
+                        saveViolations(violations, vCount);
                         break;
                     }
                 }
+                saveMembers(members, *mCount);
+
+            } else {
+                printf("Member not updated.\n");
             }
         }
 
@@ -455,9 +471,8 @@ void updateMember(Member members[], int* mCount, Violation violations[],
         // ===== CONTINUE =====
         int choice;
         inputYesNo(&choice,
-                   "\nDo you want to update another member?\n1: Yes\n0: No\n=> "
-                   "Your choice: ");
-        while (getchar() != '\n');
+                   "\nDo you want to update another member?\n1: Yes\n0: "
+                   "No\n=>Your choice: ");
 
         if (choice == 0) {
             continueUpdate = 0;

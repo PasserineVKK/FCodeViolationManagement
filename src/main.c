@@ -7,6 +7,7 @@
 #include "../include/consoleInput.h"
 #include "../include/fileio.h"
 #include "../include/member.h"
+#include "../include/model.h"
 #include "../include/report.h"
 #include "../include/utils.h"
 #include "../include/validate.h"
@@ -179,9 +180,9 @@ int main(int argc, char* argv[]) {
 
     seedSampleData(members, &mCount, violations, &vCount, accounts, &aCount);
 
-    // mCount = loadMembers(members, &mCount);
-    // vCount = loadViolations(violations, &vCount);
-    // aCount = loadAccounts(accounts, &aCount);
+    mCount = loadMembers(members, &mCount);
+    vCount = loadViolations(violations, &vCount);
+    aCount = loadAccounts(accounts, &aCount);
 
     // loginRole represent the role of this account
     // menuRole represent which menu will be open.
@@ -196,11 +197,25 @@ int main(int argc, char* argv[]) {
         //				  If not stay login =>> check again.
         if (isStayLogin == 0) {
             loginRole = login(accounts, studentID, aCount);
-            if (loginRole == -1) {
+            // If loginRole = -2 => Student ID not found
+            if (loginRole == -2) {
                 int isExit = 0;
-                inputYesNo(&isExit,
-                           "Student ID does not exist, do you want to exit? \n "
-                           "1. Yes\n 0. No: ");
+                inputYesNo(
+                    &isExit,
+                    "\nDo you want to exit? \n1. Yes\n 0. No\n=>Your choice: ");
+                printf("\n");
+                if (isExit == 1)
+                    return 0;
+                else
+                    continue;
+            }
+            // If loginRole = -1 => Account locked
+            else if (loginRole == -1) {
+                int isExit = 0;
+                inputYesNo(
+                    &isExit,
+                    "\nDo you want to exit? \n1. Yes\n 0. No\n=>Your choice: ");
+                printf("\n");
                 if (isExit == 1)
                     return 0;
                 else
@@ -210,15 +225,17 @@ int main(int argc, char* argv[]) {
                 mIndex = searchMemberByIdInM(members, mCount, studentID);
                 vIndex = searchMemberByIdInV(violations, vCount, studentID);
                 isStayLogin = 1;
+                // login successfully ==> Assign value for menuRole to open
+                // menu, and memberIndex to identify user
+
                 displayNotificationByMemberID(members[mIndex].studentID,
                                               ADMIN_WARNING);
                 pauseProgram();
-                // login successfully ==> Assign value for menuRole to open
-                // menu, and memberIndex to identify user
+                clearScreen();
             }
         }
 
-        // clearScreen();
+        clearScreen();
         switch (menuRole) {
             case 0: {
                 printf(
@@ -249,13 +266,12 @@ int main(int argc, char* argv[]) {
                                                     vCount);
                         break;
                     case 3:
-                        // not finish yet
+                        viewMyUnpaidFines(studentID, violations, vCount);
                         break;
                     case 4:
                         displayMemberList(members, mCount);
                         break;
                     case 5:
-                        printf("===== CHANGE PASSWORD =====\n");
                         changePassword(accounts, aCount, studentID, menuRole);
                         break;
                     case 6:
@@ -299,18 +315,20 @@ int main(int argc, char* argv[]) {
                     "\n┃  5.  Mark Fine as Paid                       ┃"
                     "\n┃  6.  View Violation List                     ┃"
                     "\n┃  7.  Statistics by Department                ┃"
-                    "\n┃  8.  View Member in Sorted List              ┃"
-                    "\n┃  9.  Change Member's Password                ┃"
-                    "\n┃ 10.  Log Out                                 ┃"
-                    "\n┃ 11.  Exit                                    ┃"
-                    "\n┃ 12.  Switch to Member Menu                   ┃"
-                    "\n┃ 13.  Create notification                     ┃"
-                    "\n┃ 14.  Delete  violation                       ┃"
-                    "\n┃ 15.  Update notification                     ┃"
-                    "\n┃ 16.  Delete notification                     ┃"
-                    "\n┃ 17.  Display all notifications               ┃"
+                    "\n┃  8.  Check member reach out club condition   ┃"
+                    "\n┃  9.  View Member in Sorted List              ┃"
+                    "\n┃ 10.  Change Member's Password                ┃"
+                    "\n┃ 11.  View Violations by Time Range           ┃"
+                    "\n┃ 12.  Log Out                                 ┃"
+                    "\n┃ 13.  Exit                                    ┃"
+                    "\n┃ 14.  Switch to Member Menu                   ┃"
+                    "\n┃ 15.  Add new notification                    ┃"
+                    "\n┃ 16.  Delete violation                        ┃"
+                    "\n┃ 17.  Update notification                     ┃"
+                    "\n┃ 17.  Delete notification                     ┃"
+                    "\n┃ 17.  Show all notifications                  ┃"
                     "\n┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛\n");
-                inputIntegerInRange(&choice, 1, 14,
+                inputIntegerInRange(&choice, 1, 17,
                                     " ==> Enter your selection: ");
 
                 clearScreen();
@@ -337,9 +355,14 @@ int main(int argc, char* argv[]) {
                         // not sorted by team, role yet
                         break;
                     case 7:
-                        showTotalFineByRole(members, mCount);
+                        showFineStatsByTeam(members, mCount, violations,
+                                            vCount);
                         break;
-                    case 8: {
+                    case 8:
+                        checkAndWarnOutClub(studentID, members, &mCount,
+                                            violations, &vCount);
+                        break;
+                    case 9: {
                         int sortMode;
                         inputYesNo(
                             &sortMode,
@@ -349,23 +372,27 @@ int main(int argc, char* argv[]) {
                         displayInSortByVioCount(members, mCount, sortMode);
                         break;
                     }
-                    case 9: {
+                    case 10: {
                         changePassword(accounts, aCount, studentID, menuRole);
                         break;
                     }
+                    case 11: {
+                        displayViolationsByTimeRange(violations, vCount);
+                        break;
+                    }
 
-                    case 10:
+                    case 12:
                         isStayLogin = 0;
                         loginRole = -1;
                         menuRole = -1;
                         // mark as not login, reset menu role
                         continue;
-                    case 11:
+                    case 13:
                         return 0;
-                    case 12:
+                    case 14:
                         menuRole = 0;
                         continue;
-                    case 13:
+                    case 15:
                         int type;
                         inputIntegerInRange(
                             &type, 0, 2,
@@ -385,40 +412,41 @@ int main(int argc, char* argv[]) {
                                                1);
                         }
                         break;
-                    case 14:
+                    case 16:
                         char violationId[10];
                         inputString(violationId, 10, "Enter violation id");
                         Violation* v =
                             findViolationById(violationId, violations, vCount);
                         deleteViolation(violations, &vCount, v);
                         break;
-                    case 15:
+                    case 17:
                         char id[6];
                         inputString(id, 6, "Enter notification id: ");
                         Notification* n = findNotificationById(id);
 
                         if (n == NULL) break;
 
-                        int type;
+                        int updateType;
                         inputIntegerInRange(
-                            &type, 0, 2,
+                            &updateType, 0, 2,
                             "Enter type of notification, global(0), notice "
                             "(1), warning (2): ");
-                        char content[200];
-                        inputString(content, 200, "Enter notify content: ");
+                        char updateContent[200];
+                        inputString(updateContent, 200,
+                                    "Enter notify content: ");
                         char memberId[6];
                         inputString(memberId, 6, "Enter member id: ");
                         if (strcmp(memberId, "") == 0) break;
-                        updateNotification(n, memberId, type, content,
-                                           n->deleteTime);
+                        updateNotification(n, memberId, updateType,
+                                           updateContent, n->deleteTime);
                         break;
-                    case 16:
-                        char id[6];
+                    case 18:
+                        char removeId[6];
                         inputString(id, 6, "Enter remove notification id: ");
-                        deleteNotification(findNotificationById(id));
+                        deleteNotification(findNotificationById(removeId));
                         printf("Delete notification");
                         break;
-                    case 17:
+                    case 19:
                         displayNotificationList();
                         break;
                     default:

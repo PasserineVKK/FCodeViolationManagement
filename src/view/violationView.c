@@ -6,6 +6,7 @@
 #include <time.h>
 
 #include "../../include/consoleInput.h"
+#include "../../include/report.h"
 #include "../../include/utils.h"
 #include "../../include/view/viewUtil.h"
 
@@ -109,6 +110,27 @@ void markFineAsPaidView(Violation violations[], int vCount, Member members[],
         saveMembers(members, mCount);
         printf("Marked as paid successfully.\n");
     }
+}
+
+void displayViolationsByTimeRange(Violation violations[], int vCount) {
+    Violation* results = (Violation*)malloc(sizeof(Violation) * vCount);
+    int resultCount = 0;
+
+    resultCount = listViolationsByTimeRange(violations, vCount, results);
+
+    if (resultCount == 0) {
+        printf("No violations found in the specified time range.\n");
+        free(results);
+        return;
+    }
+
+    displayViolationTableHeader();
+    for (int i = 0; i < resultCount; i++) {
+        displayViolationRow(&results[i]);
+    }
+    displayViolationTableFooter();
+
+    free(results);
 }
 
 // 1.3 View unpaid fines for a member

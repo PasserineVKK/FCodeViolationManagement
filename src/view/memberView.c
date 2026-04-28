@@ -1,5 +1,3 @@
-#include "view/memberView.h"
-
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -8,15 +6,13 @@
 
 void displayOneMemberInfo(Member member) {
     printf(
-        "┏━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-        "━┳━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━┓\n");
+        "┏━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━┓\n");
 
     printf("┃ %-10s ┃ %-24s ┃ %-28s ┃ %-12s ┃ %-12s ┃ %-18s ┃ %-8s ┃\n",
            "Student ID", "Name", "Email", "Phone", "Team", "Role", "Status");
 
     printf(
-        "┣━━━━━━━━━━━━╋━━━━━━━━━━━━━━━━━━━━━━━━━━╋━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-        "━╋━━━━━━━━━━━━━━╋━━━━━━━━━━━━━━╋━━━━━━━━━━━━━━━━━━━━╋━━━━━━━━━━┫\n");
+        "┣━━━━━━━━━━━━╋━━━━━━━━━━━━━━━━━━━━━━━━━━╋━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╋━━━━━━━━━━━━━━╋━━━━━━━━━━━━━━╋━━━━━━━━━━━━━━━━━━━━╋━━━━━━━━━━┫\n");
 
     printf("┃ %-10s ┃ %-24s ┃ %-28s ┃ %-12s ┃ %-12s ┃ %-18s ┃ %-8s ┃\n",
            member.studentID, member.fullName, member.email, member.phoneNumber,
@@ -24,22 +20,19 @@ void displayOneMemberInfo(Member member) {
            member.isPending ? "Pending" : "Active");
 
     printf(
-        "┗━━━━━━━━━━━━┻━━━━━━━━━━━━━━━━━━━━━━━━━━┻━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-        "━┻━━━━━━━━━━━━━━┻━━━━━━━━━━━━━━┻━━━━━━━━━━━━━━━━━━━━┻━━━━━━━━━━┛\n");
+        "┗━━━━━━━━━━━━┻━━━━━━━━━━━━━━━━━━━━━━━━━━┻━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┻━━━━━━━━━━━━━━┻━━━━━━━━━━━━━━┻━━━━━━━━━━━━━━━━━━━━┻━━━━━━━━━━┛\n");
 }
 
 void displayMemberList(Member members[], int count) {
     printf("\n");
     printf(
-        "┏━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━"
-        "━━━━┓\n");
+        "┏━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━┓\n");
 
     printf("┃ %-10s ┃ %-22s ┃ %-12s ┃ %-18s ┃\n", "Student ID", "Full Name",
            "Team", "Role");
 
     printf(
-        "┣━━━━━━━━━━━━╋━━━━━━━━━━━━━━━━━━━━━━━━╋━━━━━━━━━━━━━━╋━━━━━━━━━━━━━━━━"
-        "━━━━┫\n");
+        "┣━━━━━━━━━━━━╋━━━━━━━━━━━━━━━━━━━━━━━━╋━━━━━━━━━━━━━━╋━━━━━━━━━━━━━━━━━━━━┫\n");
 
     for (int i = 0; i < count; i++) {
         printf("┃ %-10s ┃ %-22s ┃ %-12s ┃ %-18s ┃\n", members[i].studentID,
@@ -48,36 +41,14 @@ void displayMemberList(Member members[], int count) {
     }
 
     printf(
-        "┗━━━━━━━━━━━━┻━━━━━━━━━━━━━━━━━━━━━━━━┻━━━━━━━━━━━━━━┻━━━━━━━━━━━━━━━━"
-        "━━━━┛\n");
+        "┗━━━━━━━━━━━━┻━━━━━━━━━━━━━━━━━━━━━━━━┻━━━━━━━━━━━━━━┻━━━━━━━━━━━━━━━━━━━━┛\n");
     printf("Total members: %d\n\n", count);
 }
 
-void showTotalFineByRole(Member members[], int mCount) {
-    const char* team[] = {"Academic", "Planning", "HR", "Media"};
-    double totalFineByTeam[4] = {0};
 
-    for (int i = 0; i < mCount; i++) {
-        totalFineByTeam[members[i].role] += members[i].totalFine;
-    }
-    printf(
-        "\n┏━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓"
-        "\n");
-    printf("┃ %-20s ┃ %-40s ┃\n", "Team", "Total Fine of that team");
-    printf(
-        "┣━━━━━━━━━━━━━━━━━━━━━━╋━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫"
-        "\n");
-
-    for (int i = 0; i < 4; i++) {
-        printf("┃ %-20s ┃ %-40.2f ┃\n", team[i], totalFineByTeam[i]);
-    }
-
-    printf(
-        "┗━━━━━━━━━━━━━━━━━━━━━━┻━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛"
-        "\n");
-}
 
 void displayInSortByVioCount(Member members[], int mCount, int sortMode) {
+	// 1. Prepare a copy list before sorting
     Member sortList[mCount];
     for (int i = 0; i < mCount; i++) {
         sortList[i] = members[i];
@@ -86,6 +57,7 @@ void displayInSortByVioCount(Member members[], int mCount, int sortMode) {
     int minIndex = 0, maxIndex = mCount - 1;
 
     int start = 0, end = mCount - 1;
+    // 2. Double Selection Sort
     while (start < end) {
         minIndex = start;
         maxIndex = end;
@@ -101,19 +73,26 @@ void displayInSortByVioCount(Member members[], int mCount, int sortMode) {
             }
         }
 
+		// swap max value to the end
         temp = sortList[maxIndex];
         sortList[maxIndex] = sortList[end];
         sortList[end] = temp;
+        
+        // check edge case: if the minIndex is in end, after swap, the minIndex must be the maxIndex
+		if (minIndex == end){
+			minIndex = maxIndex;
+		}
+      
+        temp = sortList[minIndex];
+        sortList[minIndex] = sortList[start];
+        sortList[start] = temp;
+        
+        start++;
         end--;
-
-        if (maxIndex != start) {
-            temp = sortList[minIndex];
-            sortList[minIndex] = sortList[start];
-            sortList[start] = temp;
-            start++;
-        }
+        
     }
-
+	
+	// 3. Decide to show in ASC or DESC by sortMode: 1 is ASC, -1 is DESC
     int i, len;
     if (sortMode == 1) {
         i = 0;
@@ -124,13 +103,11 @@ void displayInSortByVioCount(Member members[], int mCount, int sortMode) {
     }
     printf("\n");
     printf(
-        "┏━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━"
-        "━━┳━━━━━━━━━━━━━━━━━━━━┓\n");
+        "┏━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━┓\n");
     printf("┃ %-10s ┃ %-22s ┃ %-10s ┃ %-18s ┃ %-18s ┃\n", "Student ID",
            "Full Name", "Team", "Role", "Violations");
     printf(
-        "┣━━━━━━━━━━━━╋━━━━━━━━━━━━━━━━━━━━━━━━╋━━━━━━━━━━━━╋━━━━━━━━━━━━━━━━━━"
-        "━━╋━━━━━━━━━━━━━━━━━━━━┫\n");
+        "┣━━━━━━━━━━━━╋━━━━━━━━━━━━━━━━━━━━━━━━╋━━━━━━━━━━━━╋━━━━━━━━━━━━━━━━━━━━╋━━━━━━━━━━━━━━━━━━━━┫\n");
     for (i; i != len + sortMode; i = i + sortMode) {
         printf("┃ %-10s ┃ %-22s ┃ %-10s ┃ %-18s ┃ %-18d ┃\n",
                sortList[i].studentID, sortList[i].fullName,
@@ -138,6 +115,5 @@ void displayInSortByVioCount(Member members[], int mCount, int sortMode) {
                sortList[i].violationCount);
     }
     printf(
-        "┗━━━━━━━━━━━━┻━━━━━━━━━━━━━━━━━━━━━━━━┻━━━━━━━━━━━━┻━━━━━━━━━━━━━━━━━━"
-        "━━┻━━━━━━━━━━━━━━━━━━━━┛\n");
+        "┗━━━━━━━━━━━━┻━━━━━━━━━━━━━━━━━━━━━━━━┻━━━━━━━━━━━━┻━━━━━━━━━━━━━━━━━━━━┻━━━━━━━━━━━━━━━━━━━━┛\n");
 }

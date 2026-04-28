@@ -17,4 +17,6 @@ void markFineAsPaidView(Violation violations[], int vCount, Member members[],
 void viewMyUnpaidFines(const char* myStudentID, Violation violations[],
                        int vCount);
 
+void displayViolationsByTimeRange(Violation violations[], int vCount);
+
 #endif

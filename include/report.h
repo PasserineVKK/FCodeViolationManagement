@@ -43,6 +43,10 @@ Notification* findNotificationById(const char* notificationId);
 void showFineStatsByTeam(Member members[], int mCount, Violation violations[],
                          int vCount);
 
+// Feature 2.11 Show violation by time range
+int listViolationsByTimeRange(Violation violations[], int vCount,
+                              Violation results[]);
+
 Notification* notifyAdmin(const char* content, const char* adminId, int isSave);
 Notification* warningMember(const char* content, const char* memberId,
                             int isSave);
