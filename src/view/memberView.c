@@ -45,7 +45,10 @@ void displayMemberList(Member members[], int count) {
     printf("Total members: %d\n\n", count);
 }
 
+
+
 void displayInSortByVioCount(Member members[], int mCount, int sortMode) {
+	// 1. Prepare a copy list before sorting
     Member sortList[mCount];
     for (int i = 0; i < mCount; i++) {
         sortList[i] = members[i];
@@ -54,6 +57,7 @@ void displayInSortByVioCount(Member members[], int mCount, int sortMode) {
     int minIndex = 0, maxIndex = mCount - 1;
 
     int start = 0, end = mCount - 1;
+    // 2. Double Selection Sort
     while (start < end) {
         minIndex = start;
         maxIndex = end;
@@ -69,19 +73,26 @@ void displayInSortByVioCount(Member members[], int mCount, int sortMode) {
             }
         }
 
+		// swap max value to the end
         temp = sortList[maxIndex];
         sortList[maxIndex] = sortList[end];
         sortList[end] = temp;
+        
+        // check edge case: if the minIndex is in end, after swap, the minIndex must be the maxIndex
+		if (minIndex == end){
+			minIndex = maxIndex;
+		}
+      
+        temp = sortList[minIndex];
+        sortList[minIndex] = sortList[start];
+        sortList[start] = temp;
+        
+        start++;
         end--;
-
-        if (maxIndex != start) {
-            temp = sortList[minIndex];
-            sortList[minIndex] = sortList[start];
-            sortList[start] = temp;
-            start++;
-        }
+        
     }
-
+	
+	// 3. Decide to show in ASC or DESC by sortMode: 1 is ASC, -1 is DESC
     int i, len;
     if (sortMode == 1) {
         i = 0;
