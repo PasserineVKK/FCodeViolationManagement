@@ -174,6 +174,9 @@ int main(int argc, char* argv[]) {
     Violation* violations = malloc(sizeof(Violation) * vCapacity);
     Account accounts[MAX_ACCOUNTS] = {0};
 
+    initNotificationList();
+    autoDeleteOutDateNotification();
+
     seedSampleData(members, &mCount, violations, &vCount, accounts, &aCount);
 
     // mCount = loadMembers(members, &mCount);
@@ -201,15 +204,15 @@ int main(int argc, char* argv[]) {
                 if (isExit == 1)
                     return 0;
                 else
-                    displayNotificationByMemberID(members[mIndex].studentID,
-                                                  ADMIN_WARNING);
-                pauseProgram();
-                continue;
+                    continue;
             } else {
                 menuRole = loginRole;
                 mIndex = searchMemberByIdInM(members, mCount, studentID);
                 vIndex = searchMemberByIdInV(violations, vCount, studentID);
                 isStayLogin = 1;
+                displayNotificationByMemberID(members[mIndex].studentID,
+                                              ADMIN_WARNING);
+                pauseProgram();
                 // login successfully ==> Assign value for menuRole to open
                 // menu, and memberIndex to identify user
             }
@@ -233,7 +236,7 @@ int main(int argc, char* argv[]) {
                     "\n┃  9.  View notification                       ┃"
                     "\n┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛\n");
 
-                inputIntegerInRange(&choice, 1, 8,
+                inputIntegerInRange(&choice, 1, 9,
                                     "==> Enter your selection: ");
 
                 clearScreen();
@@ -275,6 +278,7 @@ int main(int argc, char* argv[]) {
                     case 9:
                         displayNotificationByMemberID(members[mIndex].studentID,
                                                       IGNORE_NOTI_TYPE);
+                        displayGlobalNotification();
                         break;
                     default:
                         printf("Invalid option, please try again.\n");
@@ -300,8 +304,11 @@ int main(int argc, char* argv[]) {
                     "\n┃ 10.  Log Out                                 ┃"
                     "\n┃ 11.  Exit                                    ┃"
                     "\n┃ 12.  Switch to Member Menu                   ┃"
-                    "\n┃ 13.  Create global notification              ┃",
+                    "\n┃ 13.  Create notification                     ┃"
                     "\n┃ 14.  Delete  violation                       ┃"
+                    "\n┃ 15.  Update notification                     ┃"
+                    "\n┃ 16.  Delete notification                     ┃"
+                    "\n┃ 17.  Display all notifications               ┃"
                     "\n┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛\n");
                 inputIntegerInRange(&choice, 1, 14,
                                     " ==> Enter your selection: ");
@@ -359,10 +366,24 @@ int main(int argc, char* argv[]) {
                         menuRole = 0;
                         continue;
                     case 13:
+                        int type;
+                        inputIntegerInRange(
+                            &type, 0, 2,
+                            "Enter type of notification, global(0), notice "
+                            "(1), warning (2): ");
                         char content[200];
-                        inputString(content, 200,
-                                    "Input global notification content: ");
-                        globalNotification(content);
+                        inputString(content, 200, "Enter notify content: ");
+                        if (type == ADMIN_NOTICE || type == ADMIN_WARNING) {
+                            char memberId[6];
+                            inputString(memberId, 6, "Enter member id: ");
+                            createNotification(memberId, type, content,
+                                               time(NULL) + BASE_DELETE_TIME,
+                                               1);
+                        } else {
+                            createNotification(NULL, type, content,
+                                               time(NULL) + BASE_DELETE_TIME,
+                                               1);
+                        }
                         break;
                     case 14:
                         char violationId[10];
@@ -370,6 +391,35 @@ int main(int argc, char* argv[]) {
                         Violation* v =
                             findViolationById(violationId, violations, vCount);
                         deleteViolation(violations, &vCount, v);
+                        break;
+                    case 15:
+                        char id[6];
+                        inputString(id, 6, "Enter notification id: ");
+                        Notification* n = findNotificationById(id);
+
+                        if (n == NULL) break;
+
+                        int type;
+                        inputIntegerInRange(
+                            &type, 0, 2,
+                            "Enter type of notification, global(0), notice "
+                            "(1), warning (2): ");
+                        char content[200];
+                        inputString(content, 200, "Enter notify content: ");
+                        char memberId[6];
+                        inputString(memberId, 6, "Enter member id: ");
+                        if (strcmp(memberId, "") == 0) break;
+                        updateNotification(n, memberId, type, content,
+                                           n->deleteTime);
+                        break;
+                    case 16:
+                        char id[6];
+                        inputString(id, 6, "Enter remove notification id: ");
+                        deleteNotification(findNotificationById(id));
+                        printf("Delete notification");
+                        break;
+                    case 17:
+                        displayNotificationList();
                         break;
                     default:
                         printf("Invalid option, please try again.");
@@ -380,5 +430,7 @@ int main(int argc, char* argv[]) {
         }
         pauseProgram();
     } while (1);
+
+    freeNotificationList();
     return 0;
 }

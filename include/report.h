@@ -22,7 +22,9 @@ void displayNotificationList();
 
 void displaySingleNotification(Notification* n);
 
-displayNotificationByMemberID(const char* memberId, int type);
+void displayNotificationByMemberID(const char* memberId, int type);
+
+void displayGlobalNotification();
 
 Notification* createNotification(const char* receiverID, int type,
                                  const char* message, time_t deleteTime,
@@ -32,6 +34,8 @@ void updateNotification(Notification* n, const char* receiverID, int type,
                         const char* message, time_t deleteTime);
 
 void deleteNotification(Notification* n);
+void deleteNotificationByMemberId(const char* memberId);
+void autoDeleteOutDateNotification();
 
 Notification* findNotificationById(const char* notificationId);
 

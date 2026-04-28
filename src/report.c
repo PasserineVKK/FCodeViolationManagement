@@ -106,9 +106,17 @@ void displayNotificationByMemberID(const char* studentId, int type) {
     }
 }
 
-void displayNotificationList() {
+void displayGlobalNotification() {
     for (int i = 0; i < count; i++)
+        if (notifications[i].type == GLOBAL_NOTICE)
+            displaySingleNotification(&notifications[i]);
+}
+
+void displayNotificationList() {
+    for (int i = 0; i < count; i++) {
         displaySingleNotification(&notifications[i]);
+        printf("Id: %s\n", notifications[i].id);
+    }
 }
 
 void displaySingleNotification(Notification* n) {
@@ -157,6 +165,7 @@ Notification* createNotification(const char* receiverID, int type,
     sprintf(n.id, "%06d", count + 1);
     n.type = type;
     n.deleteTime = deleteTime;
+    n.create_time = time(NULL);
     strcpy(n.content, message);
     if (!(receiverID == NULL)) strcpy(n.memberId, receiverID);
     notifications[count] = n;
@@ -187,19 +196,38 @@ void updateNotification(Notification* n, const char* receiverID, int type,
 }
 
 void deleteNotification(Notification* n) {
-    if (n == NULL || notifications == NULL || notifications == NULL ||
-        count <= 0)
-        return;
+    if (n == NULL || notifications == NULL || count <= 0) return;
 
-    for (int i = 0; i < count; i++) {
-        if (&((notifications)[i]) == n) {
-            for (int j = i; j < count - 1; j++) {
-                (notifications)[j] = (notifications)[j + 1];
-            }
-            (count)--;
-            return;
+    for (int i = 0; i < count; i++)
+        if (&notifications[i] == n) {
+            for (int j = 0; j < i - 1; j++)
+                notifications[j] = notifications[j + 1];
+            count--;
         }
-    }
+
+    saveNotification();
+}
+
+void deleteNotificationByMemberId(const char* memberId) {
+    for (int i = 0; i < count; i++)
+        if (strcmp(memberId, notifications[i].memberId) == 0) {
+            for (int j = 0; j < i - 1; j++)
+                notifications[j] = notifications[j + 1];
+            count--;
+        }
+
+    saveNotification();
+}
+
+void autoDeleteOutDateNotification() {
+    time_t now = time(NULL);
+    for (int i = 0; i < count; i++)
+        if (now > notifications[i].deleteTime) {
+            for (int j = 0; j < i - 1; j++)
+                notifications[j] = notifications[j + 1];
+            count--;
+        }
+
     saveNotification();
 }
 
@@ -210,15 +238,20 @@ Notification* notifyAdmin(const char* content, const char* adminId,
     displaySingleNotification(n);
 }
 
-Notification* warningMember(const char* content, const char* memberId,
-                            int isSave) {
+Notification* warningMember(int isSave, const char* memberId,
+                            const char* content, ...) {
     createNotification(memberId, ADMIN_WARNING, content,
                        time(NULL) + BASE_DELETE_TIME, isSave);
 }
 
-Notification* globalNotification(const char* content) {
+Notification* globalNotification(const char* content, ...) {
     createNotification(NULL, GLOBAL_NOTICE, content,
                        time(NULL) + BASE_DELETE_TIME, 1);
+}
+
+void quickNotification(const char* content) {
+    displaySingleNotification(
+        createNotification(NULL, GLOBAL_NOTICE, content, time(NULL), NOT_SAVE));
 }
 
 void freeNotificationList() {

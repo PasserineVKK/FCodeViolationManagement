@@ -14,9 +14,6 @@
 #include "../include/view/violationView.h"
 #include "../include/violation.h"
 
-#define WILL_SAVE 1
-#define NOT_SAVE 0
-
 #define IS_READ 1
 #define DID_NOT_READ 0
 

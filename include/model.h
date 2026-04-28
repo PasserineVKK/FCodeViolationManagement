@@ -46,13 +46,16 @@ typedef struct {
 
 #define GLOBAL_NOTICE 0
 #define ADMIN_NOTICE 1
-#define ADMIN_WARNING -1
+#define ADMIN_WARNING 2
 
+#define WILL_SAVE 1
+#define NOT_SAVE 0
 typedef struct {
     char id[6];
     int type;
     char memberId[10];  // Only for Admin waring;
     char content[MAX_MESSAGE_LENGTH];
+    time_t create_time;
     time_t deleteTime;
 } Notification;
 

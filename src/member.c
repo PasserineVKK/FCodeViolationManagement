@@ -6,6 +6,7 @@
 #include "../include/auth.h"
 #include "../include/consoleInput.h"
 #include "../include/fileio.h"
+#include "../include/report.h"
 #include "../include/utils.h"
 #include "../include/validate.h"
 #include "../include/view/memberView.h"
@@ -166,6 +167,7 @@ void addMember(Member members[], int* mCount, Account accounts[], int* aCount) {
             printf("\nAccount information for this member:\n");
             printf("Student ID: %s\n", acc.studentID);
             printf("Password: %s\n", acc.password);
+
         } else {
             printf("Member not added.\n");
         }
@@ -257,6 +259,8 @@ void removeMember(Member members[], int* mCount, Account accounts[],
                     (*vCount)--;
                     saveViolations(violations, *vCount);
                 }
+
+                deleteNotificationByMemberId(members[mIndex].studentID);
 
                 // Print success message
                 printf("Member removed successfully!\n");
