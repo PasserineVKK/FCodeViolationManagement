@@ -6,16 +6,27 @@
 // @attention 1 month. After this time, notification will automatic delete.
 #define BASE_DELETE_TIME 2592000
 
+// @attention base notification path
+#define NOTIFICATION_PATH "data/notification.dat"
+
+#define IGNORE_NOTI_TYPE -1
+
 // @warning Must call when use notification struc.
 // Call free if not using any more
-void initNotificationList(int size);
+void initNotificationList();
 
-void displayNotifications();
+// @warning Must call after use!
+void freeNotificationList();
+
+void displayNotificationList();
 
 void displaySingleNotification(Notification* n);
 
+displayNotificationByMemberID(const char* memberId, int type);
+
 Notification* createNotification(const char* receiverID, int type,
-                                 const char* message, time_t deleteTime);
+                                 const char* message, time_t deleteTime,
+                                 int isSave);
 
 void updateNotification(Notification* n, const char* receiverID, int type,
                         const char* message, time_t deleteTime);
@@ -28,11 +39,9 @@ Notification* findNotificationById(const char* notificationId);
 void showFineStatsByTeam(Member members[], int mCount, Violation violations[],
                          int vCount);
 
-void notifyAdmin(const char* content, const char* adminId);
-void warningMember(const char* content, const char* memberId);
-void globalNotification(const char* content);
-
-// @warning Must call after use!
-void freeNotificationList();
+Notification* notifyAdmin(const char* content, const char* adminId, int isSave);
+Notification* warningMember(const char* content, const char* memberId,
+                            int isSave);
+Notification* globalNotification(const char* content);
 
 #endif

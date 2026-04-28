@@ -4,6 +4,7 @@
 #include <string.h>
 
 #include "../include/consoleInput.h"
+#include "../include/fileio.h"
 #include "../include/member.h"
 #include "../include/utils.h"
 #include "../include/view/viewUtil.h"
@@ -13,10 +14,19 @@ static Notification* notifications;
 static int count;
 static int capacity;
 
-void initNotificationList(int maxSize) {
-    notifications = malloc(sizeof(Notification) * maxSize);
-    capacity = maxSize;
+#define MAX_NOTIFICATIONS 1000
+
+void initNotificationList() {
+    notifications = malloc(sizeof(Notification) * MAX_NOTIFICATIONS);
+    capacity = MAX_NOTIFICATIONS;
     count = 0;
+
+    loadFromFile(NOTIFICATION_PATH, notifications, sizeof(Notification),
+                 MAX_NOTIFICATIONS, &count);
+}
+
+void saveNotification() {
+    saveToFile(NOTIFICATION_PATH, notifications, sizeof(Notification), count);
 }
 
 // 2.7 Show fine statistics by team
@@ -72,7 +82,34 @@ void showFineStatsByTeam(Member members[], int mCount, Violation violations[],
     printf("\n");
 }
 
-void displayNotifications() {}
+void displayNotifications(int type) {
+    for (int i = 0; i < count; i++)
+        if (notifications[i].type == type)
+            displaySingleNotification(&notifications[i]);
+}
+
+void displayWarning(const char* memberId) {
+    for (int i = 0; i < count; i++)
+        if (strcmp(notifications[i].memberId, memberId) == 0)
+            displaySingleNotification(&notifications[i]);
+}
+
+void displayNotificationByMemberID(const char* studentId, int type) {
+    for (int i = 0; i < count; i++) {
+        Notification* n = &notifications[i];
+        if (strcmp(n->memberId, studentId) == 0) {
+            if (type != IGNORE_NOTI_TYPE && n->type == type)
+                displaySingleNotification(n);
+            else
+                displaySingleNotification(n);
+        }
+    }
+}
+
+void displayNotificationList() {
+    for (int i = 0; i < count; i++)
+        displaySingleNotification(&notifications[i]);
+}
 
 void displaySingleNotification(Notification* n) {
     char timeBuf[30];
@@ -92,6 +129,10 @@ void displaySingleNotification(Notification* n) {
             printf("[UNKNOWN] [%s]\n", n->content);
             break;
     }
+
+    char deleteTime[10];
+    getFormatTime(deleteTime, 10, n->deleteTime);
+    printf("Delete time: %s\n", deleteTime);
 }
 
 void ensureNotificationCapacity() {
@@ -108,7 +149,8 @@ void ensureNotificationCapacity() {
 }
 
 Notification* createNotification(const char* receiverID, int type,
-                                 const char* message, time_t deleteTime) {
+                                 const char* message, time_t deleteTime,
+                                 int isSave) {
     ensureNotificationCapacity();
     Notification n;
 
@@ -118,8 +160,8 @@ Notification* createNotification(const char* receiverID, int type,
     strcpy(n.content, message);
     if (!(receiverID == NULL)) strcpy(n.memberId, receiverID);
     notifications[count] = n;
-    displaySingleNotification(&notifications[count]);
     count++;
+    if (isSave) saveNotification();
     return &notifications[count - 1];
 }
 
@@ -141,6 +183,7 @@ void updateNotification(Notification* n, const char* receiverID, int type,
     strncpy(n->content, message, MAX_MESSAGE_LENGTH);
     n->content[MAX_MESSAGE_LENGTH - 1] = '\0';
     n->deleteTime = deleteTime;
+    saveNotification();
 }
 
 void deleteNotification(Notification* n) {
@@ -157,22 +200,25 @@ void deleteNotification(Notification* n) {
             return;
         }
     }
+    saveNotification();
 }
 
-void notifyAdmin(const char* content, const char* adminId) {
+Notification* notifyAdmin(const char* content, const char* adminId,
+                          int isSave) {
     Notification* n = createNotification(adminId, ADMIN_NOTICE, content,
-                                         time(NULL) + BASE_DELETE_TIME);
+                                         time(NULL) + BASE_DELETE_TIME, isSave);
     displaySingleNotification(n);
 }
 
-void warningMember(const char* content, const char* memberId) {
+Notification* warningMember(const char* content, const char* memberId,
+                            int isSave) {
     createNotification(memberId, ADMIN_WARNING, content,
-                       time(NULL) + BASE_DELETE_TIME);
+                       time(NULL) + BASE_DELETE_TIME, isSave);
 }
 
-void globalNotification(const char* content) {
+Notification* globalNotification(const char* content) {
     createNotification(NULL, GLOBAL_NOTICE, content,
-                       time(NULL) + BASE_DELETE_TIME);
+                       time(NULL) + BASE_DELETE_TIME, 1);
 }
 
 void freeNotificationList() {

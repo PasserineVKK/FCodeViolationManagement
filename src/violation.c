@@ -8,10 +8,17 @@
 #include "../include/consoleInput.h"
 #include "../include/fileio.h"
 #include "../include/member.h"
+#include "../include/report.h"
 #include "../include/utils.h"
 #include "../include/view/viewUtil.h"
 #include "../include/view/violationView.h"
 #include "../include/violation.h"
+
+#define WILL_SAVE 1
+#define NOT_SAVE 0
+
+#define IS_READ 1
+#define DID_NOT_READ 0
 
 void simpleDisplayViolation(Violation* v) {
     clearScreen();
@@ -124,8 +131,6 @@ void ensureCapacity(Violation** violations, int* count, int* capacity) {
     }
 }
 
-void handleSeriousViolation(Member* m, Violation* v) {}
-
 void createViolationID(int index, char* buffer) {
     sprintf(buffer, "VI%04d", index);
 }
@@ -144,8 +149,53 @@ void deleteViolation(Violation* violations, int* count, Violation* v) {
     }
 }
 
-void updateViolation(Violation* v) {
-    if (v == NULL) return;
+void handleSeriousViolation(Member* m, Violation newV) {
+    char content[200];
+    char* studentID = m->studentID;
+
+    if (newV.reason == REASON_MEETING_ABSENCE) {
+        m->consecutiveAbsences++;
+
+        sprintf(content,
+                "Member with ID %s. You have been absent from meetings. "
+                "If this violation occurs more than twice, you will be "
+                "kicked out. "
+                "Please contact the administrator if the attendance record "
+                "is incorrect.",
+                studentID);
+        warningMember(content, studentID, WILL_SAVE);
+
+        if (m->consecutiveAbsences >= 3) {
+            newV.penalty = PENALTY_KICK;
+            m->isPending = 1;
+
+            sprintf(content,
+                    "Member with ID %s has missed more than three meetings. "
+                    "Account automatically disabled; member will be "
+                    "automatically deleted "
+                    "unless there is further action.",
+                    studentID);
+            notifyAdmin(content, NULL, WILL_SAVE);
+
+            sprintf(content,
+                    "Member with ID %s. You have missed more than three "
+                    "meetings, "
+                    "so your account has been deactivated. You will be "
+                    "kicked out of the club "
+                    "in the future if you do not provide any satisfactory "
+                    "explanation.",
+                    studentID);
+            warningMember(content, studentID, WILL_SAVE);
+        }
+    } else if (newV.reason == REASON_VIOLENCE) {
+        m->isPending = 1;
+
+        sprintf(content,
+                "Member with ID %s. You have been kicked out for a "
+                "violence-related violation.",
+                studentID);
+        warningMember(content, studentID, 1);
+    }
 }
 
 void recordViolationView(Violation violations[], int* vCount, int* vCapacity,
@@ -181,20 +231,17 @@ void recordViolationView(Violation violations[], int* vCount, int* vCapacity,
     newV.penalty =
         (newV.reason == REASON_VIOLENCE) ? PENALTY_KICK : PENALTY_FINANCIAL;
 
-    if (newV.reason == REASON_MEETING_ABSENCE) {
-        members[mIndex].consecutiveAbsences++;
-        if (members[mIndex].consecutiveAbsences >= 3) {
-            newV.penalty = PENALTY_KICK;
-            members[mIndex].isPending = 1;
-        }
-    }
-    // else {
-    //     members[mIndex].consecutiveAbsences = 0;
-    // }
-
     inputString(newV.note, 50, "Enter note (optional): ");
 
     int confirm;
+    if (newV.reason == REASON_MEETING_ABSENCE ||
+        newV.reason == REASON_VIOLENCE) {
+        notifyAdmin(
+            "You have just set a reason for violation that could lead to a "
+            "member's removal. Please review it.",
+            NULL, NOT_SAVE);
+        printf("Chen giữa xem!\n");
+    }
     inputYesNo(&confirm, "Confirm to record this violation? (1: Yes, 0: No): ");
     if (confirm) {
         if (addViolation(violations, vCount, newV)) {
@@ -207,6 +254,8 @@ void recordViolationView(Violation violations[], int* vCount, int* vCapacity,
             printf("Error: Violation list is full.\n");
         }
     }
+
+    handleSeriousViolation(&members[mIndex], newV);
 }
 
 // 2.8 Check and warn if member reach out club condition
@@ -229,8 +278,8 @@ void recordViolationView(Violation violations[], int* vCount, int* vCapacity,
 //     //case: violence -> direct out
 //     if(hasViolence){
 //         printf("\n!!! Warning: Member %s has committed violence and is
-//         subject to removal from the club. Please review the violation details
-//         and take necessary actions.\n", studentID); int confirm;
+//         subject to removal from the club. Please review the violation
+//         details and take necessary actions.\n", studentID); int confirm;
 
 //         inputYesNo(&confirm, "Confirm to remove this member from the
 //         club?\n1: Yes\n0: No\n=> Your choice: "); if(confirm == 1){
@@ -254,17 +303,17 @@ void recordViolationView(Violation violations[], int* vCount, int* vCapacity,
 //     //case: Consecutive absences >= 2 -> warning
 //     //      -> if reach 3 -> bcn confirm out
 //     if(absences >= 2){
-//         printf("\n!!! Warning: Member %s has %d consecutive absences and is
-//         approaching the threshold for removal from the club. Please review
-//         the attendance records and take necessary actions.\n", studentID,
-//         absences); if (absences >= 3){
+//         printf("\n!!! Warning: Member %s has %d consecutive absences and
+//         is approaching the threshold for removal from the club. Please
+//         review the attendance records and take necessary actions.\n",
+//         studentID, absences); if (absences >= 3){
 //             int confirm;
 //             inputYesNo(&confirm, "Confirm to remove this member from the
 //             club?\n1: Yes\n0: No\n=> Your choice: "); if(confirm == 1){
 //                 members[mIndex].isPending = 1;
 //                 saveMembers(members, *mCount);
-//                 printf("Added %s to pending out club list.\n", studentID);
-//                 return 2;
+//                 printf("Added %s to pending out club list.\n",
+//                 studentID); return 2;
 //             }
 //         }
 //         return 1;

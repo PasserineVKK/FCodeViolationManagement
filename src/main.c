@@ -197,11 +197,14 @@ int main(int argc, char* argv[]) {
                 int isExit = 0;
                 inputYesNo(&isExit,
                            "Student ID does not exist, do you want to exit? \n "
-                           "1. Yes\n 0. No\n");
+                           "1. Yes\n 0. No: ");
                 if (isExit == 1)
                     return 0;
                 else
-                    continue;
+                    displayNotificationByMemberID(members[mIndex].studentID,
+                                                  ADMIN_WARNING);
+                pauseProgram();
+                continue;
             } else {
                 menuRole = loginRole;
                 mIndex = searchMemberByIdInM(members, mCount, studentID);
@@ -227,6 +230,7 @@ int main(int argc, char* argv[]) {
                     "\n┃  6. Log Out                                  ┃"
                     "\n┃  7. Exit                                     ┃"
                     "\n┃  8. Switch to Admin Menu                     ┃"
+                    "\n┃  9.  View notification                       ┃"
                     "\n┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛\n");
 
                 inputIntegerInRange(&choice, 1, 8,
@@ -268,6 +272,10 @@ int main(int argc, char* argv[]) {
                             printf("Permission denied. Try again.\n");
                             break;
                         }
+                    case 9:
+                        displayNotificationByMemberID(members[mIndex].studentID,
+                                                      IGNORE_NOTI_TYPE);
+                        break;
                     default:
                         printf("Invalid option, please try again.\n");
                 }
@@ -292,9 +300,10 @@ int main(int argc, char* argv[]) {
                     "\n┃ 10.  Log Out                                 ┃"
                     "\n┃ 11.  Exit                                    ┃"
                     "\n┃ 12.  Switch to Member Menu                   ┃"
-                    "\n┃ 15.  Delete  violation                       ┃"
+                    "\n┃ 13.  Create global notification              ┃",
+                    "\n┃ 14.  Delete  violation                       ┃"
                     "\n┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛\n");
-                inputIntegerInRange(&choice, 1, 15,
+                inputIntegerInRange(&choice, 1, 14,
                                     " ==> Enter your selection: ");
 
                 clearScreen();
@@ -349,10 +358,13 @@ int main(int argc, char* argv[]) {
                     case 12:
                         menuRole = 0;
                         continue;
-                    case 14:
-                        printf("In progress!");
+                    case 13:
+                        char content[200];
+                        inputString(content, 200,
+                                    "Input global notification content: ");
+                        globalNotification(content);
                         break;
-                    case 15:
+                    case 14:
                         char violationId[10];
                         inputString(violationId, 10, "Enter violation id");
                         Violation* v =
