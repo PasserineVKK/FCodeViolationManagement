@@ -15,6 +15,7 @@
 #include "../include/view/viewUtil.h"
 #include "../include/view/violationView.h"
 #include "../include/view/memberView.h"
+#include "../include/validate.h"
 
 
 #define IS_READ 1
@@ -117,7 +118,6 @@ void createViolationID(int index, char* buffer) {
 
 void deleteViolation(Violation* violations, int* count, Violation* v) {
     if (violations == NULL || v == NULL || *count <= 0) return;
-
     for (int i = 0; i < *count; i++) {
         if (&violations[i] == v) {
             for (int j = i; j < *count - 1; j++) {
@@ -134,7 +134,7 @@ void handleSeriousViolation(Member* m, Violation newV) {
     char* studentID = m->studentID;
 
     if(m == NULL) return;
-    if (newV.reason == REASON_MEETING_ABSENCE) {
+    if (newV.reason == REASON_MEETING_ABSENCE) { 
         sprintf(content,
                 "Member with ID %s. You have been absent from meetings. "
                 "If this violation occurs more than twice, you will be "
@@ -154,64 +154,67 @@ void handleSeriousViolation(Member* m, Violation newV) {
 
 void recordViolationView(Violation violations[], int* vCount, int* vCapacity,
                          Member members[], int mCount) {
-    ensureCapacity(&violations, vCount, vCapacity);
+    int continueRecord = 1;
+    while (continueRecord){
+        ensureCapacity(&violations, vCount, vCapacity);
+    
+        Violation newV;
+        char studentID[10];
+        int mIndex;
 
-    Violation newV;
-    char studentID[10];
-    int mIndex;
+        printf("\n--- Record New Violation ---\n");
+        inputStudentID(studentID, "Enter Student ID: ");
 
-    printf("\n--- Record New Violation ---\n");
-    inputStudentID(studentID, "Enter Student ID: ");
+        mIndex = searchMemberByIdInM(members, mCount, studentID);
+        if (mIndex == -1) {
+            printf("Error: Student ID not found.\n");
+            return;
+        }
 
-    mIndex = searchMemberByIdInM(members, mCount, studentID);
-    if (mIndex == -1) {
-        printf("Error: Student ID not found.\n");
-        return;
+        strcpy(newV.studentID, studentID);
+        sprintf(newV.violationID, "VIO%03d", *vCount + 1); 
+
+        printf("Reasons:\n");
+        printf("%d. Not uniform\n", REASON_NOT_UNIFORM);
+        printf("%d. Meeting absence\n", REASON_MEETING_ABSENCE);
+        printf("%d. No Club activity\n", REASON_NO_CLUB_ACTIVITY);
+        printf("%d. Violence\n", REASON_VIOLENCE);
+        inputIntegerInRange(&newV.reason, 0, 3, "Enter reason: ");
+
+        newV.violationTime = time(NULL);
+        newV.fine = calculateFine(members[mIndex].role, newV.reason);
+        newV.isPaid = NOT_PAY;
+        newV.penalty = PENALTY_FINANCIAL;
+        newV.isPending = NOT_PENDING;
+
+        inputString(newV.note, 100, "Enter note (optional): ");
+
+        if (newV.reason == REASON_MEETING_ABSENCE) {
+            members[mIndex].consecutiveAbsences++;
+        }
+
+        int confirm;
+        inputYesNo(&confirm, "Confirm to record this violation? (1: Yes, 0: No): ");
+        if (!confirm) {
+            printf("Violation not recorded.\n");
+            return;
+        } 
+        if (!addViolation(violations, vCount, newV)) {
+            printf("Error: Violation list is full.\n");
+            return;
+        }
+
+        if (newV.reason == REASON_MEETING_ABSENCE || newV.reason == REASON_VIOLENCE) {
+            handleSeriousViolation(&members[mIndex], newV);
+        }
+
+        updateMemberTotalFine(members, mCount, violations, *vCount, studentID);
+        saveViolations(violations, *vCount);
+        saveMembers(members, mCount);
+
+        printf("Violation recorded successfully.\n");
+        inputYesNo(&continueRecord, "\nRecord another violation?\n1: Yes\n0: No\n=> Your choice: ");
     }
-
-    strcpy(newV.studentID, studentID);
-    sprintf(newV.violationID, "VIO%03d", *vCount + 1);
-
-    printf("Reasons:\n");
-    printf("%d. Not uniform\n", REASON_NOT_UNIFORM);
-    printf("%d. Meeting absence\n", REASON_MEETING_ABSENCE);
-    printf("%d. No Club activity\n", REASON_NO_CLUB_ACTIVITY);
-    printf("%d. Violence\n", REASON_VIOLENCE);
-    inputIntegerInRange(&newV.reason, 0, 3, "Enter reason: ");
-
-    newV.violationTime = time(NULL);
-    newV.fine = calculateFine(members[mIndex].role, newV.reason);
-    newV.isPaid = NOT_PAY;
-    newV.penalty = PENALTY_FINANCIAL;
-    newV.isPending = NOT_PENDING;
-
-    inputString(newV.note, 100, "Enter note (optional): ");
-
-    if (newV.reason == REASON_MEETING_ABSENCE) {
-        members[mIndex].consecutiveAbsences++;
-    }
-
-    int confirm;
-    inputYesNo(&confirm, "Confirm to record this violation? (1: Yes, 0: No): ");
-    if (!confirm) {
-        printf("Violation not recorded.\n");
-        return;
-    }
-
-    if (!addViolation(violations, vCount, newV)) {
-        printf("Error: Violation list is full.\n");
-        return;
-    }
-
-    if (newV.reason == REASON_MEETING_ABSENCE || newV.reason == REASON_VIOLENCE) {
-        handleSeriousViolation(&members[mIndex], newV);
-    }
-
-    updateMemberTotalFine(members, mCount, violations, *vCount, studentID);
-    saveViolations(violations, *vCount);
-    saveMembers(members, mCount);
-
-    printf("Violation recorded successfully.\n");
 }
 
 // 2.8 Check and warn if member reach out club condition
@@ -225,12 +228,14 @@ void checkAndWarnOutClub(Member members[], int* mCount,
         displayKickList(members, *mCount, violations, *vCount);
 
         char studentID[10];
-        inputString(studentID, 10,
-                    "\nEnter student ID from kick list to process (or press Enter to back): ");
+        inputString(studentID, 10, "\nEnter student ID from kick list to process (or press Enter to back): ");
 
         if (strcmp(studentID, "") == 0) {
             return;
         }
+
+        //validate studentID
+        if (!isValidStudentID(studentID)) continue;
 
         int mIndex = searchMemberByIdInM(members, *mCount, studentID);
         if (mIndex == -1) {
@@ -238,7 +243,7 @@ void checkAndWarnOutClub(Member members[], int* mCount,
             continue;
         }
 
-        if (!isMemberInKickList(members[mIndex], violations, *vCount)) {
+        if (members[mIndex].isPending != 1) {
             printf("This member is not in kick list.\n");
             continue;
         }
@@ -264,22 +269,21 @@ void checkAndWarnOutClub(Member members[], int* mCount,
             printf("No action taken.\n");
         }
 
-        int next;
-        inputYesNo(&next,
-                   "\nDo you want to process another member?\n1. Yes\n0. No\n=> Your choice: ");
-        if (next == 0) {
-            continueProcess = 0;
-        }
+        inputYesNo(&continueProcess, "\nDo you want to process another member?\n1. Yes\n0. No\n=> Your choice: ");
     }
 }
 
 // Display members in warning list
 void displayWarningList(Member members[], int mCount, Violation violations[], int vCount) {
-    int found = 0;
     printf("\n===== WARNING LIST =====\n");
+    printf("┌─────────────┬──────────────────────┬────────────────────┐\n");
+    printf("│ %-11s │ %-20s │ %-18s │\n", "Student ID", "Full Name", "Consecutive Absence");
+    printf("├─────────────┼──────────────────────┼────────────────────┤\n");
+    
+    int found = 0;
     for (int i = 0; i < mCount; i++) {
         if (isMemberInWarningList(members[i], violations, vCount)) {
-            printf("Student ID: %s | Name: %s | Consecutive Absences: %d\n",
+            printf("│ %-11s │ %-20s │ %-18d │\n",
                    members[i].studentID,
                    members[i].fullName,
                    members[i].consecutiveAbsences);
@@ -287,40 +291,38 @@ void displayWarningList(Member members[], int mCount, Violation violations[], in
         }
     }
     if (!found) {
-        printf("No members in warning list.\n");
+        printf("│ %-52s │\n", "No members in warning list.");
     }
+    printf("└─────────────┴──────────────────────┴────────────────────┘\n");
 }
 
 // Display members in kick list
 void displayKickList(Member members[], int mCount, Violation violations[], int vCount) {
-    int found = 0;
     printf("\n===== KICK LIST =====\n");
+    printf("┌─────────────┬──────────────────────┬────────────────────┬──────────────────┐\n");
+    printf("│ %-11s │ %-20s │ %-18s │ %-16s │\n", "Student ID", "Full Name", "Consecutive Absence", "Reason");
+    printf("├─────────────┼──────────────────────┼────────────────────┼──────────────────┤\n");
+    
+    int found = 0;
     for (int i = 0; i < mCount; i++) {
-        if (isMemberInKickList(members[i], violations, vCount)) {
-            printf("Student ID: %s | Name: %s | Consecutive Absences: %d",
+        if (members[i].isPending == 1) {
+            const char* reason = hasViolenceViolation(members[i].studentID, violations, vCount)
+                                 ? "Violence"
+                                 : "Absence Threshold";
+            printf("│ %-11s │ %-20s │ %-18d │ %-16s │\n",
                    members[i].studentID,
                    members[i].fullName,
-                   members[i].consecutiveAbsences);
-
-            if (hasViolenceViolation(members[i].studentID, violations, vCount)) {
-                printf(" | Reason: Violence");
-            } else {
-                printf(" | Reason: Absence Threshold");
-            }
-            printf("\n");
+                   members[i].consecutiveAbsences,
+                   reason);
             found = 1;
         }
     }
     if (!found) {
-        printf("No members in kick list.\n");
+        printf("│ %-71s │\n", "No members in kick list.");
     }
+    printf("└─────────────┴──────────────────────┴────────────────────┴──────────────────┘\n");
 }
 
-int isMemberInKickList(Member member, Violation violations[], int vCount) {
-    if (member.consecutiveAbsences >= 3) return 1;
-    if (hasViolenceViolation(member.studentID, violations, vCount)) return 1;
-    return 0;
-}
 // Check if member has any violence-related violation
 int hasViolenceViolation(const char* studentID, Violation violations[], int vCount) {
     for (int i = 0; i < vCount; i++) {
@@ -333,7 +335,7 @@ int hasViolenceViolation(const char* studentID, Violation violations[], int vCou
 }
 
 int isMemberInWarningList(Member member, Violation violations[], int vCount) {
-    if (isMemberInKickList(member, violations, vCount)) return 0; 
+    if (member.isPending == 1) return 0; 
     if (member.consecutiveAbsences == 2) return 1;
     return 0;
 }

@@ -420,7 +420,7 @@ int main(int argc, char* argv[]) {
                         deleteViolation(violations, &vCount, v);
                         break;
                     }
-                    case 17: 
+                    case 17: {
                         char id[6];
                         inputString(id, 6, "Enter notification id: ");
                         Notification* n = findNotificationById(id);
@@ -441,9 +441,10 @@ int main(int argc, char* argv[]) {
                         updateNotification(n, memberId, updateType,
                                            updateContent, n->deleteTime);
                         break;
+                    }
                     case 18: {
                         char removeId[6];
-                        inputString(id, 6, "Enter remove notification id: ");
+                        inputString(removeId, 6, "Enter remove notification id: ");
                         deleteNotification(findNotificationById(removeId));
                         printf("Delete notification");
                         break;
