@@ -196,8 +196,12 @@ void recordViolationView(Violation violations[], int* vCount, int* vCapacity,
         int confirm;
         inputYesNo(&confirm, "Confirm to record this violation? (1: Yes, 0: No): ");
         if (!confirm) {
+            // rollback
+            if (newV.reason == REASON_MEETING_ABSENCE) {
+                members[mIndex].consecutiveAbsences--;
+            }
             printf("Violation not recorded.\n");
-            return;
+            continue;
         } 
         if (!addViolation(violations, vCount, newV)) {
             printf("Error: Violation list is full.\n");
@@ -209,6 +213,11 @@ void recordViolationView(Violation violations[], int* vCount, int* vCapacity,
         }
 
         updateMemberTotalFine(members, mCount, violations, *vCount, studentID);
+        //se
+        if (members[mIndex].consecutiveAbsences >= 3 || 
+            hasViolenceViolation(studentID, violations, *vCount)) {
+            members[mIndex].isPending = 1;
+        }
         saveViolations(violations, *vCount);
         saveMembers(members, mCount);
 
@@ -299,17 +308,28 @@ void displayWarningList(Member members[], int mCount, Violation violations[], in
 // Display members in kick list
 void displayKickList(Member members[], int mCount, Violation violations[], int vCount) {
     printf("\n===== KICK LIST =====\n");
-    printf("┌─────────────┬──────────────────────┬────────────────────┬──────────────────┐\n");
-    printf("│ %-11s │ %-20s │ %-18s │ %-16s │\n", "Student ID", "Full Name", "Consecutive Absence", "Reason");
-    printf("├─────────────┼──────────────────────┼────────────────────┼──────────────────┤\n");
-    
+    printf("┌─────────────┬──────────────────────┬─────────────────────┬──────────────────────┐\n");
+    printf("│ %-11s │ %-20s │ %-19s │ %-20s │\n",
+           "Student ID", "Full Name", "Consecutive Absence", "Reason");
+    printf("├─────────────┼──────────────────────┼─────────────────────┼──────────────────────┤\n");
+
     int found = 0;
     for (int i = 0; i < mCount; i++) {
         if (members[i].isPending == 1) {
-            const char* reason = hasViolenceViolation(members[i].studentID, violations, vCount)
-                                 ? "Violence"
-                                 : "Absence Threshold";
-            printf("│ %-11s │ %-20s │ %-18d │ %-16s │\n",
+            int hasViolence  = hasViolenceViolation(members[i].studentID, violations, vCount);
+            int hasAbsence   = members[i].consecutiveAbsences >= 3;
+
+            // Xây reason string dựa trên cả 2 điều kiện
+            char reason[40] = "";
+            if (hasAbsence && hasViolence) {
+                strcpy(reason, "Absence + Violence");
+            } else if (hasViolence) {
+                strcpy(reason, "Violence");
+            } else {
+                strcpy(reason, "Absence Threshold");
+            }
+
+            printf("│ %-11s │ %-20s │ %-19d │ %-20s │\n",
                    members[i].studentID,
                    members[i].fullName,
                    members[i].consecutiveAbsences,
@@ -317,10 +337,11 @@ void displayKickList(Member members[], int mCount, Violation violations[], int v
             found = 1;
         }
     }
+
     if (!found) {
-        printf("│ %-71s │\n", "No members in kick list.");
+        printf("│ %-73s │\n", "No members in kick list.");
     }
-    printf("└─────────────┴──────────────────────┴────────────────────┴──────────────────┘\n");
+    printf("└─────────────┴──────────────────────┴─────────────────────┴──────────────────────┘\n");
 }
 
 // Check if member has any violence-related violation
