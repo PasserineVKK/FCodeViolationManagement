@@ -57,12 +57,13 @@ int login(Account accounts[], char* studentID, int aCount) {
     char password[30];
     int role;           // 0 = Member, 1 = BOD
     int isLocked = 0;   // 1 = This account locked after 3 failed trials
-    int failCount = 0;  // consecutive failed trials
+    
 
     // Input student ID
     inputStudentID(studentID, "Enter student ID: ");
     int aIndex = searchMemberByIdInA(accounts, aCount, studentID);
-
+	int failCount = accounts[aIndex].failCount;  // consecutive failed trials
+	
     // Check if student ID exists in accounts list
     if (aIndex == -1) {
         printf("\nStudent ID not found. Please try again.\n");
@@ -76,7 +77,7 @@ int login(Account accounts[], char* studentID, int aCount) {
     }
 
     // Enter password
-    do {
+    while (failCount < 3) {
         printf("Enter password: ");
         scanf("%s", password);
         // clear stadin
@@ -87,7 +88,9 @@ int login(Account accounts[], char* studentID, int aCount) {
         }
         printf("Incorrect password. Please try again.\n");
         failCount++;
-    } while (failCount < 3);
+        accounts[aIndex].failCount = failCount;
+        saveAccounts(accounts, aCount);
+    };
 
     // Check if account is locked after 3 failed attempts
     if (failCount >= 3) {
@@ -97,7 +100,9 @@ int login(Account accounts[], char* studentID, int aCount) {
         return -1;
     }
 
-    // Successful login, return role
+    // Successful login, reset fail, return role
+    accounts[aIndex].failCount = 0;
+    saveAccounts(accounts, aCount);
     return accounts[aIndex].role;
 }
 

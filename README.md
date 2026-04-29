@@ -23,7 +23,7 @@ The F-Code Violation Management System is a terminal-based solution developed in
 * Full CRUD operations (Add, Edit, Delete) for member profiles.
 
 ### 3. Violation and Penalty System
-* Automated Fines: Calculate penalties based on role (20,000d for Members, 50,000d for Leaders/BCN).
+* Automated Fines: Calculate penalties based on role (20,000d for Members, 50,000d for Leaders/BOD).
 * Attendance Tracking: Automatically flag members for "Out Club" status after 3 consecutive unexcused absences.
 * Immediate Enforcement: Instant "Out Club" processing for violence violations.
 
@@ -45,10 +45,10 @@ To run the system, ensure you have a C compiler (like GCC) installed.
    git clone [https://github.com/PasserineVKK/FCodeViolationManagement.git]
 
 2. Compile the source code:
-   gcc src/*.c -I include -o fcode_manager
+   gcc src/*.c src/view/*.c -Iinclude -o main.exe
 
 3. Execute the program:
-   ./fcode_manager
+   ./main.exe
 
 ## Contribution Guidelines (Internal)
 * Coding Standards: Use English for all variable and function names.
@@ -66,13 +66,13 @@ To run the system, ensure you have a C compiler (like GCC) installed.
     * *Example:* `MAX_MEMBERS`, `BASE_FINE_MEMBER`.
 * **Structs:** Use `PascalCase`.
     * *Example:* `Member`, `ViolationRecord`.
-* **Filenames:** Use lowercase with underscores if needed.
-    * *Example:* `fileio.c`, `auth.h`.
+
 
 
 ## 3. Memory Management
-* **Static Allocation:** Use static arrays with predefined sizes for simplicity.
-* **Global Variables:** Avoid global variables unless absolutely necessary (e.g., the main database array).
+* **Static Allocation:** Use static arrays with predefined sizes (Members, Violations) for simplicity.
+* **Dynamic Allocation:** Use dynamic arrays with unpredefined sizes (Violations)
+
 
 
 ## 4. Git Workflow
@@ -129,15 +129,13 @@ To run the system, ensure you have a C compiler (like GCC) installed.
 
 6.  **Code Review & Merge:**
     * Address any comments from reviewers.
-    * Once approved, the branch will be merged (preferably using **Squash and Merge**).
-    * Delete the feature branch locally and on remote after a successful merge.
+    * Once approved, the branch will be merged.
 
 ### 4.3. Golden Rules
 
 * **Never** use `git push --force` on shared branches (`main`, `develop`).
 * **Pull before you push:** Always sync with the remote repository to handle conflicts locally.
-* **Meaningful Commits:** Ensure commit messages describe *what* changed and *why*.
-* **No Broken Code:** Never merge a PR that fails build tests or contains syntax errors.
+* **Meaningful Commits:** Ensure commit messages describe *what* changed and try to explain *why*.
 
 ## 5. Documentation & Comments
 * **Language:** All comments and documentation must be in English.
@@ -146,4 +144,4 @@ To run the system, ensure you have a C compiler (like GCC) installed.
 
 ## 6. Data Management
 * **Local Data:** Use your own `.dat` files for testing. 
-* DO NOT commit `.dat` files to the remote repository. Ensure `data/*.dat` is in `.gitignore`.
+
