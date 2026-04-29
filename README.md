@@ -45,10 +45,10 @@ To run the system, ensure you have a C compiler (like GCC) installed.
    git clone [https://github.com/PasserineVKK/FCodeViolationManagement.git]
 
 2. Compile the source code:
-   gcc src/*.c src/view/*.c sampleData/sampleData.c -Iinclude -o main.exe
+   gcc src/*.c src/view/*.c -Iinclude -o main.exe
 
 3. Execute the program:
-   .\main.exe
+   ./main.exe
 
 ## Contribution Guidelines (Internal)
 * Coding Standards: Use English for all variable and function names.
