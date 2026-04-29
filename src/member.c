@@ -272,7 +272,7 @@ void removeMember(Member members[], int* mCount, Account accounts[],
                     saveViolations(violations, *vCount);
                 }
 
-                deleteNotificationByMemberId(members[mIndex].studentID);
+                deleteNotificationByMemberId(members[mIndex].studentID); 
 
                 // Print success message
                 printf("Member removed successfully!\n");

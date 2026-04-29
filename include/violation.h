@@ -26,7 +26,6 @@
 int loadViolations(Violation violations[], int* count);
 int saveViolations(Violation violations[], int count);
 
-int checkOutCondition(const Violation violations[], int count, const char* id);
 double calculateFine(int role, int reason);
 void refreshFineAfterRolechange(char* memberId, int role,
                                 Violation violations[], int count);
@@ -48,7 +47,17 @@ void deleteViolation(Violation* violation, int* count, Violation* v);
 void recordViolationView(Violation violations[], int* vCount, int* vCapacity,
                          Member members[], int mCount);
 
-int checkAndWarnOutClub(const char* studentID, Member members[], int* mCount,
-                        Violation violations[], int* vCount);
+void handleSeriousViolation(Member* member, Violation violation);
+
+void displayWarningList(Member members[], int mCount, Violation violations[], int vCount);
+void displayKickList(Member members[], int mCount, Violation violations[], int vCount);
+int isMemberInKickList(Member member, Violation violations[], int vCount);
+int isMemberInWarningList(Member member, Violation violations[], int vCount);
+
+int hasViolenceViolation(const char* studentID, Violation violations[], int vCount);
+
+
+void removeMemberById(const char* id, Member members[], int* mCount, Account accounts[], int* aCount, Violation violations[], int* vCount);
+void checkAndWarnOutClub(Member members[], int* mCount, Account accounts[], int* aCount, Violation violations[], int* vCount);
 
 #endif
