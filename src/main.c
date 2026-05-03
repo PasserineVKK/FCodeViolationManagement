@@ -221,8 +221,9 @@ int main(int argc, char* argv[]) {
                 else
                     continue;
             } else {
-                menuRole = loginRole;
                 mIndex = searchMemberByIdInM(members, mCount, studentID);
+                //Use:menuRole = (members[mIndex].isPending != 1) ? loginRole : 0;
+                menuRole = 1; //Only use to test, delete when use above line
                 vIndex = searchMemberByIdInV(violations, vCount, studentID);
                 isStayLogin = 1;
                 // login successfully ==> Assign value for menuRole to open
@@ -250,7 +251,7 @@ int main(int argc, char* argv[]) {
                     "\n┃  6. Log Out                                  ┃"
                     "\n┃  7. Exit                                     ┃"
                     "\n┃  8. Switch to Admin Menu                     ┃"
-                    "\n┃  9.  View notification                       ┃"
+                    "\n┃  9. View notification                        ┃"
                     "\n┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛\n");
 
                 inputIntegerInRange(&choice, 1, 9,
@@ -284,7 +285,11 @@ int main(int argc, char* argv[]) {
                         // if choice = 7, save the data end return.
                         return 0;
                     case 8:
-                        if (loginRole == 1 || loginRole == 2) {
+                        if ((loginRole == 1 || loginRole == 2) && members[mIndex].isPending == 1){
+                            printf("Pending account. Can only use member menu now. ");
+                            break;
+                        }
+                        if ((loginRole == 1 || loginRole == 2) && members[mIndex].isPending != 1) {
                             menuRole = 1;
                             continue;
                         } else {

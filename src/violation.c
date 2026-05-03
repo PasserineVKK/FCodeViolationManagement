@@ -22,7 +22,6 @@
 #define DID_NOT_READ 0
 
 void simpleDisplayViolation(Violation* v) {
-	clearScreen();
 	displayViolationList(v, 1);
 }
 
@@ -151,6 +150,16 @@ void handleSeriousViolation(Member* m, Violation newV) {
 	}
 }
 
+int checkTotalBOD(Member members[], int mCount) {
+	int bodCount = 0;
+	for (int i = 0; i < mCount; i++) {
+		if (members[i].role == 2) {
+			bodCount++;
+		}
+	}
+	return bodCount;
+}
+
 void recordViolationView(Violation violations[], int* vCount, int* vCapacity,
                          Member members[], int mCount) {
 	int continueRecord = 1;
@@ -205,7 +214,6 @@ void recordViolationView(Violation violations[], int* vCount, int* vCapacity,
 				printf("Error: Violation list is full.\n");
 				return;
 			}
-
 			if (newV.reason == REASON_MEETING_ABSENCE || newV.reason == REASON_VIOLENCE) {
 				handleSeriousViolation(&members[mIndex], newV);
 			}
@@ -214,8 +222,19 @@ void recordViolationView(Violation violations[], int* vCount, int* vCapacity,
 			//se
 			if (members[mIndex].consecutiveAbsences >= 3 ||
 			        hasViolenceViolation(studentID, violations, *vCount)) {
-				members[mIndex].isPending = 1;
+				if (checkTotalBOD(members, mCount) == 1) {
+					members[mIndex].isPending = 0;
+					printf("This member has reached the kick condition, "
+						"but since they are the only BOD member, they will not be kicked "
+						" to avoid leaving the club without any BOD member.\n");
+				}
+				else {
+					members[mIndex].isPending = 1;
+				}
 			}
+
+			printf ("Pending: %d\n", members[mIndex].isPending);
+
 			saveViolations(violations, *vCount);
 			saveMembers(members, mCount);
 
