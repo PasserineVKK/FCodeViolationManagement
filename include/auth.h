@@ -7,14 +7,14 @@
 #define ACCOUNTS_FILE "data/accounts.dat"
 
 int loadAccounts(AccountList *accounts);
-int saveAccounts(Account accounts[], int count);
+int saveAccounts(AccountList *accounts);
 
-int searchMemberByIdInA(Account accounts[], int count, const char *id);
+int searchMemberByIdInA(AccountList *accounts, const char* id);
 
 // Return role of logged in account
 int login(AccountList *accounts, char *studentID);
 
 // Change password of logged in account
-void changePassword(Account accounts[], int aCount, char *actorID, int role);
+void changePassword(AccountList *accounts, char* actorID, int role);
 
 #endif
