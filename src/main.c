@@ -215,7 +215,7 @@ int main(int argc, char* argv[]) {
         // Firstly, auth. If stay login ==> do not check
         //				  If not stay login =>> check again.
         if (isStayLogin == 0) {
-            loginRole = login(accounts.data, studentID, accounts.count);
+            loginRole = login(&accounts, studentID);
             // If loginRole = -2 => Student ID not found
             if (loginRole == -2) {
                 int isExit = 0;

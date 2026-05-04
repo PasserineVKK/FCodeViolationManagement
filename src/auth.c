@@ -50,7 +50,7 @@ static int inputPasswordOrCancel(char* target, const char* prompt) {
 }
 
 // Return role of logged in account
-int login(Account accounts[], char* studentID, int aCount) {
+int login(AccountList *accounts, char* studentID) {
     printf("===== LOGIN =====\n");
 
     // char studentID[9]; // SE000000\0
@@ -61,8 +61,8 @@ int login(Account accounts[], char* studentID, int aCount) {
 
     // Input student ID
     inputStudentID(studentID, "Enter student ID: ");
-    int aIndex = searchMemberByIdInA(accounts, aCount, studentID);
-	int failCount = accounts[aIndex].failCount;  // consecutive failed trials
+    int aIndex = searchMemberByIdInA(accounts->data, accounts->count, studentID);
+    Account acc = accounts->data[aIndex];
 	
     // Check if student ID exists in accounts list
     if (aIndex == -1) {
@@ -71,11 +71,13 @@ int login(Account accounts[], char* studentID, int aCount) {
     }
 
     // Check if account is locked
-    if (accounts[aIndex].isLocked) {
+    if (acc.isLocked) {
         printf("\nThis account is locked due to 3 failed login attempts.\n");
         return -1;
     }
 
+	int failCount = acc.failCount;  // consecutive failed trials
+	
     // Enter password
     while (failCount < 3) {
         printf("Enter password: ");
@@ -83,27 +85,27 @@ int login(Account accounts[], char* studentID, int aCount) {
         // clear stadin
         int c;
         while ((c = getchar()) != '\n' && c != EOF);
-        if (strcmp(password, accounts[aIndex].password) == 0) {
+        if (strcmp(password, acc.password) == 0) {
             break;
         }
         printf("Incorrect password. Please try again.\n");
         failCount++;
-        accounts[aIndex].failCount = failCount;
-        saveAccounts(accounts, aCount);
+        accounts->data[aIndex].failCount = failCount;
+        saveAccounts(accounts->data, accounts->count);
     };
 
     // Check if account is locked after 3 failed attempts
     if (failCount >= 3) {
-        accounts[aIndex].isLocked = 1;
-        saveAccounts(accounts, aCount);
+        accounts->data[aIndex].isLocked = 1;
+        saveAccounts(accounts->data, accounts->count);
         printf("\nThis account is now locked due to 3 failed login attempts.\n");
         return -1;
     }
 
     // Successful login, reset fail, return role
-    accounts[aIndex].failCount = 0;
-    saveAccounts(accounts, aCount);
-    return accounts[aIndex].role;
+    acc.failCount = 0;
+    saveAccounts(accounts->data, accounts->count);
+    return acc.role;
 }
 
 // Change password of logged in account

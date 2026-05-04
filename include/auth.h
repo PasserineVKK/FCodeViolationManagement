@@ -12,7 +12,7 @@ int saveAccounts(Account accounts[], int count);
 int searchMemberByIdInA(Account accounts[], int count, const char *id);
 
 // Return role of logged in account
-int login(Account accounts[], char *studentID, int aCount);
+int login(AccountList *accounts, char *studentID);
 
 // Change password of logged in account
 void changePassword(Account accounts[], int aCount, char *actorID, int role);
