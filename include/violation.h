@@ -23,7 +23,7 @@
 #define VIOLATIONS_FILE "data/violations.dat"
 #define MAX_VIOLATIONS 3000
 
-int loadViolations(Violation violations[], int* count);
+int loadViolations(Violation violations[], int* count, Member members[], int mCount);
 int saveViolations(Violation violations[], int count);
 
 double calculateFine(int role, int reason);

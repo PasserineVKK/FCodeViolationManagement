@@ -181,7 +181,7 @@ int main(int argc, char* argv[]) {
     //seedSampleData(members, &mCount, violations, &vCount, accounts, &aCount);
 
     mCount = loadMembers(members, &mCount);
-    vCount = loadViolations(violations, &vCount);
+    vCount = loadViolations(violations, &vCount, members, mCount);
     aCount = loadAccounts(accounts, &aCount);
 
     // loginRole represent the role of this account

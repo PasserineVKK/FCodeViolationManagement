@@ -26,13 +26,31 @@ void simpleDisplayViolation(Violation* v) {
 	displayViolationList(v, 1);
 }
 
-int loadViolations(Violation violations[], int* count) {
-	return loadFromFile(VIOLATIONS_FILE, violations, sizeof(Violation),
+int loadViolations(Violation violations[], int* count, Member members[], int mCount) {
+	int isLoadSuccess = loadFromFile(VIOLATIONS_FILE, violations, sizeof(Violation) - sizeof(Member*),
 	                    MAX_VIOLATIONS, count);
+	                    
+	if (!isLoadSuccess){
+		printf("No initial data");
+		*count = 0;
+		return 1;
+	} else {
+	// assign pointer to owner
+		for (int i = 0; i < *count; i++){
+			int mIndex = searchMemberByIdInM(members, mCount, violations[i].studentID);
+			if (mIndex>=0 && mIndex < mCount){
+				violations[i].owner = &members[mIndex];
+			} else {
+				violations[i].owner = NULL;
+				
+			}
+		}
+	}
+	return 1;
 }
 
 int saveViolations(Violation violations[], int count) {
-	return saveToFile(VIOLATIONS_FILE, violations, sizeof(Violation), count);
+	return saveToFile(VIOLATIONS_FILE, violations, sizeof(Violation) - sizeof(Member*), count);
 }
 
 double calculateFine(int role, int reason) {
