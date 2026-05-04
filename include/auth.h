@@ -6,7 +6,7 @@
 #define MAX_ACCOUNTS 1000
 #define ACCOUNTS_FILE "data/accounts.dat"
 
-int loadAccounts(Account accounts[], int *count);
+int loadAccounts(AccountList *accounts);
 int saveAccounts(Account accounts[], int count);
 
 int searchMemberByIdInA(Account accounts[], int count, const char *id);

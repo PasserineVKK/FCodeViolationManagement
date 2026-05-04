@@ -9,7 +9,7 @@
 #include "model.h"
 
 // file
-int loadMembers(Member members[], int* count);
+int loadMembers(MemberList* members);
 int saveMembers(Member members[], int count);
 
 // Returns index in array, -1 if not found

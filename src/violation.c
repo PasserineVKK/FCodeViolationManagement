@@ -26,22 +26,31 @@ void simpleDisplayViolation(Violation* v) {
 	displayViolationList(v, 1);
 }
 
-int loadViolations(Violation violations[], int* count, Member members[], int mCount) {
-	int isLoadSuccess = loadFromFile(VIOLATIONS_FILE, violations, sizeof(Violation) - sizeof(Member*),
-	                    MAX_VIOLATIONS, count);
+
+void initViolationList(ViolationList *list, int initialCapacity){
+	list->count = 0;
+	list->capacity = initialCapacity;
+	list->data = malloc(sizeof(Violation) * list->capacity);
+}
+
+int loadViolations(ViolationList *violations, MemberList *members) {
+	int isLoadSuccess = loadFromFile(VIOLATIONS_FILE, violations->data, sizeof(Violation) - sizeof(Member*),
+	                    MAX_VIOLATIONS, &violations->count);
 	                    
 	if (!isLoadSuccess){
 		printf("No initial data");
-		*count = 0;
+		violations->count = 0;
 		return 1;
 	} else {
 	// assign pointer to owner
-		for (int i = 0; i < *count; i++){
-			int mIndex = searchMemberByIdInM(members, mCount, violations[i].studentID);
-			if (mIndex>=0 && mIndex < mCount){
-				violations[i].owner = &members[mIndex];
+		int mCount = members->count;
+		for (int i = 0; i < violations->count; i++){
+			int mIndex = searchMemberByIdInM(members->data, mCount, violations->data[i].studentID);
+			//check wheter mIndex valid
+			if (mIndex>=0 && mIndex <mCount){
+				violations->data[i].owner = &(members->data[mIndex]); //owner is pointer
 			} else {
-				violations[i].owner = NULL;	
+				violations->data[i].owner = NULL;	
 			}
 		}
 	}

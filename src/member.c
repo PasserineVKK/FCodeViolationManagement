@@ -13,9 +13,9 @@
 #include "../include/violation.h"
 
 // file
-int loadMembers(Member members[], int* count) {
-    return loadFromFile(MEMBERS_FILE, members, sizeof(Member), MAX_MEMBERS,
-                        count);
+int loadMembers(MemberList* members) {
+    return loadFromFile(MEMBERS_FILE, members->data, sizeof(Member), MAX_MEMBERS,
+                        &(members->count));
 }
 
 int saveMembers(Member members[], int count) {

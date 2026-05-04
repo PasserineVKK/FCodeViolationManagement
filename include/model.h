@@ -1,6 +1,6 @@
 #ifndef MODEL_H
 #define MODEL_H
-
+#define MAX 1000
 #include <time.h>
 
 typedef struct {
@@ -38,6 +38,22 @@ typedef struct {
     int isPending;  // 0 = Not pending, 1 = Pending
     Member* owner;
 } Violation;
+
+typedef struct {
+	Member data[MAX];
+	int count;
+} MemberList;
+
+typedef struct {
+	Account data[MAX];
+	int count;
+} AccountList;
+
+typedef struct {
+	Violation* data;
+	int count;
+	int capacity;
+} ViolationList;
 
 
 // Notification

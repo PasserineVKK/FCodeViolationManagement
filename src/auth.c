@@ -8,9 +8,9 @@
 #include "../include/member.h"
 
 // file
-int loadAccounts(Account accounts[], int* count) {
-    return loadFromFile(ACCOUNTS_FILE, accounts, sizeof(Account), MAX_ACCOUNTS,
-                        count);
+int loadAccounts(AccountList *accounts) {
+    return loadFromFile(ACCOUNTS_FILE, accounts->data, sizeof(Account), MAX_ACCOUNTS,
+                        &accounts->count);
 }
 
 int saveAccounts(Account accounts[], int count) {
