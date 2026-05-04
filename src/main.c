@@ -16,6 +16,20 @@
 #include "../include/view/violationView.h"
 #include "../include/violation.h"
 
+#define REASON_NOT_UNIFORM 0
+#define REASON_MEETING_ABSENCE 1
+#define REASON_NO_CLUB_ACTIVITY 2
+#define REASON_VIOLENCE 3
+
+#define PENDING 1
+#define NOT_PENDING 0
+
+#define ALREADY_PAID 1
+#define NOT_PAY 0
+
+#define PENALTY_FINANCIAL 0
+#define PENALTY_KICK 1
+
 // #include "../sampleData/sampleData.h"
 
 void seedSampleData(Member members[], int* mCount, Violation violations[],
@@ -31,7 +45,7 @@ void seedSampleData(Member members[], int* mCount, Violation violations[],
     strcpy(members[0].studentID, "SE200001");
     members[0].team = 0;  // Academic
     members[0].role = 0;  // Member -> fine = 20,000
-    members[0].violationCount = 3;
+    members[0].violationCount = 2;
     members[0].consecutiveAbsences = 1;
     members[0].totalFine = 40000.0;
     members[0].isPending = 0;
@@ -44,8 +58,8 @@ void seedSampleData(Member members[], int* mCount, Violation violations[],
     members[1].team = 2;  // HR
     members[1].role = 1;  // Leader/Vice -> fine = 50,000
     members[1].violationCount = 3;
-    members[1].consecutiveAbsences = 2;
-    members[1].totalFine = 100000.0;
+    members[1].consecutiveAbsences = 3;
+    members[1].totalFine = 150000.0;
     members[1].isPending = 1;
 
     // --- Member 2: BCN, Planning, warning ---
@@ -55,9 +69,9 @@ void seedSampleData(Member members[], int* mCount, Violation violations[],
     strcpy(members[2].studentID, "SE200003");
     members[2].team = 1;  // Planning
     members[2].role = 2;  // BCN -> fine = 50,000
-    members[2].violationCount = 3;
-    members[2].consecutiveAbsences = 2;
-    members[2].totalFine = 50000.0;
+    members[2].violationCount = 4;
+    members[2].consecutiveAbsences = 1;
+    members[2].totalFine = 200000.0;
     members[2].isPending = 0;
 
     *mCount = 3;
@@ -68,60 +82,71 @@ void seedSampleData(Member members[], int* mCount, Violation violations[],
     time_t base = 1745020800;  // 2026-04-19 00:00 UTC
 
     // SE200001
-    for (int i = 0; i < 3; i++) {
-        strcpy(violations[i].studentID, "SE200001");
+    for (int i = 0; i < 2; i++) {
+        strcpy(violations[i].studentID, members[0].studentID);
         violations[i].fine = 20000.0;
         violations[i].isPending = 0;
         violations[i].penalty = 0;
+         violations[i].owner = &members[0];
     }
     strcpy(violations[0].violationID, "VIO001");
-    violations[0].reason = 0;
+    violations[0].reason = REASON_MEETING_ABSENCE;
     violations[0].isPaid = 0;
-    strcpy(violations[0].note, "Forgot uniform");
+    strcpy(violations[0].note, "Retrospective meeting");
 
     strcpy(violations[1].violationID, "VIO002");
-    violations[1].reason = 1;
+    violations[1].reason = REASON_NOT_UNIFORM;
     violations[1].isPaid = 0;
-    strcpy(violations[1].note, "Absent without notice");
-
-    strcpy(violations[2].violationID, "VIO003");
-    violations[2].reason = 2;
-    violations[2].isPaid = 1;
+    strcpy(violations[1].note, "05/05/2026, Tuesday");
 
     // SE200002
-    for (int i = 3; i < 6; i++) {
-        strcpy(violations[i].studentID, "SE200002");
+    for (int i = 2; i < 4; i++) {
+        strcpy(violations[i].studentID, members[1].studentID);
         violations[i].fine = 50000.0;
-        violations[i].isPaid = 0;
-        violations[i].penalty = 1;
+        violations[i].isPaid = ALREADY_PAID;
+        violations[i].penalty = PENALTY_FINANCIAL;
+        violations[i].owner = &members[1];
     }
+    
+    strcpy(violations[2].violationID, "VIO003");
+    violations[2].reason = REASON_MEETING_ABSENCE;
+    strcpy(violations[2].note, "Retrospective meeting");
+    
     strcpy(violations[3].violationID, "VIO004");
-    violations[3].isPending = 0;
-    strcpy(violations[3].note, "Absence 1");
+    violations[3].reason = REASON_MEETING_ABSENCE;
+    strcpy(violations[3].note, "SUMMER semester meeting");
 
     strcpy(violations[4].violationID, "VIO005");
-    violations[4].isPending = 0;
-    strcpy(violations[4].note, "Absence 2");
+    violations[4].reason = REASON_MEETING_ABSENCE;
+    strcpy(violations[4].note, "Daily report meeting");
+    violations[4].penalty = PENALTY_KICK;
 
-    strcpy(violations[5].violationID, "VIO006");
-    violations[5].isPending = 1;
-    strcpy(violations[5].note, "Absence 3 - pending kick");
+    
 
     // SE200003
-    for (int i = 6; i < 9; i++) {
-        strcpy(violations[i].studentID, "SE200003");
+    for (int i = 5; i < 9; i++) {
+        strcpy(violations[i].studentID, members[2].studentID);
         violations[i].fine = 50000.0;
         violations[i].isPending = 0;
         violations[i].penalty = 0;
+         violations[i].owner = &members[2];
     }
+    
+    strcpy(violations[5].violationID, "VIO006");
+    violations[5].isPaid = 0;
+    violations[5].reason = REASON_NOT_UNIFORM;
+    
     strcpy(violations[6].violationID, "VIO007");
     violations[6].isPaid = 0;
+    violations[6].reason = REASON_NOT_UNIFORM;
 
     strcpy(violations[7].violationID, "VIO008");
     violations[7].isPaid = 1;
+    violations[7].reason = REASON_NOT_UNIFORM;
 
     strcpy(violations[8].violationID, "VIO009");
     violations[8].isPaid = 1;
+    violations[8].reason = REASON_MEETING_ABSENCE;
 
     *vCount = 9;
 
@@ -137,22 +162,23 @@ void seedSampleData(Member members[], int* mCount, Violation violations[],
 
     strcpy(accounts[1].studentID, "SE200002");
     strcpy(accounts[1].password, "SE200002");
-    accounts[1].role = 0;
+    accounts[1].role = 1;
     accounts[1].isLocked = 0;
     accounts[1].failCount = 0;
 
     strcpy(accounts[2].studentID, "SE200003");
     strcpy(accounts[2].password, "SE200003");
-    accounts[2].role = 1;  // Admin/BCN
+    accounts[2].role = 2;  // Admin/BCN
     accounts[2].isLocked = 0;
     accounts[2].failCount = 0;
 
     *aCount = 3;
 
     // save to files
-    saveToFile("data/members.dat", members, sizeof(Member), *mCount);
-    saveToFile("data/violations.dat", violations, sizeof(Violation), *vCount);
-    saveToFile("data/accounts.dat", accounts, sizeof(Account), *aCount);
+    saveMembers(members, *mCount);
+	saveAccounts(accounts, *aCount);
+	saveViolations(violations, *vCount);
+	
 
     printf("Created sample data with Pending status in data/ folder.\n");
 }
@@ -178,11 +204,11 @@ int main(int argc, char* argv[]) {
     initNotificationList();
     autoDeleteOutDateNotification();
 
-    //seedSampleData(members, &mCount, violations, &vCount, accounts, &aCount);
+  //  seedSampleData(members, &mCount, violations, &vCount, accounts, &aCount);
 
-    mCount = loadMembers(members, &mCount);
-    vCount = loadViolations(violations, &vCount, members, mCount);
-    aCount = loadAccounts(accounts, &aCount);
+    loadMembers(members, &mCount);
+    loadViolations(violations, &vCount, members, mCount);
+    loadAccounts(accounts, &aCount);
 
     // loginRole represent the role of this account
     // menuRole represent which menu will be open.

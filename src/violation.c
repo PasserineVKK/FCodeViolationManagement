@@ -41,8 +41,7 @@ int loadViolations(Violation violations[], int* count, Member members[], int mCo
 			if (mIndex>=0 && mIndex < mCount){
 				violations[i].owner = &members[mIndex];
 			} else {
-				violations[i].owner = NULL;
-				
+				violations[i].owner = NULL;	
 			}
 		}
 	}
@@ -50,6 +49,9 @@ int loadViolations(Violation violations[], int* count, Member members[], int mCo
 }
 
 int saveViolations(Violation violations[], int count) {
+	for(int i = 0; i < count; i++) {
+        violations[i].owner = NULL;
+    }
 	return saveToFile(VIOLATIONS_FILE, violations, sizeof(Violation) - sizeof(Member*), count);
 }
 
