@@ -25,41 +25,33 @@
 
 void initViolationList(ViolationList *list, int initialCapacity);
 
-int loadViolations(ViolationList *violations, MemberList *members);
-int saveViolations(Violation violations[], int count);
+int loadViolations(ViolationList *violations, const MemberList *members);
+int saveViolations(ViolationList *violations);
 
 double calculateFine(int role, int reason);
-void refreshFineAfterRolechange(char* memberId, int role,
-                                Violation violations[], int count);
+void refreshFineAfterRolechange(const char* memberId, int role, ViolationList *violations);
 
-Violation* findViolationById(const char* violationId, Violation violations[],
-                             int count);
+Violation* findViolationById(const char* violationId, ViolationList *violations);
 
-int getViolationIndexById(Violation violations[], int count,
-                          const char* violationId);
+int getViolationIndexById(const ViolationList *violations, const char* violationId);
 
-int searchMemberByIdInV(Violation violations[], int count, const char* id);
-void updateIsPaidField(char* violationId, Violation violations[], int count,
-                       int value);
-int addViolation(Violation violations[], int* count, Violation newV);
+int searchMemberByIdInV(const ViolationList *violations, const char* id);
+void updateIsPaidField(const char* violationId, ViolationList *violations, int value);
+int addViolation(ViolationList *violations, const Violation *newV);
 
-void deleteViolation(Violation* violation, int* count, Violation* v);
+void deleteViolation(ViolationList *list, const Violation *v);
 
-// Features 2.4: Record Violation
-void recordViolationView(Violation violations[], int* vCount, int* vCapacity,
-                         Member members[], int mCount);
+void recordViolationView(ViolationList *violations, MemberList *members);
 
-void handleSeriousViolation(Member* member, Violation violation);
+void handleSeriousViolation(const Member *member, const Violation *violation);
 
-void displayWarningList(Member members[], int mCount, Violation violations[], int vCount);
-void displayKickList(Member members[], int mCount, Violation violations[], int vCount);
-int isMemberInKickList(Member member, Violation violations[], int vCount);
-int isMemberInWarningList(Member member, Violation violations[], int vCount);
+void displayWarningList(const MemberList *members, const ViolationList *violations);
+void displayKickList(const MemberList *members, const ViolationList *violations);
+int isMemberInWarningList(const Member *member, const ViolationList *violations);
 
-int hasViolenceViolation(const char* studentID, Violation violations[], int vCount);
+int hasViolenceViolation(const char* studentID, const ViolationList *violations);
 
-
-void removeMemberById(const char* id, Member members[], int* mCount, Account accounts[], int* aCount, Violation violations[], int* vCount);
-void checkAndWarnOutClub(Member members[], int* mCount, Account accounts[], int* aCount, Violation violations[], int* vCount);
+void removeMemberById(const char* id, MemberList *members, AccountList *accounts, ViolationList *violations);
+void checkAndWarnOutClub(MemberList *members, AccountList *accounts, ViolationList *violations);
 
 #endif

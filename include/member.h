@@ -10,31 +10,28 @@
 
 // file
 int loadMembers(MemberList* members);
-int saveMembers(Member members[], int count);
+int saveMembers(const MemberList* members);
 
 // Returns index in array, -1 if not found
 int searchMemberByIdInM(Member members[], int count, const char* id);
 
 // Recalculates totalFine from unpaid violations, returns 1 on success
-int updateMemberTotalFine(Member members[], int mCount, Violation violations[],
-                          int vCount, const char* id);
+int updateMemberTotalFine(MemberList* members, const ViolationList* violations, const char* id);
 
 // Count unpaid violations for a member
-int countUnpaidViolations(const char* id, Violation violations[], int vCount);
+int countUnpaidViolations(const char* id, const ViolationList* violations);
 
 // Features 2.1: Add member
-void addMember(Member members[], int* mCount, Account accounts[], int* aCount);
+void addMember(MemberList* members, AccountList* accounts);
 
 // Features 2.2: Remove member
-void removeMember(Member members[], int* mCount, Account accounts[],
-                  int* aCount, Violation violations[], int* vCount);
+void removeMember(MemberList* members, AccountList* accounts, ViolationList* violations);
 
 // Features 2.3: Update member
-void updateMember(Member members[], int* mCount, Violation violations[],
-                  int vCount);
+void updateMember(MemberList* members, ViolationList* violations);
 
-int updateConsecutiveAbsences(Member members[], int count, const char* id);
+int updateConsecutiveAbsences(MemberList* members, const char* id);
 
-Member* getMemberById(const char* studentId, Member members[], int mCount);
+Member* getMemberById(const char* studentId, MemberList* members);
 
 #endif

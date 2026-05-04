@@ -173,11 +173,11 @@ void seedSampleData(MemberList *members, ViolationList *violations, AccountList 
     accounts->data[2].isLocked = 0;
     accounts->data[2].failCount = 0;
 
-   printf("before");
+  
     accounts->count = 3;
-     saveMembers(members->data, members->count);
-     saveAccounts(accounts->data, accounts->count);
-     saveViolations(violations->data, violations->count);
+     saveMembers(members);
+     saveAccounts(accounts);
+     saveViolations(violations);
 
     printf("Created sample data with Pending status in data/ folder.\n");
 }
@@ -242,7 +242,7 @@ int main(int argc, char* argv[]) {
             } else {
                 menuRole = loginRole;
                 mIndex = searchMemberByIdInM(members.data, members.count, studentID);
-                vIndex = searchMemberByIdInV(violations.data, violations.count, studentID);
+                vIndex = searchMemberByIdInV(&violations, studentID);
                 isStayLogin = 1;
                 // login successfully ==> Assign value for menuRole to open
                 // menu, and memberIndex to identify user
@@ -281,17 +281,16 @@ int main(int argc, char* argv[]) {
                         displayOneMemberInfo(members.data[mIndex]);
                         break;
                     case 2:
-                        displayViolationByStudentId(studentID, violations.data,
-                                                    violations.count);
+                        displayViolationByStudentId(studentID, &violations);
                         break;
                     case 3:
-                        viewMyUnpaidFines(studentID, violations.data, violations.count);
+                        viewMyUnpaidFines(studentID, &violations);
                         break;
                     case 4:
                         displayMemberList(members.data, members.count);
                         break;
                     case 5:
-                        changePassword(accounts.data, accounts.count, studentID, menuRole);
+                        changePassword(&accounts, studentID, menuRole);
                         break;
                     case 6:
                         isStayLogin = 0;
@@ -353,21 +352,19 @@ int main(int argc, char* argv[]) {
                 clearScreen();
                 switch (choice) {
                     case 1:
-                        addMember(members.data, &members.count, accounts.data, &accounts.count);
+                        addMember(&members, &accounts);
                         break;
                     case 2:
-                        updateMember(members.data, &members.count, violations.data, violations.count);
+                        updateMember(&members, &violations);
                         break;
                     case 3:
-                        removeMember(members.data, &members.count, accounts.data, &accounts.count,
-                                     violations.data, &violations.count);
+                        removeMember(&members, &accounts, &violations);
                         break;
                     case 4:
-                        recordViolationView(violations.data, &violations.count, &violations.capacity,
-                                            members.data, members.count);
+                        recordViolationView(&violations, &members);
                         break;
                     case 5:
-                        markFineAsPaidView(violations.data, violations.count, members.data, members.count);
+                        markFineAsPaidView(&violations, &members);
                         break;
                     case 6:
                         displayViolationList(violations.data, violations.count);
@@ -378,7 +375,7 @@ int main(int argc, char* argv[]) {
                                             violations.count);
                         break;
                     case 8:
-                        checkAndWarnOutClub(members.data, &members.count, accounts.data, &accounts.count, violations.data, &violations.count);
+                        checkAndWarnOutClub(&members, &accounts, &violations);
                         break;
                     case 9: {
                         int sortMode;
@@ -391,11 +388,11 @@ int main(int argc, char* argv[]) {
                         break;
                     }
                     case 10: {
-                        changePassword(accounts.data, accounts.count, studentID, menuRole);
+                        changePassword(&accounts, studentID, menuRole);
                         break;
                     }
                     case 11: {
-                        displayViolationsByTimeRange(violations.data, violations.count);
+                        displayViolationsByTimeRange(&violations);
                         break;
                     }
 
@@ -435,8 +432,8 @@ int main(int argc, char* argv[]) {
                         char violationId[10];
                         inputString(violationId, 10, "Enter violation id");
                         Violation* v =
-                            findViolationById(violationId, violations.data, violations.count);
-                        deleteViolation(violations.data, &violations.count, v);
+                            findViolationById(violationId, &violations);
+                        deleteViolation(&violations, v);
                         break;
                     }
                     case 17: {

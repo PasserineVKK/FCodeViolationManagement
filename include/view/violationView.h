@@ -1,22 +1,23 @@
 #ifndef VIOLATION_VIEW_H
 #define VIOLATION_VIEW_H
 
-#include "../member.h"
+#include "../model.h"
 #include "../violation.h"
+#include "../member.h"
 
-void displayViolationList(Violation violations[], int vCount);
+// Display all violations in list
+void displayViolationList(const Violation violations[], int vCount);
 
-// Features 1.2
-void displayViolationByStudentId(char* id, Violation violations[], int vCount);
+// Features 1.2: Display violations for a specific student
+void displayViolationByStudentId(const char* id, const ViolationList* violations);
 
 // Features 2.5: Mark fine as paid
+void markFineAsPaidView(ViolationList* violations, MemberList* members);
 
-void markFineAsPaidView(Violation violations[], int vCount, Member members[],
-                        int mCount);
+// Features 1.3: For member to view their own unpaid fines
+void viewMyUnpaidFines(const char* myStudentID, const ViolationList* violations);
 
-void viewMyUnpaidFines(const char* myStudentID, Violation violations[],
-                       int vCount);
-
-void displayViolationsByTimeRange(Violation violations[], int vCount);
+// Display violations filtered by time range
+void displayViolationsByTimeRange(const ViolationList* violations);
 
 #endif
