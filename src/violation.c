@@ -357,7 +357,7 @@ void displayKickList(const MemberList* members, const ViolationList* violations)
             int hasViolence  = hasViolenceViolation(mem->studentID, violations);
             int hasAbsence   = mem->consecutiveAbsences >= 3;
 
-            // Xây reason string d?a trên c? 2 di?u ki?n
+
             char reason[40] = "";
             if (hasAbsence && hasViolence) {
                 strcpy(reason, "Absence + Violence");
@@ -434,6 +434,6 @@ void removeMemberById(const char* id, MemberList* members, AccountList* accounts
     deleteNotificationByMemberId(id);
 
     saveMembers(members);
-    saveAccounts(accounts); // Ensure signature matches in auth/account module
+    saveAccounts(accounts); 
     saveViolations(violations);
 }
