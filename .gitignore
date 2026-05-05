@@ -4,6 +4,7 @@
 *.out
 .vscode/
 
+sampleData/
 data/
 !data/.gitkeep
 *.dev

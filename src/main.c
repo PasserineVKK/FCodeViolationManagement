@@ -16,51 +16,65 @@
 #include "../include/view/violationView.h"
 #include "../include/violation.h"
 
+#define REASON_NOT_UNIFORM 0
+#define REASON_MEETING_ABSENCE 1
+#define REASON_NO_CLUB_ACTIVITY 2
+#define REASON_VIOLENCE 3
+
+#define PENDING 1
+#define NOT_PENDING 0
+
+#define ALREADY_PAID 1
+#define NOT_PAY 0
+
+#define PENALTY_FINANCIAL 0
+#define PENALTY_KICK 1
+
 // #include "../sampleData/sampleData.h"
 
-void seedSampleData(Member members[], int* mCount, Violation violations[],
-                    int* vCount, Account accounts[], int* aCount) {
+void seedSampleData(MemberList *members, ViolationList *violations, AccountList *accounts) {
     // =============================================================
     // 3 MEMBERS
     // =============================================================
 
     // --- Member 0: Regular member, Academic, no violations ---
-    strcpy(members[0].fullName, "Nguyen Van An");
-    strcpy(members[0].email, "anNV@fpt.edu.vn");
-    strcpy(members[0].phoneNumber, "0901234561");
-    strcpy(members[0].studentID, "SE200001");
-    members[0].team = 0;  // Academic
-    members[0].role = 0;  // Member -> fine = 20,000
-    members[0].violationCount = 3;
-    members[0].consecutiveAbsences = 1;
-    members[0].totalFine = 40000.0;
-    members[0].isPending = 0;
+    strcpy(members->data[0].fullName, "Nguyen Van An");
+    strcpy(members->data[0].email, "anNV@fpt.edu.vn");
+    strcpy(members->data[0].phoneNumber, "0901234561");
+    strcpy(members->data[0].studentID, "SE200001");
+    members->data[0].team = 0;  // Academic
+    members->data[0].role = 0;  // Member -> fine = 20,000
+    members->data[0].violationCount = 2;
+    members->data[0].consecutiveAbsences = 1;
+    members->data[0].totalFine = 40000.0;
+    members->data[0].isPending = 0;
 
     // --- Member 1: Leader, HR, absent 3 times in a row -> pending kick ---
-    strcpy(members[1].fullName, "Tran Thi Bich");
-    strcpy(members[1].email, "bichTT@fpt.edu.vn");
-    strcpy(members[1].phoneNumber, "0901234562");
-    strcpy(members[1].studentID, "SE200002");
-    members[1].team = 2;  // HR
-    members[1].role = 1;  // Leader/Vice -> fine = 50,000
-    members[1].violationCount = 3;
-    members[1].consecutiveAbsences = 2;
-    members[1].totalFine = 100000.0;
-    members[1].isPending = 1;
+    strcpy(members->data[1].fullName, "Tran Thi Bich");
+    strcpy(members->data[1].email, "bichTT@fpt.edu.vn");
+    strcpy(members->data[1].phoneNumber, "0901234562");
+    strcpy(members->data[1].studentID, "SE200002");
+    members->data[1].team = 2;  // HR
+    members->data[1].role = 1;  // Leader/Vice -> fine = 50,000
+    members->data[1].violationCount = 3;
+    members->data[1].consecutiveAbsences = 3;
+    members->data[1].totalFine = 150000.0;
+    members->data[1].isPending = 1;
 
     // --- Member 2: BCN, Planning, warning ---
-    strcpy(members[2].fullName, "Le Hoang Cuong");
-    strcpy(members[2].email, "cuongLH@fpt.edu.vn");
-    strcpy(members[2].phoneNumber, "0901234563");
-    strcpy(members[2].studentID, "SE200003");
-    members[2].team = 1;  // Planning
-    members[2].role = 2;  // BCN -> fine = 50,000
-    members[2].violationCount = 3;
-    members[2].consecutiveAbsences = 2;
-    members[2].totalFine = 50000.0;
-    members[2].isPending = 0;
+    strcpy(members->data[2].fullName, "Le Hoang Cuong");
+    strcpy(members->data[2].email, "cuongLH@fpt.edu.vn");
+    strcpy(members->data[2].phoneNumber, "0901234563");
+    strcpy(members->data[2].studentID, "SE200003");
+    members->data[2].team = 1;  // Planning
+    members->data[2].role = 2;  // BCN -> fine = 50,000
+    members->data[2].violationCount = 4;
+    members->data[2].consecutiveAbsences = 1;
+    members->data[2].totalFine = 200000.0;
+    members->data[2].isPending = 0;
 
-    *mCount = 3;
+    // C?p nh?t s? lu?ng
+    members->count = 3;
 
     // =============================================================
     // 9 VIOLATIONS (3 per member, mix paid/unpaid)
@@ -68,95 +82,105 @@ void seedSampleData(Member members[], int* mCount, Violation violations[],
     time_t base = 1745020800;  // 2026-04-19 00:00 UTC
 
     // SE200001
-    for (int i = 0; i < 3; i++) {
-        strcpy(violations[i].studentID, "SE200001");
-        violations[i].fine = 20000.0;
-        violations[i].isPending = 0;
-        violations[i].penalty = 0;
+    for (int i = 0; i < 2; i++) {
+        strcpy(violations->data[i].studentID, members->data[0].studentID);
+        violations->data[i].fine = 20000.0;
+        violations->data[i].isPending = 0;
+        violations->data[i].penalty = 0;
+        violations->data[i].owner = &members->data[0];
     }
-    strcpy(violations[0].violationID, "VIO001");
-    violations[0].reason = 0;
-    violations[0].isPaid = 0;
-    strcpy(violations[0].note, "Forgot uniform");
+    strcpy(violations->data[0].violationID, "VIO001");
+    violations->data[0].reason = REASON_MEETING_ABSENCE;
+    violations->data[0].isPaid = 0;
+    strcpy(violations->data[0].note, "Retrospective meeting");
 
-    strcpy(violations[1].violationID, "VIO002");
-    violations[1].reason = 1;
-    violations[1].isPaid = 0;
-    strcpy(violations[1].note, "Absent without notice");
-
-    strcpy(violations[2].violationID, "VIO003");
-    violations[2].reason = 2;
-    violations[2].isPaid = 1;
+    strcpy(violations->data[1].violationID, "VIO002");
+    violations->data[1].reason = REASON_NOT_UNIFORM;
+    violations->data[1].isPaid = 0;
+    strcpy(violations->data[1].note, "05/05/2026, Tuesday");
 
     // SE200002
-    for (int i = 3; i < 6; i++) {
-        strcpy(violations[i].studentID, "SE200002");
-        violations[i].fine = 50000.0;
-        violations[i].isPaid = 0;
-        violations[i].penalty = 1;
+    for (int i = 2; i < 4; i++) {
+        strcpy(violations->data[i].studentID, members->data[1].studentID);
+        violations->data[i].fine = 50000.0;
+        violations->data[i].isPaid = ALREADY_PAID;
+        violations->data[i].penalty = PENALTY_FINANCIAL;
+        violations->data[i].owner = &members->data[1];
     }
-    strcpy(violations[3].violationID, "VIO004");
-    violations[3].isPending = 0;
-    strcpy(violations[3].note, "Absence 1");
+    
+    strcpy(violations->data[2].violationID, "VIO003");
+    violations->data[2].reason = REASON_MEETING_ABSENCE;
+    strcpy(violations->data[2].note, "Retrospective meeting");
+    
+    strcpy(violations->data[3].violationID, "VIO004");
+    violations->data[3].reason = REASON_MEETING_ABSENCE;
+    strcpy(violations->data[3].note, "SUMMER semester meeting");
 
-    strcpy(violations[4].violationID, "VIO005");
-    violations[4].isPending = 0;
-    strcpy(violations[4].note, "Absence 2");
-
-    strcpy(violations[5].violationID, "VIO006");
-    violations[5].isPending = 1;
-    strcpy(violations[5].note, "Absence 3 - pending kick");
+    // Ghi chú: ? b?n g?c ph?n t? violations[4] n?m ngoài vòng for, 
+    // tôi gi? nguyên logic không thay d?i n?i dung theo yêu c?u c?a b?n.
+    strcpy(violations->data[4].violationID, "VIO005");
+    violations->data[4].reason = REASON_MEETING_ABSENCE;
+    strcpy(violations->data[4].note, "Daily report meeting");
+    violations->data[4].penalty = PENALTY_KICK;
 
     // SE200003
-    for (int i = 6; i < 9; i++) {
-        strcpy(violations[i].studentID, "SE200003");
-        violations[i].fine = 50000.0;
-        violations[i].isPending = 0;
-        violations[i].penalty = 0;
+    for (int i = 5; i < 9; i++) {
+        strcpy(violations->data[i].studentID, members->data[2].studentID);
+        violations->data[i].fine = 50000.0;
+        violations->data[i].isPending = 0;
+        violations->data[i].penalty = 0;
+        violations->data[i].owner = &members->data[2];
     }
-    strcpy(violations[6].violationID, "VIO007");
-    violations[6].isPaid = 0;
+    
+    strcpy(violations->data[5].violationID, "VIO006");
+    violations->data[5].isPaid = 0;
+    violations->data[5].reason = REASON_NOT_UNIFORM;
+    
+    strcpy(violations->data[6].violationID, "VIO007");
+    violations->data[6].isPaid = 0;
+    violations->data[6].reason = REASON_NOT_UNIFORM;
 
-    strcpy(violations[7].violationID, "VIO008");
-    violations[7].isPaid = 1;
+    strcpy(violations->data[7].violationID, "VIO008");
+    violations->data[7].isPaid = 1;
+    violations->data[7].reason = REASON_NOT_UNIFORM;
 
-    strcpy(violations[8].violationID, "VIO009");
-    violations[8].isPaid = 1;
+    strcpy(violations->data[8].violationID, "VIO009");
+    violations->data[8].isPaid = 1;
+    violations->data[8].reason = REASON_MEETING_ABSENCE;
 
-    *vCount = 9;
+    // C?p nh?t s? lu?ng
+    violations->count = 9;
 
     // =============================================================
     // 3 ACCOUNTS (default password = studentID)
     // =============================================================
 
-    strcpy(accounts[0].studentID, "SE200001");
-    strcpy(accounts[0].password, "SE200001");
-    accounts[0].role = 0;  // Member
-    accounts[0].isLocked = 0;
-    accounts[0].failCount = 0;
+    strcpy(accounts->data[0].studentID, "SE200001");
+    strcpy(accounts->data[0].password, "SE200001");
+    accounts->data[0].role = 0;  // Member
+    accounts->data[0].isLocked = 0;
+    accounts->data[0].failCount = 0;
 
-    strcpy(accounts[1].studentID, "SE200002");
-    strcpy(accounts[1].password, "SE200002");
-    accounts[1].role = 0;
-    accounts[1].isLocked = 0;
-    accounts[1].failCount = 0;
+    strcpy(accounts->data[1].studentID, "SE200002");
+    strcpy(accounts->data[1].password, "SE200002");
+    accounts->data[1].role = 1;
+    accounts->data[1].isLocked = 0;
+    accounts->data[1].failCount = 0;
 
-    strcpy(accounts[2].studentID, "SE200003");
-    strcpy(accounts[2].password, "SE200003");
-    accounts[2].role = 1;  // Admin/BCN
-    accounts[2].isLocked = 0;
-    accounts[2].failCount = 0;
+    strcpy(accounts->data[2].studentID, "SE200003");
+    strcpy(accounts->data[2].password, "SE200003");
+    accounts->data[2].role = 2;  // Admin/BCN
+    accounts->data[2].isLocked = 0;
+    accounts->data[2].failCount = 0;
 
-    *aCount = 3;
-
-    // save to files
-    saveToFile("data/members.dat", members, sizeof(Member), *mCount);
-    saveToFile("data/violations.dat", violations, sizeof(Violation), *vCount);
-    saveToFile("data/accounts.dat", accounts, sizeof(Account), *aCount);
+  
+    accounts->count = 3;
+     saveMembers(members);
+     saveAccounts(accounts);
+     saveViolations(violations);
 
     printf("Created sample data with Pending status in data/ folder.\n");
 }
-
 /* run this program using the console pauser or add your own getch,
  * system("pause") or input loop */
 
@@ -164,29 +188,24 @@ void config() { SetConsoleOutputCP(65001); }
 
 int main(int argc, char* argv[]) {
     config();
-
-    int mCount = 1000, vCount = 1000,
-        aCount = 1000;  // set to max, then reset later
-    int vCapacity = 3000;
     char studentID[10];
 
     // set the array to be empty.
-    Member members[MAX_MEMBERS] = {0};
-    Violation* violations = malloc(sizeof(Violation) * vCapacity);
-    Account accounts[MAX_ACCOUNTS] = {0};
+    MemberList members;
+    ViolationList violations;
+    initViolationList(&violations, 3000);
+    AccountList accounts;
 
     initNotificationList();
     autoDeleteOutDateNotification();
 
-    //seedSampleData(members, &mCount, violations, &vCount, accounts, &aCount);
-
-    mCount = loadMembers(members, &mCount);
-    vCount = loadViolations(violations, &vCount);
-    aCount = loadAccounts(accounts, &aCount);
+  //  seedSampleData(members, &mCount, violations, &vCount, accounts, &aCount);
+    loadMembers(&members);
+	loadViolations(&violations, &members);
+	loadAccounts(&accounts);
 
     // loginRole represent the role of this account
     // menuRole represent which menu will be open.
-
     int loginRole = -1, menuRole = -1;
     int choice = -1, isStayLogin = 0;
     // isStayedLogin check whether user is auth-ed. 0 = No, 1 = Yes;
@@ -196,7 +215,7 @@ int main(int argc, char* argv[]) {
         // Firstly, auth. If stay login ==> do not check
         //				  If not stay login =>> check again.
         if (isStayLogin == 0) {
-            loginRole = login(accounts, studentID, aCount);
+            loginRole = login(&accounts, studentID);
             // If loginRole = -2 => Student ID not found
             if (loginRole == -2) {
                 int isExit = 0;
@@ -222,13 +241,13 @@ int main(int argc, char* argv[]) {
                     continue;
             } else {
                 menuRole = loginRole;
-                mIndex = searchMemberByIdInM(members, mCount, studentID);
-                vIndex = searchMemberByIdInV(violations, vCount, studentID);
+                mIndex = searchMemberByIdInM(members.data, members.count, studentID);
+                vIndex = searchMemberByIdInV(&violations, studentID);
                 isStayLogin = 1;
                 // login successfully ==> Assign value for menuRole to open
                 // menu, and memberIndex to identify user
 
-                displayNotificationByMemberID(members[mIndex].studentID,
+                displayNotificationByMemberID(members.data[mIndex].studentID,
                                               ADMIN_WARNING);
                 pauseProgram();
                 clearScreen();
@@ -259,20 +278,19 @@ int main(int argc, char* argv[]) {
                 clearScreen();
                 switch (choice) {
                     case 1:
-                        displayOneMemberInfo(members[mIndex]);
+                        displayOneMemberInfo(members.data[mIndex]);
                         break;
                     case 2:
-                        displayViolationByStudentId(studentID, violations,
-                                                    vCount);
+                        displayViolationByStudentId(studentID, &violations);
                         break;
                     case 3:
-                        viewMyUnpaidFines(studentID, violations, vCount);
+                        viewMyUnpaidFines(studentID, &violations);
                         break;
                     case 4:
-                        displayMemberList(members, mCount);
+                        displayMemberList(members.data, members.count);
                         break;
                     case 5:
-                        changePassword(accounts, aCount, studentID, menuRole);
+                        changePassword(&accounts, studentID, menuRole);
                         break;
                     case 6:
                         isStayLogin = 0;
@@ -292,7 +310,7 @@ int main(int argc, char* argv[]) {
                             break;
                         }
                     case 9:
-                        displayNotificationByMemberID(members[mIndex].studentID,
+                        displayNotificationByMemberID(members.data[mIndex].studentID,
                                                       IGNORE_NOTI_TYPE);
                         displayGlobalNotification();
                         break;
@@ -334,32 +352,30 @@ int main(int argc, char* argv[]) {
                 clearScreen();
                 switch (choice) {
                     case 1:
-                        addMember(members, &mCount, accounts, &aCount);
+                        addMember(&members, &accounts);
                         break;
                     case 2:
-                        updateMember(members, &mCount, violations, vCount);
+                        updateMember(&members, &violations);
                         break;
                     case 3:
-                        removeMember(members, &mCount, accounts, &aCount,
-                                     violations, &vCount);
+                        removeMember(&members, &accounts, &violations);
                         break;
                     case 4:
-                        recordViolationView(violations, &vCount, &vCapacity,
-                                            members, mCount);
+                        recordViolationView(&violations, &members);
                         break;
                     case 5:
-                        markFineAsPaidView(violations, vCount, members, mCount);
+                        markFineAsPaidView(&violations, &members);
                         break;
                     case 6:
-                        displayViolationList(violations, vCount);
+                        displayViolationList(violations.data, violations.count);
                         // not sorted by team, role yet
                         break;
                     case 7:
-                        showFineStatsByTeam(members, mCount, violations,
-                                            vCount);
+                        showFineStatsByTeam(members.data, members.count, violations.data,
+                                            violations.count);
                         break;
                     case 8:
-                        checkAndWarnOutClub(members, &mCount, accounts, &aCount, violations, &vCount);
+                        checkAndWarnOutClub(&members, &accounts, &violations);
                         break;
                     case 9: {
                         int sortMode;
@@ -368,15 +384,15 @@ int main(int argc, char* argv[]) {
                             "Sort mode: \n 1. ASC\n 0. DESC\n Your choice: ");
                         if (sortMode == 0) sortMode = -1;
                         // sortMode only accept 1 as ASC or -1 asc DESC.
-                        displayInSortByVioCount(members, mCount, sortMode);
+                        displayInSortByVioCount(members.data, members.count, sortMode);
                         break;
                     }
                     case 10: {
-                        changePassword(accounts, aCount, studentID, menuRole);
+                        changePassword(&accounts, studentID, menuRole);
                         break;
                     }
                     case 11: {
-                        displayViolationsByTimeRange(violations, vCount);
+                        displayViolationsByTimeRange(&violations);
                         break;
                     }
 
@@ -416,8 +432,8 @@ int main(int argc, char* argv[]) {
                         char violationId[10];
                         inputString(violationId, 10, "Enter violation id");
                         Violation* v =
-                            findViolationById(violationId, violations, vCount);
-                        deleteViolation(violations, &vCount, v);
+                            findViolationById(violationId, &violations);
+                        deleteViolation(&violations, v);
                         break;
                     }
                     case 17: {

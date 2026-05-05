@@ -8,18 +8,20 @@
 #include "../include/member.h"
 
 // file
-int loadAccounts(Account accounts[], int* count) {
-    return loadFromFile(ACCOUNTS_FILE, accounts, sizeof(Account), MAX_ACCOUNTS,
-                        count);
+int loadAccounts(AccountList *accounts) {
+    return loadFromFile(ACCOUNTS_FILE, accounts->data, sizeof(Account), MAX_ACCOUNTS,
+                        &accounts->count);
 }
 
-int saveAccounts(Account accounts[], int count) {
-    return saveToFile(ACCOUNTS_FILE, accounts, sizeof(Account), count);
+// 
+int saveAccounts(AccountList *accounts) {
+    return saveToFile(ACCOUNTS_FILE, accounts->data, sizeof(Account), accounts->count);
 }
 
-int searchMemberByIdInA(Account accounts[], int count, const char* id) {
-    for (int i = 0; i < count; i++) {
-        if (strcmp(accounts[i].studentID, id) == 0) {
+// use struct pointer as param to avoid shallow copy
+int searchMemberByIdInA(AccountList *accounts, const char* id) {
+    for (int i = 0; i < accounts->count; i++) {
+        if (strcmp(accounts->data[i].studentID, id) == 0) {
             return i;
         }
     }
@@ -50,32 +52,33 @@ static int inputPasswordOrCancel(char* target, const char* prompt) {
 }
 
 // Return role of logged in account
-int login(Account accounts[], char* studentID, int aCount) {
+int login(AccountList *accounts, char* studentID) {
     printf("===== LOGIN =====\n");
 
-    // char studentID[9]; // SE000000\0
     char password[30];
-    int role;           // 0 = Member, 1 = BOD
-    int isLocked = 0;   // 1 = This account locked after 3 failed trials
     
-
     // Input student ID
     inputStudentID(studentID, "Enter student ID: ");
-    int aIndex = searchMemberByIdInA(accounts, aCount, studentID);
-	int failCount = accounts[aIndex].failCount;  // consecutive failed trials
-	
+    
+    // Truy?n tr?c ti?p accounts (dã là con tr?) vào hàm search
+    int aIndex = searchMemberByIdInA(accounts, studentID);
+    
     // Check if student ID exists in accounts list
     if (aIndex == -1) {
         printf("\nStudent ID not found. Please try again.\n");
         return -2;
     }
 
+    Account acc = accounts->data[aIndex];
+
     // Check if account is locked
-    if (accounts[aIndex].isLocked) {
+    if (acc.isLocked) {
         printf("\nThis account is locked due to 3 failed login attempts.\n");
         return -1;
     }
 
+    int failCount = acc.failCount;  // consecutive failed trials
+    
     // Enter password
     while (failCount < 3) {
         printf("Enter password: ");
@@ -83,36 +86,35 @@ int login(Account accounts[], char* studentID, int aCount) {
         // clear stadin
         int c;
         while ((c = getchar()) != '\n' && c != EOF);
-        if (strcmp(password, accounts[aIndex].password) == 0) {
+        if (strcmp(password, acc.password) == 0) {
             break;
         }
         printf("Incorrect password. Please try again.\n");
         failCount++;
-        accounts[aIndex].failCount = failCount;
-        saveAccounts(accounts, aCount);
+        accounts->data[aIndex].failCount = failCount;
+        saveAccounts(accounts); // Truy?n con tr?
     };
 
     // Check if account is locked after 3 failed attempts
     if (failCount >= 3) {
-        accounts[aIndex].isLocked = 1;
-        saveAccounts(accounts, aCount);
+        accounts->data[aIndex].isLocked = 1;
+        saveAccounts(accounts);
         printf("\nThis account is now locked due to 3 failed login attempts.\n");
         return -1;
     }
 
     // Successful login, reset fail, return role
-    accounts[aIndex].failCount = 0;
-    saveAccounts(accounts, aCount);
-    return accounts[aIndex].role;
+    accounts->data[aIndex].failCount = 0; // C?p nh?t tr?c ti?p vào m?ng g?c
+    saveAccounts(accounts);
+    return accounts->data[aIndex].role;
 }
 
 // Change password of logged in account
-void changePassword(Account accounts[], int aCount, char* actorID, int role) {
+void changePassword(AccountList *accounts, char* actorID, int role) {
     printf("===== CHANGE PASSWORD =====\n");
     int aIndex = -1;
 
     char studentID[9];  // SE000000\0
-
     char oldPassword[30];
 
     if (role == 0) {
@@ -124,7 +126,8 @@ void changePassword(Account accounts[], int aCount, char* actorID, int role) {
             "Enter student ID of the member you want to change password: ");
     }
 
-    aIndex = searchMemberByIdInA(accounts, aCount, studentID);
+    // Truy?n con tr? accounts
+    aIndex = searchMemberByIdInA(accounts, studentID);
 
     if (aIndex == -1) {
         printf("Student ID not found. Please try again.\n");
@@ -145,7 +148,7 @@ void changePassword(Account accounts[], int aCount, char* actorID, int role) {
             }
 
             // Check if old password is correct
-            if (strcmp(oldPassword, accounts[aIndex].password) == 0) {
+            if (strcmp(oldPassword, accounts->data[aIndex].password) == 0) {
                 break;
             }
             printf("Incorrect old password. Please try again.\n");
@@ -167,10 +170,10 @@ void changePassword(Account accounts[], int aCount, char* actorID, int role) {
         printf("New password and confirm password do not match.\n");
     } while (1);
 
-    // Update new password to account and save to file
-    strcpy(accounts[aIndex].password, newPassword);
-    saveAccounts(accounts, aCount);
+    // Update new password to account và luu (dùng con tr?)
+    strcpy(accounts->data[aIndex].password, newPassword);
+    saveAccounts(accounts);
     printf("Password changed successfully.\n");
-
+ 
     return;
 }
