@@ -100,7 +100,7 @@ void seedSampleData(MemberList *members, ViolationList *violations, AccountList 
     strcpy(violations->data[1].note, "05/05/2026, Tuesday");
 
     // SE200002
-    for (int i = 2; i < 4; i++) {
+    for (int i = 2; i < 5; i++) {
         strcpy(violations->data[i].studentID, members->data[1].studentID);
         violations->data[i].fine = 50000.0;
         violations->data[i].isPaid = ALREADY_PAID;
@@ -115,9 +115,7 @@ void seedSampleData(MemberList *members, ViolationList *violations, AccountList 
     strcpy(violations->data[3].violationID, "VIO004");
     violations->data[3].reason = REASON_MEETING_ABSENCE;
     strcpy(violations->data[3].note, "SUMMER semester meeting");
-
-    // Ghi chú: ? b?n g?c ph?n t? violations[4] n?m ngoài vòng for, 
-    // tôi gi? nguyên logic không thay d?i n?i dung theo yêu c?u c?a b?n.
+    
     strcpy(violations->data[4].violationID, "VIO005");
     violations->data[4].reason = REASON_MEETING_ABSENCE;
     strcpy(violations->data[4].note, "Daily report meeting");
@@ -148,7 +146,6 @@ void seedSampleData(MemberList *members, ViolationList *violations, AccountList 
     violations->data[8].isPaid = 1;
     violations->data[8].reason = REASON_MEETING_ABSENCE;
 
-    // C?p nh?t s? lu?ng
     violations->count = 9;
 
     // =============================================================
@@ -199,7 +196,7 @@ int main(int argc, char* argv[]) {
     initNotificationList();
     autoDeleteOutDateNotification();
 
-  //  seedSampleData(members, &mCount, violations, &vCount, accounts, &aCount);
+    seedSampleData(&members, &violations, &accounts);
     loadMembers(&members);
 	loadViolations(&violations, &members);
 	loadAccounts(&accounts);
@@ -242,7 +239,7 @@ int main(int argc, char* argv[]) {
             } else {
                 menuRole = loginRole;
                 mIndex = searchMemberByIdInM(members.data, members.count, studentID);
-                vIndex = searchMemberByIdInV(&violations, studentID);
+                vIndex = getViolationIndexById(&violations, studentID);
                 isStayLogin = 1;
                 // login successfully ==> Assign value for menuRole to open
                 // menu, and memberIndex to identify user
@@ -429,11 +426,8 @@ int main(int argc, char* argv[]) {
                         break;
                     }
                     case 16: {
-                        char violationId[10];
-                        inputString(violationId, 10, "Enter violation id");
-                        Violation* v =
-                            findViolationById(violationId, &violations);
-                        deleteViolation(&violations, v);
+                        
+                        deleteViolation(&violations);
                         break;
                     }
                     case 17: {

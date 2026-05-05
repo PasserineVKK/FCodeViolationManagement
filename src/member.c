@@ -231,7 +231,7 @@ void removeMember(MemberList* members, AccountList* accounts, ViolationList* vio
             // Start to remove
             if (confirm == 1) {
                 // Search member in violation list and account list (Assume signatures changed)
-                vIndex = searchMemberByIdInV(violations, id);
+                vIndex = getViolationIndexById(violations, id);
                 aIndex = searchMemberByIdInA(accounts, id);
 
                 // Remove in member list by shift left array
