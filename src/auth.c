@@ -60,7 +60,6 @@ int login(AccountList *accounts, char* studentID) {
     // Input student ID
     inputStudentID(studentID, "Enter student ID: ");
     
-    // Truy?n tr?c ti?p accounts (dã là con tr?) vào hàm search
     int aIndex = searchMemberByIdInA(accounts, studentID);
     
     // Check if student ID exists in accounts list
@@ -104,7 +103,7 @@ int login(AccountList *accounts, char* studentID) {
     }
 
     // Successful login, reset fail, return role
-    accounts->data[aIndex].failCount = 0; // C?p nh?t tr?c ti?p vào m?ng g?c
+    accounts->data[aIndex].failCount = 0; // C?p nh?t tr?c ti?p vï¿½o m?ng g?c
     saveAccounts(accounts);
     return accounts->data[aIndex].role;
 }
@@ -170,7 +169,7 @@ void changePassword(AccountList *accounts, char* actorID, int role) {
         printf("New password and confirm password do not match.\n");
     } while (1);
 
-    // Update new password to account và luu (dùng con tr?)
+    // Update new password to account vï¿½ luu (dï¿½ng con tr?)
     strcpy(accounts->data[aIndex].password, newPassword);
     saveAccounts(accounts);
     printf("Password changed successfully.\n");

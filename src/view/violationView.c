@@ -58,7 +58,7 @@ void displayViolationRow(const Violation* v) {
 
     const char* paidStr = v->isPaid ? "Yes" : "No";
     const char* penaltyStr = v->penalty ? "Kick" : "Financial";
-    const char* pendingStr = v->isPending ? "Pending" : "Resolved";
+    const char* pendingStr = v->owner->isPending ? "Pending" : "Resolved";
 
     printf(
         "┃ %-10s ┃ %-10s ┃ %-20s ┃ %-20s ┃ %-8.0f ┃ %-8s ┃ %-10s ┃ %-32s ┃ "
@@ -166,29 +166,17 @@ void viewMyUnpaidFines(const char* myStudentID, const ViolationList* violations)
         if (v->isPaid != 0) continue;
 
         char timeStr[20];
-        getFormatTime(
-            timeStr,
-            sizeof(timeStr),
-            v->violationTime
-        );
+        getFormatTime(timeStr, sizeof(timeStr), v->violationTime);
 
-        const char* reason =
-            (v->reason >= 0 && v->reason <= 3)
-                ? reasonNames[v->reason]
-                : "Unknown";
+        const char* reason =(v->reason >= 0 && v->reason <= 3)
+                                ? reasonNames[v->reason]
+                                : "Unknown";
 
         char fineStr[30];
-        formatCurrency(
-            v->fine,
-            fineStr,
-            sizeof(fineStr)
-        );
+        formatCurrency(v->fine, fineStr, sizeof(fineStr));
 
         printf("┃ %-12s ┃ %-24s ┃ %-20s ┃ %16s ┃\n",
-            v->violationID,
-            reason,
-            timeStr,
-            fineStr);
+            v->violationID, reason, timeStr, fineStr);
 
         total += v->fine;
         found++;
@@ -205,11 +193,7 @@ void viewMyUnpaidFines(const char* myStudentID, const ViolationList* violations)
 
         char totalStr[30];
 
-        formatCurrency(
-            total,
-            totalStr,
-            sizeof(totalStr)
-        );
+        formatCurrency(total, totalStr, sizeof(totalStr));
 
         printf("┃ %-61s  ┃ %-16s ┃\n",
             "Total Unpaid Fines",

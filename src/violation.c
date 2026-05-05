@@ -185,10 +185,10 @@ void handleSeriousViolation(const Member* m, const Violation* newV) {
     }
 }
 
-int checkTotalBOD(Member members[], int mCount) {
+int checkTotalBOD(MemberList *members) {
 	int bodCount = 0;
-	for (int i = 0; i < mCount; i++) {
-		if (members[i].role == 2) {
+	for (int i = 0; i < members->count; i++) {
+		if (members->data[i].role == 2) {
 			bodCount++;
 		}
 	}
@@ -231,7 +231,6 @@ void recordViolationView(ViolationList* violations, MemberList* members) {
         newV.fine = calculateFine(targetMem->role, newV.reason);
         newV.isPaid = NOT_PAY;
         newV.penalty = PENALTY_FINANCIAL;
-        newV.isPending = NOT_PENDING;
 
         inputString(newV.note, 100, "Enter note (optional): ");
 

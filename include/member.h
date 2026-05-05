@@ -25,7 +25,7 @@ int countUnpaidViolations(const char* id, const ViolationList* violations);
 void addMember(MemberList* members, AccountList* accounts);
 
 // Features 2.2: Remove member
-void removeMember(MemberList* members, AccountList* accounts, ViolationList* violations);
+void removeMember(MemberList* members, AccountList* accounts, ViolationList* violations, const char *actorID);
 
 // Features 2.3: Update member
 void updateMember(MemberList* members, ViolationList* violations);

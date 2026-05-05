@@ -38,7 +38,7 @@ int countUnpaidViolations(const char* id, const ViolationList* violations) {
         // Use pointer to access directly and avoid copying
         Violation* v = &violations->data[i];
         if (strcmp(v->studentID, id) == 0 &&
-            v->isPaid == 0 && v->isPending == 0) {
+            v->isPaid == 0 && v->owner->isPending == 0) {
             unpaidCount++;
         }
     }
@@ -57,7 +57,7 @@ int updateMemberTotalFine(MemberList* members, const ViolationList* violations, 
     for (int i = 0; i < violations->count; i++) {
         Violation* v = &violations->data[i];
         if (strcmp(v->studentID, id) == 0 &&
-            v->isPaid == 0 && v->isPending == 0) {
+            v->isPaid == 0 && v->owner->isPending == 0) {
             totalFine += v->fine;
         }
     }
@@ -199,7 +199,7 @@ void addMember(MemberList* members, AccountList* accounts) {
 Input ID => Find by ID => If found, show member info
 => Confirm to remove => If yes, remove by shift left array => Save to file
 */
-void removeMember(MemberList* members, AccountList* accounts, ViolationList* violations) {
+void removeMember(MemberList* members, AccountList* accounts, ViolationList* violations, const char *actorID) {
     // Check if member list is empty
     if (members->count == 0) {
         printf("No members available to remove.\n");
@@ -210,73 +210,84 @@ void removeMember(MemberList* members, AccountList* accounts, ViolationList* vio
 
     int continueRemove = 1;
     while (continueRemove) {
-        int mIndex = -1, vIndex = -1, aIndex = -1;  // Reset position before find member
+        int mIndex = -1, vIndex = -1, aIndex = -1, actorIndex = -1;  // Reset position before find member
         inputStudentID(id, "Enter student ID to remove: ");
 
         // Find member by ID in member list
         mIndex = searchMemberByIdInM(members, id);
+        actorIndex = searchMemberByIdInM(members, actorID);
 
         if (mIndex != -1) {
             // Show student
             printf("\nStudent found:\n");
             displayOneMemberInfo(members->data[mIndex]);
 
-            // Confirm to remove member
-            int confirm;
-            inputYesNo(
-                &confirm,
-                "\nRemove this member?\n1: Yes\n0: No\n=> Your choice: ");
-
-            // Start to remove
-            if (confirm == 1) {
-                // Search member in violation list and account list (Assume signatures changed)
-                vIndex = searchMemberByIdInV(violations, id);
-                aIndex = searchMemberByIdInA(accounts, id);
-
-                // Remove in member list by shift left array
-                for (int i = mIndex; i < members->count - 1; i++) {
-                    members->data[i] = members->data[i + 1];
-                }
-                members->count--;
-
-                // Remove in account list by shift left array if found
-                
-                for (int i = aIndex; i < accounts->count - 1; i++) {
-                    accounts->data[i] = accounts->data[i + 1];
-                }
-                accounts->count--;
-            
-
-                // Call save member and account to file functions
-                saveMembers(members);
-                saveAccounts(accounts);
-
-                // Remove in violation list by shift left array if found
-                // If vIndex == -1 => This member has no violation record
-                // => No need to remove in violation list
-                if (vIndex != -1) {
-                    // Loop through all violations to remove every violation of this member
-                    for (int i = 0; i < violations->count; i++) {
-                        if (strcmp(violations->data[i].studentID, id) == 0) {
-                            for (int j = i; j < violations->count - 1; j++) {
-                                violations->data[j] = violations->data[j + 1];
-                            }
-                            violations->count--;
-                            i--; // Check at this index again after shifting
-                        }
-                    }
-                    saveViolations(violations);
-                }
-
-                // Delete notification 
-                deleteNotificationByMemberId(id); 
-
-                // Print success message
-                printf("Member removed successfully!\n");
-            } else {
-                printf("Member not removed.\n");
+            //Only BOD can remove BOD
+            if (members->data[mIndex].role == 2 && members->data[actorIndex].role == 1){
+                printf ("You are only Vice/Leader, you are not granted permission to remove BOD\n");
+            }    
+            else if (members->data[mIndex].role == 2 && members->data[actorIndex].role == 2  && checkTotalBOD (members)== 1){
+                //Only can remove themself if they are not the last BOD
+                printf ("You are the last BOD, can't remove yourslef\n");
             }
-        } else {
+            else {
+                // Confirm to remove member
+                int confirm;
+                inputYesNo(&confirm, "\nRemove this member?\n1: Yes\n0: No\n=> Your choice: ");
+
+                // Start to remove
+                if (confirm == 1) {
+                    // Search member in violation list and account list (Assume signatures changed)
+                    vIndex = searchMemberByIdInV(violations, id);
+                    aIndex = searchMemberByIdInA(accounts, id);
+
+                    // Remove in member list by shift left array
+                    for (int i = mIndex; i < members->count - 1; i++) {
+                        members->data[i] = members->data[i + 1];
+                    }
+                    members->count--;
+
+                    // Remove in account list by shift left array if found
+                    
+                    for (int i = aIndex; i < accounts->count - 1; i++) {
+                        accounts->data[i] = accounts->data[i + 1];
+                    }
+                    accounts->count--;
+                
+
+                    // Call save member and account to file functions
+                    saveMembers(members);
+                    saveAccounts(accounts);
+
+                    // Remove in violation list by shift left array if found
+                    // If vIndex == -1 => This member has no violation record
+                    // => No need to remove in violation list
+                    if (vIndex != -1) {
+                        // Loop through all violations to remove every violation of this member
+                        for (int i = 0; i < violations->count; i++) {
+                            if (strcmp(violations->data[i].studentID, id) == 0) {
+                                for (int j = i; j < violations->count - 1; j++) {
+                                    violations->data[j] = violations->data[j + 1];
+                                }
+                                violations->count--;
+                                i--; // Check at this index again after shifting
+                            }
+                        }
+                        saveViolations(violations);
+                    }
+
+                    // Delete notification 
+                    deleteNotificationByMemberId(id); 
+
+                    // Print success message
+                    printf("Member removed successfully!\n");
+                } 
+                else {
+                    printf("Member not removed.\n");
+                }
+            }
+        } 
+        else {
             printf("Member not found!\n");
         }
 
@@ -395,7 +406,7 @@ void updateMember(MemberList* members, ViolationList* violations) {
                                 Violation* vPtr = &violations->data[i];
                                 if (strcmp(vPtr->studentID, studentID) == 0 &&
                                     vPtr->isPaid == 0 &&
-                                    vPtr->isPending == 0 &&
+                                    vPtr->owner->isPending == 0 &&
                                     vPtr->fine != 0) {
                                     
                                     double newFine = calculateFine(role, vPtr->reason);

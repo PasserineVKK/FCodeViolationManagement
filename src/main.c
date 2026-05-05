@@ -85,7 +85,7 @@ void seedSampleData(MemberList *members, ViolationList *violations, AccountList 
     for (int i = 0; i < 2; i++) {
         strcpy(violations->data[i].studentID, members->data[0].studentID);
         violations->data[i].fine = 20000.0;
-        violations->data[i].isPending = 0;
+        violations->data[i].owner->isPending = 0;
         violations->data[i].penalty = 0;
         violations->data[i].owner = &members->data[0];
     }
@@ -116,8 +116,6 @@ void seedSampleData(MemberList *members, ViolationList *violations, AccountList 
     violations->data[3].reason = REASON_MEETING_ABSENCE;
     strcpy(violations->data[3].note, "SUMMER semester meeting");
 
-    // Ghi ch�: ? b?n g?c ph?n t? violations[4] n?m ngo�i v�ng for, 
-    // t�i gi? nguy�n logic kh�ng thay d?i n?i dung theo y�u c?u c?a b?n.
     strcpy(violations->data[4].violationID, "VIO005");
     violations->data[4].reason = REASON_MEETING_ABSENCE;
     strcpy(violations->data[4].note, "Daily report meeting");
@@ -127,7 +125,7 @@ void seedSampleData(MemberList *members, ViolationList *violations, AccountList 
     for (int i = 5; i < 9; i++) {
         strcpy(violations->data[i].studentID, members->data[2].studentID);
         violations->data[i].fine = 50000.0;
-        violations->data[i].isPending = 0;
+        violations->data[i].owner->isPending = 0;
         violations->data[i].penalty = 0;
         violations->data[i].owner = &members->data[2];
     }
@@ -362,7 +360,7 @@ int main(int argc, char* argv[]) {
                         updateMember(&members, &violations);
                         break;
                     case 3:
-                        removeMember(&members, &accounts, &violations);
+                        removeMember(&members, &accounts, &violations, studentID);
                         break;
                     case 4:
                         recordViolationView(&violations, &members);

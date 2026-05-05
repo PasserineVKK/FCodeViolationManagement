@@ -35,7 +35,6 @@ typedef struct {
     int isPaid;   // 0 = Not yet, 1 = Already
     int penalty;  // 0 = Financial penalty, 1 = Kick
     char note[100];
-    int isPending;  // 0 = Not pending, 1 = Pending
     Member* owner;
 } Violation;
 
