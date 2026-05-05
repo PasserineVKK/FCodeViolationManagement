@@ -228,7 +228,7 @@ void removeMember(MemberList* members, AccountList* accounts, ViolationList* vio
             }    
             else if (members->data[mIndex].role == 2 && members->data[actorIndex].role == 2  && checkTotalBOD (members)== 1){
                 //Only can remove themself if they are not the last BOD
-                printf ("You are the last BOD, can't remove yourslef\n");
+                printf ("You are the last BOD, can't remove yourself\n");
             }
             else {
                 // Confirm to remove member
