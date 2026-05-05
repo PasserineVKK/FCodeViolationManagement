@@ -13,7 +13,7 @@ int loadMembers(MemberList* members);
 int saveMembers(const MemberList* members);
 
 // Returns index in array, -1 if not found
-int searchMemberByIdInM(Member members[], int count, const char* id);
+int searchMemberByIdInM(const MemberList * members, const char* id);
 
 // Recalculates totalFine from unpaid violations, returns 1 on success
 int updateMemberTotalFine(MemberList* members, const ViolationList* violations, const char* id);

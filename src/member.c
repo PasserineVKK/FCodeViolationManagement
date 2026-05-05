@@ -23,10 +23,9 @@ int saveMembers(const MemberList* members) {
 }
 
 // search
-
-int searchMemberByIdInM(Member members[], int count, const char* id) {
-    for (int i = 0; i < count; i++) {
-        if (strcmp(members[i].studentID, id) == 0) {
+int searchMemberByIdInM(const MemberList *members, const char* id) {
+    for (int i = 0; i < members->count; i++) {
+        if (strcmp(members->data[i].studentID, id) == 0) {
             return i;
         }
     }
@@ -48,7 +47,7 @@ int countUnpaidViolations(const char* id, const ViolationList* violations) {
 
 // updateTotalFine
 int updateMemberTotalFine(MemberList* members, const ViolationList* violations, const char* id) {
-    int memberIndex = searchMemberByIdInM(members->data, members->count, id);
+    int memberIndex = searchMemberByIdInM(members, id);
     if (memberIndex == -1) {
         printf("Member not found!\n");
         return 0;
@@ -70,7 +69,7 @@ int updateMemberTotalFine(MemberList* members, const ViolationList* violations, 
 }
 
 int updateConsecutiveAbsences(MemberList* members, const char* id) {
-    int index = searchMemberByIdInM(members->data, members->count, id);
+    int index = searchMemberByIdInM(members, id);
 
     if (index != -1) {
         // Use pointer to update directly
@@ -102,7 +101,7 @@ void addMember(MemberList* members, AccountList* accounts) {
     while (continueAdd) {
         // Input student ID
         inputStudentID(studentID, "\nEnter student ID: ");
-        if (searchMemberByIdInM(members->data, members->count, studentID) == -1) {
+        if (searchMemberByIdInM(members, studentID) == -1) {
             // Input member name
             inputMemberName(fullName, "\nEnter full name: ");
 
@@ -215,7 +214,7 @@ void removeMember(MemberList* members, AccountList* accounts, ViolationList* vio
         inputStudentID(id, "Enter student ID to remove: ");
 
         // Find member by ID in member list
-        mIndex = searchMemberByIdInM(members->data, members->count, id);
+        mIndex = searchMemberByIdInM(members, id);
 
         if (mIndex != -1) {
             // Show student
@@ -323,7 +322,7 @@ void updateMember(MemberList* members, ViolationList* violations) {
         inputStudentID(studentID, "Enter student ID to update: ");
 
         // Find member by ID
-        mIndex = searchMemberByIdInM(members->data, members->count, studentID);
+        mIndex = searchMemberByIdInM(members, studentID);
 
         // If found
         if (mIndex != -1) {
