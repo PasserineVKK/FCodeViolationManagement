@@ -100,7 +100,7 @@ void seedSampleData(MemberList *members, ViolationList *violations, AccountList 
     strcpy(violations->data[1].note, "05/05/2026, Tuesday");
 
     // SE200002
-    for (int i = 2; i < 4; i++) {
+    for (int i = 2; i < 5; i++) {
         strcpy(violations->data[i].studentID, members->data[1].studentID);
         violations->data[i].fine = 50000.0;
         violations->data[i].isPaid = ALREADY_PAID;
@@ -146,8 +146,11 @@ void seedSampleData(MemberList *members, ViolationList *violations, AccountList 
     violations->data[8].isPaid = 1;
     violations->data[8].reason = REASON_MEETING_ABSENCE;
 
-    // C?p nh?t s? lu?ng
     violations->count = 9;
+    
+    for(int i=0;i<8;i++){
+    	violations->data[i].violationTime = base;
+	}
 
     // =============================================================
     // 3 ACCOUNTS (default password = studentID)
@@ -197,7 +200,7 @@ int main(int argc, char* argv[]) {
     initNotificationList();
     autoDeleteOutDateNotification();
 
-  //  seedSampleData(members, &mCount, violations, &vCount, accounts, &aCount);
+    seedSampleData(&members, &violations, &accounts);
     loadMembers(&members);
 	loadViolations(&violations, &members);
 	loadAccounts(&accounts);
@@ -239,8 +242,9 @@ int main(int argc, char* argv[]) {
                     continue;
             } else {
                 menuRole = loginRole;
-                mIndex = searchMemberByIdInM(&members, studentID);
-                vIndex = searchMemberByIdInV(&violations, studentID);
+		        mIndex = searchMemberByIdInM(&members, studentID);
+                vIndex = getViolationIndexById(&violations, studentID);
+
                 isStayLogin = 1;
                 // login successfully ==> Assign value for menuRole to open
                 // menu, and memberIndex to identify user
@@ -360,7 +364,8 @@ int main(int argc, char* argv[]) {
                         updateMember(&members, &violations);
                         break;
                     case 3:
-                        removeMember(&members, &accounts, &violations, studentID);
+                        //removeMember(&members, &accounts, &violations, studentID);
+                        printf ("Can not use now!");
                         break;
                     case 4:
                         recordViolationView(&violations, &members);
@@ -430,11 +435,8 @@ int main(int argc, char* argv[]) {
                         break;
                     }
                     case 16: {
-                        char violationId[10];
-                        inputString(violationId, 10, "Enter violation id");
-                        Violation* v =
-                            findViolationById(violationId, &violations);
-                        deleteViolation(&violations, v);
+                        
+                        deleteViolation(&violations);
                         break;
                     }
                     case 17: {

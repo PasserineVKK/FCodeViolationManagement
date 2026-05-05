@@ -25,7 +25,7 @@
 
 void initViolationList(ViolationList *list, int initialCapacity);
 
-int loadViolations(ViolationList *violations, const MemberList *members);
+int loadViolations(ViolationList *violations, MemberList *members);
 int saveViolations(ViolationList *violations);
 
 double calculateFine(int role, int reason);
@@ -35,11 +35,10 @@ Violation* findViolationById(const char* violationId, ViolationList *violations)
 
 int getViolationIndexById(const ViolationList *violations, const char* violationId);
 
-int searchMemberByIdInV(const ViolationList *violations, const char* id);
 void updateIsPaidField(const char* violationId, ViolationList *violations, int value);
 int addViolation(ViolationList *violations, const Violation *newV);
 
-void deleteViolation(ViolationList *list, const Violation *v);
+void deleteViolation(ViolationList *list);
 
 void recordViolationView(ViolationList *violations, MemberList *members);
 
@@ -53,6 +52,8 @@ int hasViolenceViolation(const char* studentID, const ViolationList *violations)
 
 void removeMemberById(const char* id, MemberList *members, AccountList *accounts, ViolationList *violations);
 void checkAndWarnOutClub(MemberList *members, AccountList *accounts, ViolationList *violations);
+
+void removeOneViolation (ViolationList* list, const char *violationId);
 
 int checkTotalBOD(MemberList *members);
 

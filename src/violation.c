@@ -31,7 +31,7 @@ void initViolationList(ViolationList *list, int initialCapacity){
     list->data = malloc(sizeof(Violation) * list->capacity);
 }
 
-int loadViolations(ViolationList *violations, const MemberList *members) {
+int loadViolations(ViolationList *violations, MemberList *members) {
     int isLoadSuccess = loadFromFile(VIOLATIONS_FILE, violations->data, sizeof(Violation) - sizeof(Member*),
                                     MAX_VIOLATIONS, &violations->count);
                                     
@@ -56,12 +56,6 @@ int loadViolations(ViolationList *violations, const MemberList *members) {
 }
 
 int saveViolations(ViolationList* violations) {
-    // Note: Setting owner = NULL modifies the runtime data to prevent invalid addresses 
-    // being saved, but it also breaks the links in memory after saving. 
-    // Kept as original logic strictly.
-    for(int i = 0; i < violations->count; i++) {
-        violations->data[i].owner = NULL;
-    }
     return saveToFile(VIOLATIONS_FILE, violations->data, sizeof(Violation) - sizeof(Member*), violations->count);
 }
 
@@ -96,12 +90,6 @@ int getViolationIndexById(const ViolationList* violations, const char* violation
     return -1;
 }
 
-int searchMemberByIdInV(const ViolationList* violations, const char* id) {
-    for (int i = 0; i < violations->count; i++) {
-        if (strcmp(violations->data[i].studentID, id) == 0) return i;
-    }
-    return -1;
-}
 
 void getReason(int* reason) {
     printf("Choose violate reason: \n"); // Fixed redundant format arg
@@ -149,10 +137,25 @@ void createViolationID(int index, char* buffer) {
     sprintf(buffer, "VI%04d", index);
 }
 
-void deleteViolation(ViolationList* list, const Violation* v) {
+void removeOneViolation (ViolationList* list, const char *violationId){
+    Violation* v = findViolationById(violationId, list);
     if (list == NULL || list->data == NULL || v == NULL || list->count <= 0) return;
     for (int i = 0; i < list->count; i++) {
+    	// if address of data[i] == address of v 
         if (&list->data[i] == v) {
+        			printf("Owner address: %p\n", (void*)v->owner);
+        	// remove from pending list, or change totalFine
+        	if (v->reason == REASON_VIOLENCE || v->owner->consecutiveAbsences == 3) {
+				v->owner->isPending = 0;
+			} else {
+				v->owner->totalFine = (v->owner->totalFine) - ((v->owner->role == 0)? 20000 : 50000);
+			}
+			
+        	// if reason is meeting absence -> reduce absence times
+        	if (v->reason == REASON_MEETING_ABSENCE) {
+        		v->owner->consecutiveAbsences--;
+			}
+
             for (int j = i; j < list->count - 1; j++) {
                 list->data[j] = list->data[j + 1];
             }
@@ -160,6 +163,14 @@ void deleteViolation(ViolationList* list, const Violation* v) {
             break;
         }
     }
+}
+
+//Only for user
+void deleteViolation(ViolationList* list) {
+	char violationId[10];
+    inputString(violationId, 10, "Enter violation id: ");
+    removeOneViolation(list, violationId);
+    
 }
 
 void handleSeriousViolation(const Member* m, const Violation* newV) {
@@ -231,6 +242,8 @@ void recordViolationView(ViolationList* violations, MemberList* members) {
         newV.fine = calculateFine(targetMem->role, newV.reason);
         newV.isPaid = NOT_PAY;
         newV.penalty = PENALTY_FINANCIAL;
+		// Assign the owner pointer to the newly added record
+        newV.owner = targetMem;
 
         inputString(newV.note, 100, "Enter note (optional): ");
 
@@ -252,8 +265,7 @@ void recordViolationView(ViolationList* violations, MemberList* members) {
                 return;
             }
 
-            // Assign the owner pointer strictly to the newly added record
-            violations->data[violations->count - 1].owner = targetMem;
+            
 
             if (newV.reason == REASON_MEETING_ABSENCE || newV.reason == REASON_VIOLENCE) {
                 handleSeriousViolation(targetMem, &newV);

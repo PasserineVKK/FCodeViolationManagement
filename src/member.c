@@ -238,7 +238,6 @@ void removeMember(MemberList* members, AccountList* accounts, ViolationList* vio
                 // Start to remove
                 if (confirm == 1) {
                     // Search member in violation list and account list (Assume signatures changed)
-                    vIndex = searchMemberByIdInV(violations, id);
                     aIndex = searchMemberByIdInA(accounts, id);
 
                     // Remove in member list by shift left array
@@ -260,21 +259,24 @@ void removeMember(MemberList* members, AccountList* accounts, ViolationList* vio
                     saveAccounts(accounts);
 
                     // Remove in violation list by shift left array if found
-                    // If vIndex == -1 => This member has no violation record
-                    // => No need to remove in violation list
-                    if (vIndex != -1) {
-                        // Loop through all violations to remove every violation of this member
-                        for (int i = 0; i < violations->count; i++) {
-                            if (strcmp(violations->data[i].studentID, id) == 0) {
-                                for (int j = i; j < violations->count - 1; j++) {
-                                    violations->data[j] = violations->data[j + 1];
-                                }
-                                violations->count--;
-                                i--; // Check at this index again after shifting
-                            }
-                        }
-                        saveViolations(violations);
-                    }
+                    // removeOneViolation (ViolationList* list, const char *violationId)
+                    // for (int i = 0; i < violations->count - 1; i++){
+                        
+                    // }
+                    
+                    // if (vIndex != -1) {
+                    //     // Loop through all violations to remove every violation of this member
+                    //     for (int i = 0; i < violations->count; i++) {
+                    //         if (strcmp(violations->data[i].studentID, id) == 0) {
+                    //             for (int j = i; j < violations->count - 1; j++) {
+                    //                 violations->data[j] = violations->data[j + 1];
+                    //             }
+                    //             violations->count--;
+                    //             i--; // Check at this index again after shifting
+                    //         }
+                    //     }
+                    //     saveViolations(violations);
+                    // }
 
                     // Delete notification 
                     deleteNotificationByMemberId(id); 
