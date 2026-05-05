@@ -40,8 +40,7 @@ void autoDeleteOutDateNotification();
 Notification* findNotificationById(const char* notificationId);
 
 // 2.7 Show fine statistics by team
-void showFineStatsByTeam(Member members[], int mCount, Violation violations[],
-                         int vCount);
+void showFineStatsByTeam(MemberList *member, ViolationList *violations);
 
 // Feature 2.11 Show violation by time range
 int listViolationsByTimeRange(Violation violations[], int vCount,

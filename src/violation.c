@@ -42,7 +42,7 @@ int loadViolations(ViolationList *violations, const MemberList *members) {
     } else {
         // assign pointer to owner
         for (int i = 0; i < violations->count; i++){
-            int mIndex = searchMemberByIdInM(members->data, members->count, violations->data[i].studentID);
+            int mIndex = searchMemberByIdInM(members, violations->data[i].studentID);
             // check whether mIndex valid
             if (mIndex >= 0 && mIndex < members->count){
                 // owner is pointer
@@ -185,6 +185,17 @@ void handleSeriousViolation(const Member* m, const Violation* newV) {
     }
 }
 
+int checkTotalBOD(Member members[], int mCount) {
+	int bodCount = 0;
+	for (int i = 0; i < mCount; i++) {
+		if (members[i].role == 2) {
+			bodCount++;
+		}
+	}
+	return bodCount;
+}
+
+
 void recordViolationView(ViolationList* violations, MemberList* members) {
     int continueRecord = 1;
     while (continueRecord) {
@@ -197,7 +208,7 @@ void recordViolationView(ViolationList* violations, MemberList* members) {
         printf("\n--- Record New Violation ---\n");
         inputStudentID(studentID, "Enter Student ID: ");
 
-        mIndex = searchMemberByIdInM(members->data, members->count, studentID);
+        mIndex = searchMemberByIdInM(members, studentID);
         if (mIndex == -1) {
             printf("Error: Student ID not found.\n");
             return;
@@ -284,7 +295,7 @@ void checkAndWarnOutClub(MemberList* members, AccountList* accounts, ViolationLi
         //validate studentID
         if (!isValidStudentID(studentID)) continue;
 
-        int mIndex = searchMemberByIdInM(members->data, members->count, studentID);
+        int mIndex = searchMemberByIdInM(members, studentID);
         if (mIndex == -1) {
             printf("Member not found.\n");
             continue;
@@ -323,13 +334,13 @@ void checkAndWarnOutClub(MemberList* members, AccountList* accounts, ViolationLi
 void displayWarningList(const MemberList* members, const ViolationList* violations) {
     printf("\n===== WARNING LIST =====\n");
     printf("+-------------------------------------------------------+\n");
-    printf("¦ %-11s ¦ %-20s ¦ %-18s ¦\n", "Student ID", "Full Name", "Consecutive Absence");
-    printf("+-----------+----------------------+--------------------¦\n");
+    printf("ï¿½ %-11s ï¿½ %-20s ï¿½ %-18s ï¿½\n", "Student ID", "Full Name", "Consecutive Absence");
+    printf("+-----------+----------------------+--------------------ï¿½\n");
 
     int found = 0;
     for (int i = 0; i < members->count; i++) {
         if (isMemberInWarningList(&members->data[i], violations)) {
-            printf("¦ %-11s ¦ %-20s ¦ %-18d ¦\n",
+            printf("ï¿½ %-11s ï¿½ %-20s ï¿½ %-18d ï¿½\n",
                    members->data[i].studentID,
                    members->data[i].fullName,
                    members->data[i].consecutiveAbsences);
@@ -337,7 +348,7 @@ void displayWarningList(const MemberList* members, const ViolationList* violatio
         }
     }
     if (!found) {
-        printf("¦ %-52s ¦\n", "No members in warning list.");
+        printf("ï¿½ %-52s ï¿½\n", "No members in warning list.");
     }
     printf("+-------------------------------------------------------+\n");
 }
@@ -346,9 +357,9 @@ void displayWarningList(const MemberList* members, const ViolationList* violatio
 void displayKickList(const MemberList* members, const ViolationList* violations) {
     printf("\n===== KICK LIST =====\n");
     printf("+-------------------------------------------------------------------------------+\n");
-    printf("¦ %-11s ¦ %-20s ¦ %-19s ¦ %-20s ¦\n",
+    printf("ï¿½ %-11s ï¿½ %-20s ï¿½ %-19s ï¿½ %-20s ï¿½\n",
            "Student ID", "Full Name", "Consecutive Absence", "Reason");
-    printf("+-----------+----------------------+---------------------+----------------------¦\n");
+    printf("+-----------+----------------------+---------------------+----------------------ï¿½\n");
 
     int found = 0;
     for (int i = 0; i < members->count; i++) {
@@ -367,7 +378,7 @@ void displayKickList(const MemberList* members, const ViolationList* violations)
                 strcpy(reason, "Absence Threshold");
             }
 
-            printf("¦ %-11s ¦ %-20s ¦ %-19d ¦ %-20s ¦\n",
+            printf("ï¿½ %-11s ï¿½ %-20s ï¿½ %-19d ï¿½ %-20s ï¿½\n",
                    mem->studentID,
                    mem->fullName,
                    mem->consecutiveAbsences,
@@ -377,7 +388,7 @@ void displayKickList(const MemberList* members, const ViolationList* violations)
     }
 
     if (!found) {
-        printf("¦ %-73s ¦\n", "No members in kick list.");
+        printf("ï¿½ %-73s ï¿½\n", "No members in kick list.");
     }
     printf("+-------------------------------------------------------------------------------+\n");
 }
@@ -401,7 +412,7 @@ int isMemberInWarningList(const Member* member, const ViolationList* violations)
 
 //remove member in pending list after confirm kick by BCN
 void removeMemberById(const char* id, MemberList* members, AccountList* accounts, ViolationList* violations) {
-    int mIndex = searchMemberByIdInM(members->data, members->count, id);
+    int mIndex = searchMemberByIdInM(members, id);
     int aIndex = searchMemberByIdInA(accounts, id);
 
     if (mIndex == -1) {

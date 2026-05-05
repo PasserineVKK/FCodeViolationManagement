@@ -27,5 +27,5 @@ void clearScreen() {
 void getFormatTime(char* t_str, int size, time_t time) {
     struct tm* timeInfo;
     timeInfo = localtime(&time);
-    strftime(t_str, size, "%Y-%m-%d %H:%M", timeInfo);
+    strftime(t_str, size, "%H:%M %d-%m-%Y", timeInfo);
 }

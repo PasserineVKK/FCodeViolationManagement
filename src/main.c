@@ -116,8 +116,8 @@ void seedSampleData(MemberList *members, ViolationList *violations, AccountList 
     violations->data[3].reason = REASON_MEETING_ABSENCE;
     strcpy(violations->data[3].note, "SUMMER semester meeting");
 
-    // Ghi ch�: ? b?n g?c ph?n t? violations[4] n?m ngo�i v�ng for, 
-    // t�i gi? nguy�n logic kh�ng thay d?i n?i dung theo y�u c?u c?a b?n.
+    // Ghi ch�: ? b?n g?c ph?n t? violations[4] n?m ngo�i v�ng for, 
+    // t�i gi? nguy�n logic kh�ng thay d?i n?i dung theo y�u c?u c?a b?n.
     strcpy(violations->data[4].violationID, "VIO005");
     violations->data[4].reason = REASON_MEETING_ABSENCE;
     strcpy(violations->data[4].note, "Daily report meeting");
@@ -241,7 +241,7 @@ int main(int argc, char* argv[]) {
                     continue;
             } else {
                 menuRole = loginRole;
-                mIndex = searchMemberByIdInM(members.data, members.count, studentID);
+                mIndex = searchMemberByIdInM(&members, studentID);
                 vIndex = searchMemberByIdInV(&violations, studentID);
                 isStayLogin = 1;
                 // login successfully ==> Assign value for menuRole to open
@@ -269,7 +269,7 @@ int main(int argc, char* argv[]) {
                     "\n┃  6. Log Out                                  ┃"
                     "\n┃  7. Exit                                     ┃"
                     "\n┃  8. Switch to Admin Menu                     ┃"
-                    "\n┃  9.  View notification                       ┃"
+                    "\n┃  9. View notification                        ┃"
                     "\n┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛\n");
 
                 inputIntegerInRange(&choice, 1, 9,
@@ -302,7 +302,11 @@ int main(int argc, char* argv[]) {
                         // if choice = 7, save the data end return.
                         return 0;
                     case 8:
-                        if (loginRole == 1 || loginRole == 2) {
+                        if ((loginRole == 1 || loginRole == 2) && members.data[mIndex].isPending == 1){
+                            printf("Pending account. Can only use member menu now. ");
+                            break;
+                        }
+                        if ((loginRole == 1 || loginRole == 2) && members.data[mIndex].isPending != 1) {
                             menuRole = 1;
                             continue;
                         } else {
@@ -371,8 +375,7 @@ int main(int argc, char* argv[]) {
                         // not sorted by team, role yet
                         break;
                     case 7:
-                        showFineStatsByTeam(members.data, members.count, violations.data,
-                                            violations.count);
+                        showFineStatsByTeam(&members, &violations);
                         break;
                     case 8:
                         checkAndWarnOutClub(&members, &accounts, &violations);
