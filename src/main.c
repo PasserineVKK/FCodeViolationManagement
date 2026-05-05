@@ -147,6 +147,10 @@ void seedSampleData(MemberList *members, ViolationList *violations, AccountList 
     violations->data[8].reason = REASON_MEETING_ABSENCE;
 
     violations->count = 9;
+    
+    for(int i=0;i<8;i++){
+    	violations->data[i].violationTime = base;
+	}
 
     // =============================================================
     // 3 ACCOUNTS (default password = studentID)
