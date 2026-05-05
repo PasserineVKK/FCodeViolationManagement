@@ -1,28 +1,15 @@
 #ifndef MODEL_H
 #define MODEL_H
-
+#define MAX 1000
 #include <time.h>
 
 typedef struct {
-    char studentID[9];  // SE000000\0
+    char studentID[10];  // SE000000\0
     char password[30];
     int role;       // 0 = Member, 1 = BOD
     int isLocked;   // 1 = This account locked after 3 failed trials
     int failCount;  // consecutive failed trials
 } Account;
-
-typedef struct {
-    char violationID[50];
-    char studentID[10];  // SE000000\0
-    int reason;  // 0 = Not uniform, 1 = Meeting absence, 2 = Not join in Club
-                 // activity, 3 = Violence
-    time_t violationTime;
-    double fine;
-    int isPaid;   // 0 = Not yet, 1 = Already
-    int penalty;  // 0 = Financial penalty, 1 = Kick
-    char note[100];
-    int isPending;  // 0 = Not pending, 1 = Pending
-} Violation;
 
 typedef struct {
     char fullName[100];
@@ -36,6 +23,38 @@ typedef struct {
     double totalFine;
     int isPending;  // 0 = not pending, 1 = pending
 } Member;
+
+
+typedef struct {
+    char violationID[50];
+    char studentID[10];  // SE000000\0
+    int reason;  // 0 = Not uniform, 1 = Meeting absence, 2 = Not join in Club
+                 // activity, 3 = Violence
+    time_t violationTime;
+    double fine;
+    int isPaid;   // 0 = Not yet, 1 = Already
+    int penalty;  // 0 = Financial penalty, 1 = Kick
+    char note[100];
+    int isPending;  // 0 = Not pending, 1 = Pending
+    Member* owner;
+} Violation;
+
+typedef struct {
+	Member data[MAX];
+	int count;
+} MemberList;
+
+typedef struct {
+	Account data[MAX];
+	int count;
+} AccountList;
+
+typedef struct {
+	Violation* data;
+	int count;
+	int capacity;
+} ViolationList;
+
 
 // Notification
 

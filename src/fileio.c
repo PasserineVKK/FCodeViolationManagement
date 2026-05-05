@@ -25,5 +25,5 @@ int loadFromFile(const char* filePath, void* buffer, size_t elemSize,
     if (fp == NULL) return -1;  // File not found
     *count = (int)fread(buffer, elemSize, maxCount, fp);
     fclose(fp);
-    return *count;
+    return 1;
 }

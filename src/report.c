@@ -33,20 +33,19 @@ void saveNotification() {
 }
 
 // 2.7 Show fine statistics by team
-void showFineStatsByTeam(Member members[], int mCount, Violation violations[],
-                         int vCount) {
+void showFineStatsByTeam(MemberList *members, ViolationList *violations) {
     const char* teamNames[] = {"Academic", "Planning", "HR", "Media"};
 
     double paidByTeam[4] = {0};
     double unpaidByTeam[4] = {0};
 
-    for (int i = 0; i < vCount; i++) {
-        Violation* v = &violations[i];
+    for (int i = 0; i < violations->count; i++) {
+        Violation* v = &violations->data[i];
 
-        int mIdx = searchMemberByIdInM(members, mCount, v->studentID);
-        if (mIdx == -1) continue;
+        int mIndex = searchMemberByIdInM(members, v->owner->studentID);
+        if (mIndex == -1) continue;
 
-        int team = members[mIdx].team;
+        int team = members->data[mIndex].team;
         if (team < 0 || team > 3) continue;
 
         if (v->isPaid) {

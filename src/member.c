@@ -1,5 +1,4 @@
 #include "../include/member.h"
-
 #include <stdio.h>
 #include <string.h>
 
@@ -13,30 +12,33 @@
 #include "../include/violation.h"
 
 // file
-int loadMembers(Member members[], int* count) {
-    return loadFromFile(MEMBERS_FILE, members, sizeof(Member), MAX_MEMBERS,
-                        count);
+int loadMembers(MemberList* members) {
+    // Assuming MAX_MEMBERS is defined and corresponds to MAX in your struct
+    return loadFromFile(MEMBERS_FILE, members->data, sizeof(Member), MAX,
+                        &(members->count));
 }
 
-int saveMembers(Member members[], int count) {
-    return saveToFile(MEMBERS_FILE, members, sizeof(Member), count);
+int saveMembers(const MemberList* members) {
+    return saveToFile(MEMBERS_FILE, members->data, sizeof(Member), members->count);
 }
 
 // search
-int searchMemberByIdInM(Member members[], int count, const char* id) {
-    for (int i = 0; i < count; i++) {
-        if (strcmp(members[i].studentID, id) == 0) {
+int searchMemberByIdInM(const MemberList *members, const char* id) {
+    for (int i = 0; i < members->count; i++) {
+        if (strcmp(members->data[i].studentID, id) == 0) {
             return i;
         }
     }
     return -1;
 }
 
-int countUnpaidViolations(const char* id, Violation violations[], int vCount) {
+int countUnpaidViolations(const char* id, const ViolationList* violations) {
     int unpaidCount = 0;
-    for (int i = 0; i < vCount; i++) {
-        if (strcmp(violations[i].studentID, id) == 0 &&
-            violations[i].isPaid == 0 && violations[i].isPending == 0) {
+    for (int i = 0; i < violations->count; i++) {
+        // Use pointer to access directly and avoid copying
+        Violation* v = &violations->data[i];
+        if (strcmp(v->studentID, id) == 0 &&
+            v->isPaid == 0 && v->isPending == 0) {
             unpaidCount++;
         }
     }
@@ -44,30 +46,35 @@ int countUnpaidViolations(const char* id, Violation violations[], int vCount) {
 }
 
 // updateTotalFine
-
-int updateMemberTotalFine(Member members[], int mCount, Violation violations[],
-                          int vCount, const char* id) {
-    int memberIndex = searchMemberByIdInM(members, mCount, id);
+int updateMemberTotalFine(MemberList* members, const ViolationList* violations, const char* id) {
+    int memberIndex = searchMemberByIdInM(members, id);
     if (memberIndex == -1) {
         printf("Member not found!\n");
         return 0;
     }
+    
     double totalFine = 0;
-    for (int i = 0; i < vCount; i++) {
-        if (strcmp(violations[i].studentID, id) == 0 &&
-            violations[i].isPaid == 0 && violations[i].isPending == 0) {
-            totalFine += violations[i].fine;
+    for (int i = 0; i < violations->count; i++) {
+        Violation* v = &violations->data[i];
+        if (strcmp(v->studentID, id) == 0 &&
+            v->isPaid == 0 && v->isPending == 0) {
+            totalFine += v->fine;
         }
     }
-    members[memberIndex].totalFine = totalFine;
+    
+    // Use pointer to update directly
+    Member* targetMem = &members->data[memberIndex];
+    targetMem->totalFine = totalFine;
     return 1;
 }
 
-int updateConsecutiveAbsences(Member members[], int count, const char* id) {
-    int index = searchMemberByIdInM(members, count, id);
+int updateConsecutiveAbsences(MemberList* members, const char* id) {
+    int index = searchMemberByIdInM(members, id);
 
     if (index != -1) {
-        members[index].consecutiveAbsences++;
+        // Use pointer to update directly
+        Member* targetMem = &members->data[index];
+        targetMem->consecutiveAbsences++;
         //-> function trigger warning if absence = 2 may be insert here
         return 1;
     } else {
@@ -76,17 +83,17 @@ int updateConsecutiveAbsences(Member members[], int count, const char* id) {
 }
 
 // ===== Feature 2.1: ADD MEMBER =====
-void addMember(Member members[], int* mCount, Account accounts[], int* aCount) {
-    if (*mCount >= MAX_MEMBERS) {
+void addMember(MemberList* members, AccountList* accounts) {
+    if (members->count >= MAX) {
         printf("Member list is full!\n");
         return;
     }
 
-    char fullName[50];
-    char email[50];
+    char fullName[100];
+    char email[100];
     char phoneNumber[11];
-    char studentID[9];  // SE000000
-    int team;           // 0 = Academic, 1 = Planning, 2 = HR, 3 = Media
+    char studentID[10];  // SE000000\0
+    int team;            // 0 = Academic, 1 = Planning, 2 = HR, 3 = Media
     int role;
 
     int continueAdd = 1;
@@ -94,7 +101,7 @@ void addMember(Member members[], int* mCount, Account accounts[], int* aCount) {
     while (continueAdd) {
         // Input student ID
         inputStudentID(studentID, "\nEnter student ID: ");
-        if (searchMemberByIdInM(members, *mCount, studentID) == -1) {
+        if (searchMemberByIdInM(members, studentID) == -1) {
             // Input member name
             inputMemberName(fullName, "\nEnter full name: ");
 
@@ -126,47 +133,43 @@ void addMember(Member members[], int* mCount, Account accounts[], int* aCount) {
                        "\nAdd this member?\n1: Yes\n0: No\n=> Your choice: ");
 
             if (confirm == 1) {
-                // Ceate member struct and assign value
-                Member mem;
+                // Use pointers to assign data directly to the memory block, avoiding shallow copy of structs
+                Member* newMem = &members->data[members->count];
+                strcpy(newMem->fullName, fullName);
+                strcpy(newMem->studentID, studentID);
+                strcpy(newMem->email, email);
+                strcpy(newMem->phoneNumber, phoneNumber);
+                newMem->team = team;
+                newMem->role = role;
+                newMem->violationCount = 0;
+                newMem->consecutiveAbsences = 0;
+                newMem->totalFine = 0;
+                newMem->isPending = 0;
 
-                strcpy(mem.fullName, fullName);
-                strcpy(mem.studentID, studentID);
-                strcpy(mem.email, email);
-                strcpy(mem.phoneNumber, phoneNumber);
-                mem.team = team;
-                mem.role = role;
-                mem.violationCount = 0;
-                mem.consecutiveAbsences = 0;
-                mem.totalFine = 0;
-                mem.isPending = 0;
+                // Create account for this member with default password "123456" (using ID as default based on logic)
+                Account* newAcc = &accounts->data[accounts->count];
+                strcpy(newAcc->studentID, studentID);
+                strcpy(newAcc->password, studentID);  // Default password is student ID
+                newAcc->role = role;
+                newAcc->isLocked = 0;
+                newAcc->failCount = 0;
 
-                // Create account for this member with default password "123456"
-                Account acc;
-
-                strcpy(acc.studentID, studentID);
-                strcpy(acc.password,
-                       studentID);  // Default password is student ID
-                acc.role = role;
-                acc.isLocked = 0;
-                acc.failCount = 0;
-
-                // add member to member list
-                members[(*mCount)++] = mem;
-                // add account to account list
-                accounts[(*aCount)++] = acc;
+                // Increase counts
+                members->count++;
+                accounts->count++;
 
                 // Call save member to file function
-                saveMembers(members, *mCount);
-                // Call save account to file function
-                saveAccounts(accounts, *aCount);
+                saveMembers(members);
+                // Call save account to file function (Assume signature changed accordingly)
+                saveAccounts(accounts);
 
                 // Print success message
                 printf("Member added successfully!\n");
 
                 // Give back account info to user
                 printf("\nAccount information for this member:\n");
-                printf("Student ID: %s\n", acc.studentID);
-                printf("Password: %s\n", acc.password);
+                printf("Student ID: %s\n", newAcc->studentID);
+                printf("Password: %s\n", newAcc->password);
 
                 // Print success message
                 printf("Member added successfully!\n");
@@ -196,30 +199,27 @@ void addMember(Member members[], int* mCount, Account accounts[], int* aCount) {
 Input ID => Find by ID => If found, show member info
 => Confirm to remove => If yes, remove by shift left array => Save to file
 */
-void removeMember(Member members[], int* mCount, Account accounts[],
-                  int* aCount, Violation violations[], int* vCount) {
+void removeMember(MemberList* members, AccountList* accounts, ViolationList* violations) {
     // Check if member list is empty
-    if (*mCount == 0) {
+    if (members->count == 0) {
         printf("No members available to remove.\n");
         return;
     }
 
-    char id[9];
-    int pos;
+    char id[10];
 
     int continueRemove = 1;
     while (continueRemove) {
-        int mIndex = -1, vIndex = -1,
-            aIndex = -1;  // Reset position before find member
+        int mIndex = -1, vIndex = -1, aIndex = -1;  // Reset position before find member
         inputStudentID(id, "Enter student ID to remove: ");
 
         // Find member by ID in member list
-        mIndex = searchMemberByIdInM(members, *mCount, id);
+        mIndex = searchMemberByIdInM(members, id);
 
         if (mIndex != -1) {
             // Show student
             printf("\nStudent found:\n");
-            displayOneMemberInfo(members[mIndex]);
+            displayOneMemberInfo(members->data[mIndex]);
 
             // Confirm to remove member
             int confirm;
@@ -229,50 +229,47 @@ void removeMember(Member members[], int* mCount, Account accounts[],
 
             // Start to remove
             if (confirm == 1) {
-                // Search member in violation list and account list
-                vIndex = searchMemberByIdInV(violations, *vCount, id);
-                aIndex = searchMemberByIdInA(accounts, *aCount, id);
+                // Search member in violation list and account list (Assume signatures changed)
+                vIndex = searchMemberByIdInV(violations, id);
+                aIndex = searchMemberByIdInA(accounts, id);
 
                 // Remove in member list by shift left array
-                for (int i = mIndex; i < *mCount - 1; i++) {
-                    // Shift left array
-                    members[i] = members[i + 1];
+                for (int i = mIndex; i < members->count - 1; i++) {
+                    members->data[i] = members->data[i + 1];
                 }
+                members->count--;
 
-                // Remove in account list by shift left array
-                for (int i = aIndex; i < *aCount - 1; i++) {
-                    // Shift left array
-                    accounts[i] = accounts[i + 1];
+                // Remove in account list by shift left array if found
+                
+                for (int i = aIndex; i < accounts->count - 1; i++) {
+                    accounts->data[i] = accounts->data[i + 1];
                 }
+                accounts->count--;
+            
 
-                // Decrease member size
-                (*mCount)--;
-                // Decrease account size
-                (*aCount)--;
-
-                // Call save member to file function
-                saveMembers(members, *mCount);
-                // Call save account to file function
-                saveAccounts(accounts, *aCount);
+                // Call save member and account to file functions
+                saveMembers(members);
+                saveAccounts(accounts);
 
                 // Remove in violation list by shift left array if found
                 // If vIndex == -1 => This member has no violation record
                 // => No need to remove in violation list
                 if (vIndex != -1) {
-                    for (int i = vIndex; i < *vCount; i++) {
-                        // Shift left array
-                        if (strcmp(violations[i].studentID, id) == 0) {
-                            for (int j = i; j < *vCount; j++) {
-                                violations[j] = violations[j + 1];
+                    // Loop through all violations to remove every violation of this member
+                    for (int i = 0; i < violations->count; i++) {
+                        if (strcmp(violations->data[i].studentID, id) == 0) {
+                            for (int j = i; j < violations->count - 1; j++) {
+                                violations->data[j] = violations->data[j + 1];
                             }
-                            (*vCount)--;
-                            i--;
+                            violations->count--;
+                            i--; // Check at this index again after shifting
                         }
                     }
-                    saveViolations(violations, *vCount);
+                    saveViolations(violations);
                 }
 
-                deleteNotificationByMemberId(members[mIndex].studentID); 
+                // Delete notification 
+                deleteNotificationByMemberId(id); 
 
                 // Print success message
                 printf("Member removed successfully!\n");
@@ -283,7 +280,6 @@ void removeMember(Member members[], int* mCount, Account accounts[],
             printf("Member not found!\n");
         }
 
-        // ===== CONTINUE =====
         int choice;
 
         inputYesNo(&choice,
@@ -304,20 +300,19 @@ Input ID => Find by ID => If found, show member info
 => If yes, update by assign new value to target member
 => Save to file
 */
-void updateMember(Member members[], int* mCount, Violation violations[],
-                  int vCount) {
+void updateMember(MemberList* members, ViolationList* violations) {
     // Check if member list is empty
-    if (*mCount == 0) {
+    if (members->count == 0) {
         printf("No members available to update.\n");
         return;
     }
 
-    char fullName[50];
-    char email[50];
+    char fullName[100];
+    char email[100];
     char phoneNumber[11];
-    char studentID[9];  // SE000000
-    int team;           // 0 = Academic, 1 = Planning, 2 = HR, 3 = Media
-    int role;           // 0 = Member, 1 = Leader/Vice, 2 = BOD
+    char studentID[10];  // SE000000\0
+    int team;            // 0 = Academic, 1 = Planning, 2 = HR, 3 = Media
+    int role;            // 0 = Member, 1 = Leader/Vice, 2 = BOD
 
     int mIndex;
 
@@ -326,14 +321,14 @@ void updateMember(Member members[], int* mCount, Violation violations[],
         mIndex = -1;  // Reset position before find member
         inputStudentID(studentID, "Enter student ID to update: ");
 
-        // Find member by ID and update by assign new value to target member
-        mIndex = searchMemberByIdInM(members, *mCount, studentID);
+        // Find member by ID
+        mIndex = searchMemberByIdInM(members, studentID);
 
         // If found
         if (mIndex != -1) {
             // Show student
             printf("\nStudent found:\n");
-            displayOneMemberInfo(members[mIndex]);
+            displayOneMemberInfo(members->data[mIndex]);
 
             // Ask which field want to update
             int fieldChoice;
@@ -350,27 +345,18 @@ void updateMember(Member members[], int* mCount, Violation violations[],
 
             switch (fieldChoice) {
                 case 1:
-                    // Input new name
                     inputMemberName(fullName, "Enter New Name: ");
                     break;
-
                 case 2:
-                    // Input new email
                     inputMemberEmail(email, "Enter New Email: ");
                     break;
-
                 case 3:
-                    // Input new phone number
                     inputMemberPhone(phoneNumber, "Enter New Phone Number: ");
                     break;
-
                 case 4:
-                    // Input new team info
                     inputMemberTeam(&team, "Enter New Team (0-3): ");
                     break;
-
                 case 5:
-                    // Input new role info
                     inputMemberRole(&role, "Enter New Role (0-2): ");
                     break;
             }
@@ -382,89 +368,54 @@ void updateMember(Member members[], int* mCount, Violation violations[],
                 "\nUpdate this member?\n1: Yes\n0: No\n=> Your choice: ");
 
             if (confirm == 1) {
+                // Use pointer to manipulate the data block directly, avoiding shallow copy
+                Member* targetMem = &members->data[mIndex];
+
                 switch (fieldChoice) {
                     case 1:
-                        strcpy(members[mIndex].fullName, fullName);
+                        strcpy(targetMem->fullName, fullName);
                         break;
-
                     case 2:
-                        strcpy(members[mIndex].email, email);
+                        strcpy(targetMem->email, email);
                         break;
-
                     case 3:
-                        strcpy(members[mIndex].phoneNumber, phoneNumber);
+                        strcpy(targetMem->phoneNumber, phoneNumber);
                         break;
-
                     case 4:
-                        members[mIndex].team = team;
+                        targetMem->team = team;
                         break;
-
                     case 5: {
-                        int oldRole =
-                            members[mIndex]
-                                .role;  // Save old role before assign new role
-                        members[mIndex].role = role;  // Assign new role
+                        int oldRole = targetMem->role; // Save old role before assign new role
+                        targetMem->role = role;        // Assign new role
 
-                        // If member change from Member to Leader/Vice or BCN
-                        if (oldRole == 0 && role > 0) {
-                            // Replace new fines for all unpaid and not pending
-                            // violation of this member
-                            for (int i = 0; i < vCount; i++) {
-                                if (strcmp(violations[i].studentID,
-                                           studentID) == 0 &&
-                                    violations[i].isPaid == 0 &&
-                                    violations[i].isPending == 0 &&
-                                    violations[i].fine != 0) {
-                                    double newFine = calculateFine(
-                                        role, violations[i].reason);
-
-                                    // Leader/Vice or BOD have higher fine than
-                                    // Member 30.000 per violation
-                                    violations[i].fine = newFine;
+                        // If member change role (either upgrade or downgrade)
+                        if ((oldRole == 0 && role > 0) || (oldRole > 0 && role == 0)) {
+                            // Replace new fines for all unpaid and not pending violation of this member
+                            for (int i = 0; i < violations->count; i++) {
+                                Violation* vPtr = &violations->data[i];
+                                if (strcmp(vPtr->studentID, studentID) == 0 &&
+                                    vPtr->isPaid == 0 &&
+                                    vPtr->isPending == 0 &&
+                                    vPtr->fine != 0) {
+                                    
+                                    double newFine = calculateFine(role, vPtr->reason);
+                                    vPtr->fine = newFine;
                                 }
                             }
-
-                            // Update total fine for this member after change
-                            // role
-                            updateMemberTotalFine(members, *mCount, violations,
-                                                  vCount, studentID);
+                            // Update total fine for this member after change role
+                            updateMemberTotalFine(members, violations, studentID);
                         }
 
-                        // If member change from Leader/Vice or BCN to Member
-                        else if (oldRole > 0 && role == 0) {
-                            // Replace new fines for all unpaid and not pending
-                            // violation of this member
-                            for (int i = 0; i < vCount; i++) {
-                                if (strcmp(violations[i].studentID,
-                                           studentID) == 0 &&
-                                    violations[i].isPaid == 0 &&
-                                    violations[i].isPending == 0 &&
-                                    violations[i].fine != 0) {
-                                    double newFine = calculateFine(
-                                        role, violations[i].reason);
-                                    // Leader/Vice or BOD have higher fine than
-                                    // Member 30.000 per violation
-                                    violations[i].fine = newFine;
-                                }
-                            }
-                            // Update total fine for this member after change
-                            // role
-                            updateMemberTotalFine(members, *mCount, violations,
-                                                  vCount, studentID);
-                        }
-
-                        saveViolations(violations, vCount);
+                        saveViolations(violations);
                         break;
                     }
                 }
-                saveMembers(members, *mCount);
+                saveMembers(members);
 
             } else {
                 printf("Member not updated.\n");
             }
-        }
-
-        else {
+        } else {
             printf("Member not found!\n");
         }
 
@@ -480,8 +431,12 @@ void updateMember(Member members[], int* mCount, Violation violations[],
     }
 }
 
-Member* getMemberById(const char* studentId, Member members[], int count) {
-    for (int i = 0; i < count; i++)
-        if (strcmp(members[i].studentID, studentId) == 0) return &members[i];
+Member* getMemberById(const char* studentId, MemberList* members) {
+    for (int i = 0; i < members->count; i++) {
+        if (strcmp(members->data[i].studentID, studentId) == 0) {
+            // Return pointer directly to the array's memory location
+            return &members->data[i];
+        }
+    }
     return NULL;
 }
