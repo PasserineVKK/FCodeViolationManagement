@@ -459,7 +459,7 @@ void exportViolationReportToFile(MemberList *members, ViolationList *violations)
 
             for (int v = 0; v < violations->count; v++) {
                 Violation* viol = &violations->data[v];
-                if (strcmp(viol->owner->studentID, m->studentID) == 0 && viol->isPaid == 0) {
+                if (strcmp(viol->studentID, m->studentID) == 0 && viol->isPaid == 0) {
                     unpaidAmount += viol->fine;
                     unpaidCount++;
                 }
