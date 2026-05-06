@@ -34,4 +34,6 @@ int updateConsecutiveAbsences(MemberList* members, const char* id);
 
 Member* getMemberById(const char* studentId, MemberList* members);
 
+void removeOneMember (MemberList *members, AccountList *accounts, ViolationList *violations, const char *id, const char *actorID);
+
 #endif

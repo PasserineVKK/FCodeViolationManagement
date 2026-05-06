@@ -61,10 +61,8 @@ void displayViolationRow(const Violation* v) {
     const char* pendingStr = v->owner->isPending ? "Pending" : "Resolved";
 
     printf(
-        "┃ %-10s ┃ %-10s ┃ %-20s ┃ %-20s ┃ %-8.0f ┃ %-8s ┃ %-10s ┃ %-32s ┃ "
-        "%-12s ┃\n",
-        v->violationID, v->studentID, reasonStr, timeField, v->fine, paidStr,
-        penaltyStr, v->note, pendingStr);
+        "┃ %-10s ┃ %-10s ┃ %-20s ┃ %-20s ┃ %-8.0f ┃ %-8s ┃ %-10s ┃ %-32s ┃ %-12s ┃\n",
+        v->violationID, v->studentID, reasonStr, timeField, v->fine, paidStr, penaltyStr, v->note, pendingStr);
 }
 
 void displayViolationList(const Violation violations[], int vCount) {
