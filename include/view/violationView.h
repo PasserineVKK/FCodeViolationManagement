@@ -31,7 +31,6 @@ void viewMyUnpaidFines(const char *myStudentID, const ViolationList *violations)
 void displayViolationsByTimeRange(const ViolationList *violations);
 
 void displayViolationManagerMenu();
-void displayFilterOptionMenu();
 
 void flexibleDisplayViolationList(ViolationList violations, MemberList members);
 void changeFilterOption();

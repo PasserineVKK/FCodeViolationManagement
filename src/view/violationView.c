@@ -17,7 +17,6 @@ static short reasonFilter = 0;
 static short paidFilter = 0;
 static short timeRangeFilter = 0;
 
-static char idFilterSetting[10];
 static int teamFilterSetting;
 static int reasonFilterSetting = REASON_NOT_UNIFORM;
 static int paidFilterSetting = ALREADY_PAID;
@@ -26,7 +25,8 @@ static time_t endTimeFilterSetting;
 
 static long order = ASC;
 
-static short name_filter = 0;
+static int enableSortOption;
+static char currentSortCommand[3];
 
 void displayViolationTableHeader()
 {
@@ -267,6 +267,7 @@ void clearOption()
     reasonFilter = 0;
     paidFilter = 0;
     timeRangeFilter = 0;
+    enableSortOption = 0;
 }
 
 void displayChangeFilterOptionMenu()
@@ -275,7 +276,7 @@ void displayChangeFilterOptionMenu()
            "\n┃           CHANGE FILTER OPTION MENU          ┃"
            "\n┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫"
            "\n┃  1. Clear all option (ID Base)               ┃"
-           "\n┃  2. Display by name                          ┃"
+           "\n┃  2. Sort option                              ┃"
            "\n┃  3. Order change (ASC, DESC)                 ┃"
            "\n┃  4. Team filter                              ┃"
            "\n┃  5. Reason filter                            ┃"
@@ -317,8 +318,32 @@ void changeFilterOption()
             printf("All filter is off!\n");
             break;
         case 2:
-            printf("In progress!");
-            break;
+        {
+            int option;
+            printf("Change sort option!\n");
+            printf("\n=== Sort Command Rules ===\n");
+            printf("| Command | Meaning                          |\n");
+            printf("|---------|----------------------------------|\n");
+            printf("| r       | Sort by reason ASC               |\n");
+            printf("| R       | Sort by reason DESC              |\n");
+            printf("| p       | Sort by paid ASC                 |\n");
+            printf("| P       | Sort by paid DESC                |\n");
+            printf("| t       | Sort by team ASC                 |\n");
+            printf("| T       | Sort by team DESC                |\n");
+            printf("\nExamples of valid commands:\n");
+            printf("  rtp   -> reason ASC, team ASC, paid ASC\n");
+            printf("  prt   -> paid ASC, reason ASC, team ASC\n");
+            printf("  PrT   -> paid DESC, reason ASC, team DESC\n");
+            printf("  tR    -> team ASC, reason DESC\n");
+            printf("  R     -> reason DESC\n");
+            printf("  P     -> paid DESC\n");
+            printf("  T     -> team DESC\n");
+            printf("  t     -> team ASC\n");
+
+            inputString(currentSortCommand, 4, "Enter sort command: ");
+            inputYesNo(&enableSortOption, "Do you want to enable sort. Yes (1), No (0): ");
+        }
+        break;
         case 3:
             printf("Now is change order to %s\n", (order) ? "ASC" : "DESC");
             order = !order;
@@ -362,19 +387,16 @@ int isFiltered(Violation *v, int team)
 
 void flexibleDisplayViolationList(ViolationList violations, MemberList members)
 {
-    Violation *v;
-    Member *m;
     if (teamFilter)
     {
-        char team[8];
+        char team[16];
         switch (teamFilterSetting)
         {
         case 0:
             sprintf(team, "Academic");
             break;
-
         case 1:
-            sprintf(team, "Planing");
+            sprintf(team, "Planning");
             break;
         case 2:
             sprintf(team, "HR");
@@ -383,34 +405,37 @@ void flexibleDisplayViolationList(ViolationList violations, MemberList members)
             sprintf(team, "Media");
             break;
         default:
+            sprintf(team, "Unknown");
             break;
         }
-        printf("Violation list is display by team %s", team);
+        printf("Violation list is displayed by team %s\n", team);
     }
 
     displayViolationTableHeader();
-    int start, end, step;
 
-    if (order)
+    Violation *tempList[violations.count];
+    if (enableSortOption)
     {
-        start = 0;
-        end = violations.count;
-        step = 1;
+        for (int i = 0; i < violations.count; i++)
+        {
+            tempList[i] = &violations.data[i];
+        }
+        sortViolation(&violations, tempList, currentSortCommand);
     }
     else
     {
-        start = violations.count - 1;
-        end = -1;
-        step = -1;
+        for (int i = 0; i < violations.count; i++)
+        {
+            tempList[i] = &violations.data[i];
+        }
     }
 
-    for (int i = start; i != end; i += step)
+    for (int i = 0; i < violations.count; i++)
     {
-        v = &violations.data[i];
-        m = getMemberById(v->studentID, &members);
+        Violation *v = tempList[i];
+        Member *m = getMemberById(v->studentID, &members);
         if (m == NULL)
             continue;
-
         if (isFiltered(v, m->team))
         {
             displayViolationRow(v);

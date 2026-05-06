@@ -5,6 +5,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "../include/model.h"
+
 // 123456.789 to 123,456.789 VN�
 int formatCurrency(double amount, char *outputString, size_t availableLen);
 // use: declare char outputString[], then call this function.
