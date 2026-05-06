@@ -85,9 +85,9 @@ void seedSampleData(MemberList *members, ViolationList *violations, AccountList 
     for (int i = 0; i < 2; i++) {
         strcpy(violations->data[i].studentID, members->data[0].studentID);
         violations->data[i].fine = 20000.0;
-        violations->data[i].isPending = 0;
         violations->data[i].penalty = 0;
         violations->data[i].owner = &members->data[0];
+        violations->data[i].owner->isPending = 0;
     }
     strcpy(violations->data[0].violationID, "VIO001");
     violations->data[0].reason = REASON_MEETING_ABSENCE;
@@ -102,7 +102,6 @@ void seedSampleData(MemberList *members, ViolationList *violations, AccountList 
     // SE200002
     for (int i = 2; i < 5; i++) {
         strcpy(violations->data[i].studentID, members->data[1].studentID);
-        violations->data[i].fine = 50000.0;
         violations->data[i].isPaid = ALREADY_PAID;
         violations->data[i].penalty = PENALTY_FINANCIAL;
         violations->data[i].owner = &members->data[1];
@@ -110,24 +109,27 @@ void seedSampleData(MemberList *members, ViolationList *violations, AccountList 
     
     strcpy(violations->data[2].violationID, "VIO003");
     violations->data[2].reason = REASON_MEETING_ABSENCE;
+    violations->data[2].fine = 50000.0;
     strcpy(violations->data[2].note, "Retrospective meeting");
     
     strcpy(violations->data[3].violationID, "VIO004");
     violations->data[3].reason = REASON_MEETING_ABSENCE;
+    violations->data[3].fine = 50000.0;
     strcpy(violations->data[3].note, "SUMMER semester meeting");
 
     strcpy(violations->data[4].violationID, "VIO005");
     violations->data[4].reason = REASON_MEETING_ABSENCE;
     strcpy(violations->data[4].note, "Daily report meeting");
     violations->data[4].penalty = PENALTY_KICK;
+    violations->data[4].fine = 0;
 
     // SE200003
     for (int i = 5; i < 9; i++) {
         strcpy(violations->data[i].studentID, members->data[2].studentID);
         violations->data[i].fine = 50000.0;
-        violations->data[i].isPending = 0;
         violations->data[i].penalty = 0;
         violations->data[i].owner = &members->data[2];
+        violations->data[i].owner->isPending = 0;
     }
     
     strcpy(violations->data[5].violationID, "VIO006");
@@ -148,7 +150,7 @@ void seedSampleData(MemberList *members, ViolationList *violations, AccountList 
 
     violations->count = 9;
     
-    for(int i=0;i<8;i++){
+    for(int i=0;i<=8;i++){
     	violations->data[i].violationTime = base;
 	}
 
@@ -164,13 +166,13 @@ void seedSampleData(MemberList *members, ViolationList *violations, AccountList 
 
     strcpy(accounts->data[1].studentID, "SE200002");
     strcpy(accounts->data[1].password, "SE200002");
-    accounts->data[1].role = 1;
+    accounts->data[1].role = 1; //Vice or Leader
     accounts->data[1].isLocked = 0;
     accounts->data[1].failCount = 0;
 
     strcpy(accounts->data[2].studentID, "SE200003");
     strcpy(accounts->data[2].password, "SE200003");
-    accounts->data[2].role = 2;  // Admin/BCN
+    accounts->data[2].role = 2;  // Admin/BOD
     accounts->data[2].isLocked = 0;
     accounts->data[2].failCount = 0;
 
@@ -335,7 +337,7 @@ int main(int argc, char* argv[]) {
                     "\n┃  1.  Add New Member                          ┃"
                     "\n┃  2.  Edit Member Information                 ┃"
                     "\n┃  3.  Remove Member                           ┃"
-                    "\n┃  4.  Create new violation                    ┃"
+                    "\n┃  4.  Record new violation                    ┃"
                     "\n┃  5.  Mark Fine as Paid                       ┃"
                     "\n┃  6.  View Violation List                     ┃"
                     "\n┃  7.  Statistics by Department                ┃"
@@ -361,10 +363,10 @@ int main(int argc, char* argv[]) {
                         addMember(&members, &accounts);
                         break;
                     case 2:
-                        updateMember(&members, &violations);
+                        updateMember(&members, &violations, studentID);
                         break;
                     case 3:
-                        removeMember(&members, &accounts, &violations);
+                        removeMember(&members, &accounts, &violations, studentID);
                         break;
                     case 4:
                         recordViolationView(&violations, &members);
@@ -380,7 +382,7 @@ int main(int argc, char* argv[]) {
                         showFineStatsByTeam(&members, &violations);
                         break;
                     case 8:
-                        checkAndWarnOutClub(&members, &accounts, &violations);
+                        checkAndWarnOutClub(&members, &accounts, &violations, studentID);
                         break;
                     case 9: {
                         int sortMode;

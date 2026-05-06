@@ -84,6 +84,8 @@ const char *translateIsPaid(int isPaid) {
 			return "Not Paid";
 		case 1:
 			return "Paid";
+		case 2:
+			return "not have to pay";	
 		default:
 			return "Unknown Payment Status";
 	}

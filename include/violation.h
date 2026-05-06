@@ -16,6 +16,7 @@
 
 #define ALREADY_PAID 1
 #define NOT_PAY 0
+#define NOT_HAVE_TO_PAY 2
 
 #define PENALTY_FINANCIAL 0
 #define PENALTY_KICK 1
@@ -51,6 +52,10 @@ int isMemberInWarningList(const Member *member, const ViolationList *violations)
 int hasViolenceViolation(const char* studentID, const ViolationList *violations);
 
 void removeMemberById(const char* id, MemberList *members, AccountList *accounts, ViolationList *violations);
-void checkAndWarnOutClub(MemberList *members, AccountList *accounts, ViolationList *violations);
+void checkAndWarnOutClub(MemberList *members, AccountList *accounts, ViolationList *violations, const char *actorID);
+
+void removeOneViolation (ViolationList* list, const char *violationId);
+
+int checkTotalBOD(MemberList *members);
 
 #endif
