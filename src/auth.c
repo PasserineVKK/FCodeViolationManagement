@@ -103,7 +103,7 @@ int login(AccountList *accounts, char* studentID) {
     }
 
     // Successful login, reset fail, return role
-    accounts->data[aIndex].failCount = 0; // C?p nh?t tr?c ti?p v�o m?ng g?c
+    accounts->data[aIndex].failCount = 0; 
     saveAccounts(accounts);
     return accounts->data[aIndex].role;
 }
@@ -169,7 +169,7 @@ void changePassword(AccountList *accounts, char* actorID, int role) {
         printf("New password and confirm password do not match.\n");
     } while (1);
 
-    // Update new password to account v� luu (d�ng con tr?)
+    // Update new password to account
     strcpy(accounts->data[aIndex].password, newPassword);
     saveAccounts(accounts);
     printf("Password changed successfully.\n");
