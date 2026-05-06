@@ -182,7 +182,7 @@ void handleSeriousViolation(const Member* m, const Violation* newV) {
     const char* studentID = m->studentID;
 
     if (newV->reason == REASON_MEETING_ABSENCE) {
-        sprintf(content, sizeof(content),
+        snprintf(content, sizeof(content),
                 "Member with ID %s. You have been absent from meetings. "
                 "If this violation occurs more than twice, you will be "
                 "kicked out. "
@@ -191,7 +191,7 @@ void handleSeriousViolation(const Member* m, const Violation* newV) {
                 studentID);
         warningMember(content, studentID, WILL_SAVE);
     } else if (newV->reason == REASON_VIOLENCE) {
-        sprintf(content, sizeof(content),
+        snprintf(content, sizeof(content),
                 "Member with ID %s. You have been kicked out for a "
                 "violence-related violation.",
                 studentID);

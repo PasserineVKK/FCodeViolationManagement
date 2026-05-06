@@ -304,7 +304,7 @@ Input ID => Find by ID => If found, show member info
 => If yes, update by assign new value to target member
 => Save to file
 */
-void updateMember(MemberList* members, ViolationList* violations) {
+void updateMember(MemberList* members, ViolationList* violations, const char *actorID) {
     // Check if member list is empty
     if (members->count == 0) {
         printf("No members available to update.\n");
@@ -318,21 +318,26 @@ void updateMember(MemberList* members, ViolationList* violations) {
     int team;            // 0 = Academic, 1 = Planning, 2 = HR, 3 = Media
     int role;            // 0 = Member, 1 = Leader/Vice, 2 = BOD
 
-    int mIndex;
-
     int continueUpdate = 1;
     while (continueUpdate) {
-        mIndex = -1;  // Reset position before find member
+        int mIndex = -1, actorIndex = -1;  // Reset position before find member
         inputStudentID(studentID, "Enter student ID to update: ");
 
         // Find member by ID
         mIndex = searchMemberByIdInM(members, studentID);
+        actorIndex = searchMemberByIdInM(members, studentID);
+
 
         // If found
         if (mIndex != -1) {
             // Show student
             printf("\nStudent found:\n");
             displayOneMemberInfo(members->data[mIndex]);
+
+            //Only BOD can update BOD
+            if (members->data[mIndex].role == 2 && members->data[actorIndex].role == 1){
+                printf ("You are only Vice/Leader, you are not granted permission to update BOD\n");
+            }    
 
             // Ask which field want to update
             int fieldChoice;
@@ -389,6 +394,12 @@ void updateMember(MemberList* members, ViolationList* violations) {
                         targetMem->team = team;
                         break;
                     case 5: {
+                        if (members->data[mIndex].role == 2 
+                            && members->data[actorIndex].role == 2  
+                            && checkTotalBOD (members)== 1){
+                            //Only can remove themself if they are not the last BOD
+                            printf ("You are the last BOD, cannot change your role to another role.\n");
+                        }
                         int oldRole = targetMem->role; // Save old role before assign new role
                         targetMem->role = role;        // Assign new role
 

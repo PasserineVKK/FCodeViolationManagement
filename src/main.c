@@ -363,7 +363,7 @@ int main(int argc, char* argv[]) {
                         addMember(&members, &accounts);
                         break;
                     case 2:
-                        updateMember(&members, &violations);
+                        updateMember(&members, &violations, studentID);
                         break;
                     case 3:
                         removeMember(&members, &accounts, &violations, studentID);
