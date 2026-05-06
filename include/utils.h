@@ -29,3 +29,7 @@ char* getLastWord(char* inputString);
 	// team: t DESC, T ASC
 	// valid command example: rtp, prt, PrT, tR, R, P, T, t,..
 void sortViolation(ViolationList* list, Violation* sortPointerList[], char* compareCommand);
+
+void sortMember(MemberList* list, Member* sortPointerList[], char* compareCommand);
+
+
