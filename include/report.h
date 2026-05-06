@@ -51,4 +51,8 @@ Notification* warningMember(const char* content, const char* memberId,
                             int isSave);
 Notification* globalNotification(const char* content);
 
+// 2.10 - Advanced feature: Export violation report to .txt file
+// Includes timestamp, summary by team, and members with outstanding fines
+void exportViolationReportToFile(MemberList *members, ViolationList *violations);
+
 #endif

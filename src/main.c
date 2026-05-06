@@ -353,8 +353,9 @@ int main(int argc, char* argv[]) {
                     "\n┃ 17.  Update notification                     ┃"
                     "\n┃ 18.  Delete notification                     ┃"
                     "\n┃ 19.  Show all notifications                  ┃"
+                    "\n┃ 20.  Export Violation Report to File         ┃"
                     "\n┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛\n");
-                inputIntegerInRange(&choice, 1, 19,
+                inputIntegerInRange(&choice, 1, 20,
                                     " ==> Enter your selection: ");
 
                 clearScreen();
@@ -471,6 +472,9 @@ int main(int argc, char* argv[]) {
                     }
                     case 19: 
                         displayNotificationList();
+                        break;
+                    case 20:
+                        exportViolationReportToFile(&members, &violations);
                         break;
                     default:
                         printf("Invalid option, please try again.");

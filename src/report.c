@@ -291,3 +291,160 @@ int listViolationsByTimeRange(Violation violations[], int vCount,
     }
     return foundCount;
 }
+
+// Advanced feature: Export violation report to .txt file
+// Includes timestamp, summary by team, and members with outstanding fines
+void exportViolationReportToFile(MemberList *members, ViolationList *violations) {
+    if (members == NULL || violations == NULL) {
+        printf("\033[1;31m[ERROR] Invalid data!\033[0m\n");
+        return;
+    }
+
+    time_t now = time(NULL);
+    struct tm *timeinfo = localtime(&now);
+    char filename[100];
+    strftime(filename, sizeof(filename), "FCODE_ViolationReport_%Y%m%d_%H%M.txt", timeinfo);
+
+    FILE *file = fopen(filename, "w");
+    if (file == NULL) {
+        printf("\033[1;31m[ERROR] Cannot create report file!\033[0m\n");
+        return;
+    }
+
+    char timeStr[50];
+    strftime(timeStr, sizeof(timeStr), "%Y-%m-%d %H:%M:%S", timeinfo);
+
+    fprintf(file, "VIOLATION REPORT\n");
+    fprintf(file, "Generated at: %s\n\n", timeStr);
+
+    const char* teamNames[] = {"Academic", "Planning", "HR", "Media"};
+    double paidByTeam[4] = {0};
+    double unpaidByTeam[4] = {0};
+    int violationCountByTeam[4] = {0};
+    int memberCountByTeam[4] = {0};
+
+    for (int i = 0; i < violations->count; i++) {
+        Violation* v = &violations->data[i];
+        int mIndex = searchMemberByIdInM(members, v->owner->studentID);
+        if (mIndex == -1) continue;
+
+        int team = members->data[mIndex].team;
+        if (team < 0 || team > 3) continue;
+
+        violationCountByTeam[team]++;
+        if (v->isPaid == 1) {
+            paidByTeam[team] += v->fine;
+        } else {
+            unpaidByTeam[team] += v->fine;
+        }
+    }
+
+    for (int team = 0; team < 4; team++) {
+        for (int i = 0; i < members->count; i++) {
+            int hasViolation = 0;
+            if (members->data[i].team != team) continue;
+
+            for (int v = 0; v < violations->count; v++) {
+                if (strcmp(violations->data[v].owner->studentID,
+                           members->data[i].studentID) == 0) {
+                    hasViolation = 1;
+                    break;
+                }
+            }
+
+            if (hasViolation) memberCountByTeam[team]++;
+        }
+    }
+
+    double grandPaid = 0;
+    double grandUnpaid = 0;
+    int grandViolations = 0;
+
+        fprintf(file, "SUMMARY BY DEPARTMENT\n");
+        fprintf(file, "+----------------+------------+-------------------------+------------------+------------------+------------------+\n");
+        fprintf(file, "| %-14s | %-10s | %-23s | %-16s | %-16s | %-16s |\n",
+            "Department", "Violations", "Members with Violations", "Paid", "Unpaid", "Total");
+        fprintf(file, "+----------------+------------+-------------------------+------------------+------------------+------------------+\n");
+
+    for (int i = 0; i < 4; i++) {
+        char paidStr[25], unpaidStr[25], totalStr[25];
+        formatCurrency(paidByTeam[i], paidStr, sizeof(paidStr));
+        formatCurrency(unpaidByTeam[i], unpaidStr, sizeof(unpaidStr));
+        formatCurrency(paidByTeam[i] + unpaidByTeam[i], totalStr, sizeof(totalStr));
+
+        fprintf(file, "| %-14s | %10d | %23d | %-16s | %-16s | %-16s |\n",
+                teamNames[i], violationCountByTeam[i], memberCountByTeam[i],
+                paidStr, unpaidStr, totalStr);
+
+        grandPaid += paidByTeam[i];
+        grandUnpaid += unpaidByTeam[i];
+        grandViolations += violationCountByTeam[i];
+    }
+
+    char gPaid[25], gUnpaid[25], gTotal[25];
+    formatCurrency(grandPaid, gPaid, sizeof(gPaid));
+    formatCurrency(grandUnpaid, gUnpaid, sizeof(gUnpaid));
+    formatCurrency(grandPaid + grandUnpaid, gTotal, sizeof(gTotal));
+
+            fprintf(file, "+----------------+------------+-------------------------+------------------+------------------+------------------+\n");
+            fprintf(file, "| %-14s | %10d | %23s | %-16s | %-16s | %-16s |\n",
+            "GRAND TOTAL", grandViolations, "", gPaid, gUnpaid, gTotal);
+                fprintf(file, "+----------------+------------+-------------------------+------------------+------------------+------------------+\n");
+
+    fprintf(file, "MEMBERS WITH OUTSTANDING FINES\n");
+                fprintf(file, "+------------+------------------------+--------------+------------+------------------+\n");
+                fprintf(file, "| %-10s | %-22s | %-12s | %-10s | %-16s |\n",
+            "Student ID", "Full Name", "Department", "Violations", "Fine Amount");
+                fprintf(file, "+------------+------------------------+--------------+------------+------------------+\n");
+
+    int outstandingCount = 0;
+    double totalOutstanding = 0;
+
+    for (int team = 0; team < 4; team++) {
+        int membersInTeam = 0;
+
+        for (int i = 0; i < members->count; i++) {
+            Member* m = &members->data[i];
+            if (m->team != team) continue;
+
+            double unpaidAmount = 0;
+            int unpaidCount = 0;
+
+            for (int v = 0; v < violations->count; v++) {
+                Violation* viol = &violations->data[v];
+                if (strcmp(viol->owner->studentID, m->studentID) == 0 && viol->isPaid == 0) {
+                    unpaidAmount += viol->fine;
+                    unpaidCount++;
+                }
+            }
+
+            if (unpaidAmount > 0) {
+                char fineStr[25];
+                formatCurrency(unpaidAmount, fineStr, sizeof(fineStr));
+                fprintf(file, "| %-10s | %-22s | %-12s | %10d | %-16s |\n",
+                    m->studentID, m->fullName, teamNames[team], unpaidCount, fineStr);
+
+                totalOutstanding += unpaidAmount;
+                outstandingCount++;
+                membersInTeam++;
+            }
+        }
+
+        if (membersInTeam == 0) {
+                continue;
+        }
+        }
+
+            fprintf(file, "+------------+------------------------+--------------+------------+------------------+\n");
+
+    char totalOutstandingStr[25];
+    formatCurrency(totalOutstanding, totalOutstandingStr, sizeof(totalOutstandingStr));
+
+    fprintf(file, "\nTOTAL MEMBERS WITH OUTSTANDING FINES: %d\n", outstandingCount);
+    fprintf(file, "TOTAL OUTSTANDING AMOUNT: %s\n", totalOutstandingStr);
+    fprintf(file, "TOTAL VIOLATIONS: %d\n", grandViolations);
+
+    fclose(file);
+
+    printf("\033[1;32m[SUCCESS] Report exported to: %s\033[0m\n", filename);
+}
