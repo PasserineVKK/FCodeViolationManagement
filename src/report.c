@@ -381,7 +381,7 @@ void exportViolationReportToFile(MemberList *members, ViolationList *violations)
         violationCountByTeam[team]++;
         if (v->isPaid == 1) {
             paidByTeam[team] += v->fine;
-        } else {
+        } else if (v->isPaid == 0) {
             unpaidByTeam[team] += v->fine;
         }
     }
