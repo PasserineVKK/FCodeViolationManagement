@@ -39,7 +39,7 @@ int countUnpaidViolations(const char* id, const ViolationList* violations) {
         // Use pointer to access directly and avoid copying
         Violation* v = &violations->data[i];
         if (strcmp(v->studentID, id) == 0 &&
-            v->isPaid == 0 && v->owner->isPending == 0) {
+            v->isPaid == NOT_PAY && v->owner->isPending == 0) {
             unpaidCount++;
         }
     }
@@ -58,7 +58,7 @@ int updateMemberTotalFine(MemberList* members, const ViolationList* violations, 
     for (int i = 0; i < violations->count; i++) {
         Violation* v = &violations->data[i];
         if (strcmp(v->studentID, id) == 0 &&
-            v->isPaid == 0 && v->owner->isPending == 0) {
+            v->isPaid == NOT_PAY && v->owner->isPending == 0) {
             totalFine += v->fine;
         }
     }
@@ -409,7 +409,7 @@ void updateMember(MemberList* members, ViolationList* violations, const char *ac
                             for (int i = 0; i < violations->count; i++) {
                                 Violation* vPtr = &violations->data[i];
                                 if (strcmp(vPtr->studentID, studentID) == 0 &&
-                                    vPtr->isPaid == 0 &&
+                                    vPtr->isPaid == NOT_PAY &&
                                     vPtr->owner->isPending == 0 &&
                                     vPtr->fine != 0) {
                                     

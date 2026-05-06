@@ -56,7 +56,7 @@ void displayViolationRow(const Violation* v) {
             break;
     }
 
-    const char* paidStr = v->isPaid ? ((v->isPaid == 1)? "Yes" : "Not have to pay") : "No";
+    const char* paidStr = v->isPaid ? ((v->isPaid == ALREADY_PAID)? "Yes" : "Not have to pay") : "No";
     const char* penaltyStr = v->penalty ? "Kick" : "Financial";
     const char* pendingStr = v->owner->isPending ? "Pending" : "Resolved";
 
@@ -94,6 +94,11 @@ void markFineAsPaidView(ViolationList* violations, MemberList* members) {
 
     if (violations->data[vIndex].isPaid == ALREADY_PAID) {
         printf("This violation is already paid.\n");
+        return;
+    }
+
+    if (violations->data[vIndex].isPaid == NOT_HAVE_TO_PAY) {
+        printf("This violation is not have to pay\n");
         return;
     }
 
@@ -161,7 +166,7 @@ void viewMyUnpaidFines(const char* myStudentID, const ViolationList* violations)
     for (int i = 0; i < violations->count; i++) {
         const Violation* v = &violations->data[i];
         if (strcmp(v->studentID, myStudentID) != 0) continue;
-        if (v->isPaid != 0) continue;
+        if (v->isPaid == ALREADY_PAID && v->isPaid == NOT_HAVE_TO_PAY) continue;
 
         char timeStr[20];
         getFormatTime(timeStr, sizeof(timeStr), v->violationTime);

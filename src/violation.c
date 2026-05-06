@@ -112,6 +112,10 @@ int addViolation(ViolationList* violations, const Violation* newV) {
 
 void updateIsPaidField(const char* violationId, ViolationList* violations, int value) {
     Violation* v = findViolationById(violationId, violations);
+    if (v->isPaid != NOT_HAVE_TO_PAY){
+        printf ("This violation don't have to pay, can't update paid");
+        return;
+    }
     if (v != NULL) v->isPaid = value;
 }
 
