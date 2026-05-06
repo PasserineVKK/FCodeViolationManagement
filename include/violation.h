@@ -16,7 +16,7 @@
 
 #define ALREADY_PAID 1
 #define NOT_PAY 0
-#define NOT_HAVE_TO_PAY 3
+#define NOT_HAVE_TO_PAY 2
 
 #define PENALTY_FINANCIAL 0
 #define PENALTY_KICK 1

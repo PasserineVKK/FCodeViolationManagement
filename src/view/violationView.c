@@ -56,7 +56,7 @@ void displayViolationRow(const Violation* v) {
             break;
     }
 
-    const char* paidStr = v->isPaid ? "Yes" : "No";
+    const char* paidStr = v->isPaid ? ((v->isPaid == 1)? "Yes" : "Not have to pay") : "No";
     const char* penaltyStr = v->penalty ? "Kick" : "Financial";
     const char* pendingStr = v->owner->isPending ? "Pending" : "Resolved";
 
