@@ -4,11 +4,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-
 #include "../include/model.h"
+// 123456.78 to 123,456.78 VND
+int formatCurrency(double amount, char* outputString, size_t availableLen);
 
-// 123456.789 to 123,456.789 VN�
-int formatCurrency(double amount, char *outputString, size_t availableLen);
 // use: declare char outputString[], then call this function.
 // after this func operate, the value of this outputString is the desired
 // currency format

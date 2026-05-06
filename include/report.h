@@ -62,4 +62,8 @@ void displayNotificationByMemberID(const char *studentId, int type);
 void displayWarning(const char *memberId);
 void displayNotifications(int type);
 
+// 2.10 - Advanced feature: Export violation report to .txt file
+// Includes timestamp, summary by team, and members with outstanding fines
+void exportViolationReportToFile(MemberList *members, ViolationList *violations);
+
 #endif
