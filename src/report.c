@@ -48,9 +48,9 @@ void showFineStatsByTeam(MemberList *members, ViolationList *violations) {
         int team = members->data[mIndex].team;
         if (team < 0 || team > 3) continue;
 
-        if (v->isPaid) {
+        if (v->isPaid == 1) {
             paidByTeam[team] += v->fine;
-        } else {
+        } else if (v->isPaid == 0) {
             unpaidByTeam[team] += v->fine;
         }
     }

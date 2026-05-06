@@ -9,6 +9,7 @@
 #include "../include/utils.h"
 #include "../include/validate.h"
 #include "../include/view/memberView.h"
+#include "../include/view/viewUtil.h"
 #include "../include/violation.h"
 
 // file
@@ -38,7 +39,7 @@ int countUnpaidViolations(const char* id, const ViolationList* violations) {
         // Use pointer to access directly and avoid copying
         Violation* v = &violations->data[i];
         if (strcmp(v->studentID, id) == 0 &&
-            v->isPaid == 0 && v->isPending == 0) {
+            v->isPaid == NOT_PAY && v->owner->isPending == 0) {
             unpaidCount++;
         }
     }
@@ -57,7 +58,7 @@ int updateMemberTotalFine(MemberList* members, const ViolationList* violations, 
     for (int i = 0; i < violations->count; i++) {
         Violation* v = &violations->data[i];
         if (strcmp(v->studentID, id) == 0 &&
-            v->isPaid == 0 && v->isPending == 0) {
+            v->isPaid == NOT_PAY && v->owner->isPending == 0) {
             totalFine += v->fine;
         }
     }
@@ -194,12 +195,85 @@ void addMember(MemberList* members, AccountList* accounts) {
     }
 }
 
+void removeOneMember (MemberList *members, AccountList *accounts, ViolationList *violations, const char *id, const char *actorID){
+    int mIndex = -1, vIndex = -1, aIndex = -1, actorIndex = -1;  // Reset position before find member
+    // Find member by ID in member list
+    mIndex = searchMemberByIdInM(members, id);
+    actorIndex = searchMemberByIdInM(members, actorID);
+
+    if (mIndex != -1) {
+        // Show student
+        printf("\nStudent found:\n");
+        displayOneMemberInfo(members->data[mIndex]);
+
+        //Only BOD can remove BOD
+        if (members->data[mIndex].role == 2 && members->data[actorIndex].role == 1){
+            printf ("You are only Vice/Leader, you are not granted permission to remove BOD\n");
+        }    
+        else if (members->data[mIndex].role == 2 && members->data[actorIndex].role == 2  && checkTotalBOD (members)== 1){
+            //Only can remove themself if they are not the last BOD
+            printf ("You are the last BOD, can't remove yourself\n");
+        }
+        else {
+            // Confirm to remove member
+            int confirm;
+            inputYesNo(&confirm, "\nRemove this member?\n1: Yes\n0: No\n=> Your choice: ");
+
+            // Start to remove
+            if (confirm == 1) {
+                // Search member in violation list and account list (Assume signatures changed)
+                aIndex = searchMemberByIdInA(accounts, id);
+
+                // Remove in member list by shift left array
+                for (int i = mIndex; i < members->count - 1; i++) {
+                    members->data[i] = members->data[i + 1];
+                }
+                members->count--;
+
+                // Remove in account list by shift left array if found
+                for (int i = aIndex; i < accounts->count - 1; i++) {
+                    accounts->data[i] = accounts->data[i + 1];
+                }
+                accounts->count--;
+            
+                // Loop through all violations to remove every violation of this member
+                for (int i = 0; i < violations->count; i++) {
+                    if (strcmp(violations->data[i].studentID, id) == 0) {
+                        for (int j = i; j < violations->count - 1; j++) {
+                            violations->data[j] = violations->data[j + 1];
+                        }
+                        violations->count--;
+                        i--; // Check at this index again after shifting
+                    }
+                }
+
+                // Call save member and account to file functions
+                saveMembers(members);
+                saveAccounts(accounts);
+                saveViolations(violations);
+
+                // Delete notification 
+                deleteNotificationByMemberId(id); 
+
+                // Print success message
+                printf("Member removed successfully!\n");
+            } 
+            else {
+                printf("Member not removed.\n");
+            }
+        }
+    } 
+    else {
+        printf("Member not found!\n");
+    }
+}
+
 // ===== Feature 2.2: REMOVE MEMBER =====
 /*
 Input ID => Find by ID => If found, show member info
 => Confirm to remove => If yes, remove by shift left array => Save to file
 */
-void removeMember(MemberList* members, AccountList* accounts, ViolationList* violations) {
+void removeMember(MemberList* members, AccountList* accounts, ViolationList* violations, const char *actorID) {
     // Check if member list is empty
     if (members->count == 0) {
         printf("No members available to remove.\n");
@@ -210,85 +284,15 @@ void removeMember(MemberList* members, AccountList* accounts, ViolationList* vio
 
     int continueRemove = 1;
     while (continueRemove) {
-        int mIndex = -1, vIndex = -1, aIndex = -1;  // Reset position before find member
         inputStudentID(id, "Enter student ID to remove: ");
 
-        // Find member by ID in member list
-        mIndex = searchMemberByIdInM(members, id);
-
-        if (mIndex != -1) {
-            // Show student
-            printf("\nStudent found:\n");
-            displayOneMemberInfo(members->data[mIndex]);
-
-            // Confirm to remove member
-            int confirm;
-            inputYesNo(
-                &confirm,
-                "\nRemove this member?\n1: Yes\n0: No\n=> Your choice: ");
-
-            // Start to remove
-            if (confirm == 1) {
-                // Search member in violation list and account list (Assume signatures changed)
-                vIndex = getViolationIndexById(violations, id);
-                aIndex = searchMemberByIdInA(accounts, id);
-
-                // Remove in member list by shift left array
-                for (int i = mIndex; i < members->count - 1; i++) {
-                    members->data[i] = members->data[i + 1];
-                }
-                members->count--;
-
-                // Remove in account list by shift left array if found
-                
-                for (int i = aIndex; i < accounts->count - 1; i++) {
-                    accounts->data[i] = accounts->data[i + 1];
-                }
-                accounts->count--;
-            
-
-                // Call save member and account to file functions
-                saveMembers(members);
-                saveAccounts(accounts);
-
-                // Remove in violation list by shift left array if found
-                // If vIndex == -1 => This member has no violation record
-                // => No need to remove in violation list
-                if (vIndex != -1) {
-                    // Loop through all violations to remove every violation of this member
-                    for (int i = 0; i < violations->count; i++) {
-                        if (strcmp(violations->data[i].studentID, id) == 0) {
-                            for (int j = i; j < violations->count - 1; j++) {
-                                violations->data[j] = violations->data[j + 1];
-                            }
-                            violations->count--;
-                            i--; // Check at this index again after shifting
-                        }
-                    }
-                    saveViolations(violations);
-                }
-
-                // Delete notification 
-                deleteNotificationByMemberId(id); 
-
-                // Print success message
-                printf("Member removed successfully!\n");
-            } else {
-                printf("Member not removed.\n");
-            }
-        } else {
-            printf("Member not found!\n");
-        }
+        removeOneMember(members, accounts, violations, id, actorID);
 
         int choice;
 
-        inputYesNo(&choice,
+        inputYesNo(&continueRemove,
                    "\nDo you want to remove another member?\n1: Yes\n0: No\n=> "
                    "Your choice: ");
-
-        if (choice == 0) {
-            continueRemove = 0;
-        }
     }
 }
 
@@ -300,7 +304,7 @@ Input ID => Find by ID => If found, show member info
 => If yes, update by assign new value to target member
 => Save to file
 */
-void updateMember(MemberList* members, ViolationList* violations) {
+void updateMember(MemberList* members, ViolationList* violations, const char *actorID) {
     // Check if member list is empty
     if (members->count == 0) {
         printf("No members available to update.\n");
@@ -314,21 +318,26 @@ void updateMember(MemberList* members, ViolationList* violations) {
     int team;            // 0 = Academic, 1 = Planning, 2 = HR, 3 = Media
     int role;            // 0 = Member, 1 = Leader/Vice, 2 = BOD
 
-    int mIndex;
-
     int continueUpdate = 1;
     while (continueUpdate) {
-        mIndex = -1;  // Reset position before find member
+        int mIndex = -1, actorIndex = -1;  // Reset position before find member
         inputStudentID(studentID, "Enter student ID to update: ");
 
         // Find member by ID
         mIndex = searchMemberByIdInM(members, studentID);
+        actorIndex = searchMemberByIdInM(members, studentID);
+
 
         // If found
         if (mIndex != -1) {
             // Show student
             printf("\nStudent found:\n");
             displayOneMemberInfo(members->data[mIndex]);
+
+            //Only BOD can update BOD
+            if (members->data[mIndex].role == 2 && members->data[actorIndex].role == 1){
+                printf ("You are only Vice/Leader, you are not granted permission to update BOD\n");
+            }    
 
             // Ask which field want to update
             int fieldChoice;
@@ -385,6 +394,12 @@ void updateMember(MemberList* members, ViolationList* violations) {
                         targetMem->team = team;
                         break;
                     case 5: {
+                        if (members->data[mIndex].role == 2 
+                            && members->data[actorIndex].role == 2  
+                            && checkTotalBOD (members)== 1){
+                            //Only can remove themself if they are not the last BOD
+                            printf ("You are the last BOD, cannot change your role to another role.\n");
+                        }
                         int oldRole = targetMem->role; // Save old role before assign new role
                         targetMem->role = role;        // Assign new role
 
@@ -394,8 +409,8 @@ void updateMember(MemberList* members, ViolationList* violations) {
                             for (int i = 0; i < violations->count; i++) {
                                 Violation* vPtr = &violations->data[i];
                                 if (strcmp(vPtr->studentID, studentID) == 0 &&
-                                    vPtr->isPaid == 0 &&
-                                    vPtr->isPending == 0 &&
+                                    vPtr->isPaid == NOT_PAY &&
+                                    vPtr->owner->isPending == 0 &&
                                     vPtr->fine != 0) {
                                     
                                     double newFine = calculateFine(role, vPtr->reason);
