@@ -1,10 +1,14 @@
 #include "../include/validate.h"
+#include "../include/model.h"
 
 #include <ctype.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
+
+#define VIOLATION_FACTORS 3
+#define MEMBER_FACTORS 3
 
 // Check integer in range
 int isIntegerBelongRange(const char *s, int min, int max)
@@ -343,4 +347,91 @@ int isBlank(const char *str)
         if (!isblank(str[i]))
             return 0;
     return 1;
+}
+
+char *getLastWord(char *inputString)
+{
+    char *output;
+    int len = strlen(inputString);
+    for (int i = len - 1; i > 0; i--)
+    {
+        if (isalpha(inputString[i]) && isspace(inputString[i - 1]))
+        {
+            output = &inputString[i];
+            return output;
+        }
+    }
+    return inputString;
+}
+
+// comparator, accept member data type
+// compare by team, role, violationCount, totalFine
+
+// comparator, accept vio data type
+// compare by team, reason, isPaid
+// command: TRP
+static int violationComparator(Violation *v1, Violation *v2, char *compareCommand)
+{
+    int len = (strlen(compareCommand) > VIOLATION_FACTORS) ? VIOLATION_FACTORS : strlen(compareCommand);
+    int result = 0;
+    for (int i = 0; i < len; i++)
+    {
+        // upper = ASC, lower = DESC
+        char currentCommand = compareCommand[i];
+        int direction = isupper(currentCommand) ? 1 : -1;
+        currentCommand = toupper(currentCommand);
+        switch (currentCommand)
+        {
+        case 'T':
+            result = v1->owner->team - v2->owner->team;
+            break;
+        case 'R':
+            result = v1->reason - v2->reason;
+            break;
+        case 'P':
+            result = v1->isPaid - v2->isPaid;
+            break;
+        default:
+            result = 0;
+        }
+        // if the first factor is equal, continue to the next, until end of commands
+        if (result != 0)
+            return direction * result;
+    }
+    return 0;
+}
+
+// idea from: struct of qsort
+void sortViolation(ViolationList *list, Violation *sortPointerList[], char *compareCommand)
+{
+    if (list == NULL || list->count <= 1)
+        return;
+    int count = list->count;
+    for (int i = 0; i < count; i++)
+    {
+        sortPointerList[i] = &list->data[i];
+    }
+
+    int minIndex = 0, maxIndex = count - 1;
+    int start = 0, end = count - 1;
+    for (int i = 0; i < count - 1; i++)
+    {
+        int minIndex = i;
+
+        for (int j = i + 1; j < count; j++)
+        {
+            if (violationComparator(sortPointerList[j], sortPointerList[minIndex], compareCommand) < 0)
+            {
+                minIndex = j;
+            }
+        }
+
+        // Swap
+        if (minIndex != i)
+        {
+            Violation *temp = sortPointerList[minIndex];
+            sortPointerList[minIndex] = sortPointerList[i];
+            sortPointerList[i] = temp;
+        }
+    }
 }
