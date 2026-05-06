@@ -193,6 +193,7 @@ void seedSampleData(MemberList *members, ViolationList *violations, AccountList 
 void config() { SetConsoleOutputCP(65001); }
 
 int main(int argc, char* argv[]) {
+	
     config();
     char studentID[10];
 
