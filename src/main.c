@@ -194,7 +194,10 @@ void seedSampleData(MemberList *members, ViolationList *violations, AccountList 
 /* run this program using the console pauser or add your own getch,
  * system("pause") or input loop */
 
-void config() { SetConsoleOutputCP(65001); }
+void config() {
+    SetConsoleOutputCP(65001);
+    enableAnsiColors();
+}
 
 int main(int argc, char *argv[])
 {
@@ -277,20 +280,21 @@ int main(int argc, char *argv[])
         {
         case 0:
         {
+            printf("%s", UI_TABLE_HEADER);
+            printf("\nMEMBER MENU\n");
+            printf("%s", UI_RESET);
             printf(
-                "\n┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓"
-                "\n┃                 MEMBER MENU                  ┃"
-                "\n┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫"
-                "\n┃  1. View Profile                             ┃"
-                "\n┃  2. View Violation History                   ┃"
-                "\n┃  3. View Total Unpaid Fines                  ┃"
-                "\n┃  4. View Club Member List                    ┃"
-                "\n┃  5. Reset Password                           ┃"
-                "\n┃  6. Log Out                                  ┃"
-                "\n┃  7. Exit                                     ┃"
-                "\n┃  8. Switch to Admin Menu                     ┃"
-                "\n┃  9. View notification                        ┃"
-                "\n┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛\n");
+                "┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓\n"
+                "┃  1. View Profile                             ┃\n"
+                "┃  2. View Violation History                   ┃\n"
+                "┃  3. View Total Unpaid Fines                  ┃\n"
+                "┃  4. View Club Member List                    ┃\n"
+                "┃  5. Reset Password                           ┃\n"
+                "┃  6. Log Out                                  ┃\n"
+                "┃  7. Exit                                     ┃\n"
+                "┃  8. Switch to Admin Menu                     ┃\n"
+                "┃  9. View notification                        ┃\n"
+                "┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛\n");
 
             inputIntegerInRange(&choice, 1, 9,
                                 "==> Enter your selection: ");
@@ -325,7 +329,7 @@ int main(int argc, char *argv[])
             case 8:
                 if ((loginRole == 1 || loginRole == 2) && members.data[mIndex].isPending == 1)
                 {
-                    printf("Pending account. Can only use member menu now. ");
+                    uiError("Pending account. Can only use member menu now. ");
                     break;
                 }
                 if ((loginRole == 1 || loginRole == 2) && members.data[mIndex].isPending != 1)
@@ -335,7 +339,7 @@ int main(int argc, char *argv[])
                 }
                 else
                 {
-                    printf("Permission denied. Try again.\n");
+                    uiError("Permission denied. Try again.\n");
                     break;
                 }
             case 9:
@@ -343,40 +347,37 @@ int main(int argc, char *argv[])
                 displayGlobalNotification();
                 break;
             default:
-                printf("Invalid option, please try again.\n");
+                uiError("Invalid option, please try again.");
             }
             break;
         }
 
         case 1:
         case 2:
-        {
+        {    
+            printf("%s", UI_TABLE_HEADER);
+            printf("\n%-48s  %-48s  %-48s\n", "MEMBER", "VIOLATION / REPORT", "NOTIFICATION");
+            printf("%s", UI_RESET);
+
             printf(
-                "\n┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓"
-                "\n┃                  ADMIN MENU                  ┃"
-                "\n┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫"
-                "\n┃  1.  Add New Member                          ┃"
-                "\n┃  2.  Edit Member Information                 ┃"
-                "\n┃  3.  Remove Member                           ┃"
-                "\n┃  4.  Record new violation                    ┃"
-                "\n┃  5.  Mark Fine as Paid                       ┃"
-                "\n┃  6.  View Violation List                     ┃"
-                "\n┃  7.  Statistics by Department                ┃"
-                "\n┃  8.  Check warning/kick list                 ┃"
-                "\n┃  9.  View Member in Sorted List              ┃"
-                "\n┃ 10.  Change Member's Password                ┃"
-                "\n┃ 11.  View Violations by Time Range           ┃"
-                "\n┃ 12.  Log Out                                 ┃"
-                "\n┃ 13.  Exit                                    ┃"
-                "\n┃ 14.  Switch to Member Menu                   ┃"
-                "\n┃ 15.  Add new notification                    ┃"
-                "\n┃ 16.  Delete violation                        ┃"
-                "\n┃ 17.  Update notification                     ┃"
-                "\n┃ 18.  Delete notification                     ┃"
-                "\n┃ 19.  Show all notifications                  ┃"
-                "\n┃ 20.  New violation manager()                 ┃"
-                "\n┃ 21.  NEW notification violation              ┃"
-                "\n┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛\n");
+                "┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓  ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓  ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓\n"
+                "┃  1. Add New Member                           ┃  ┃  4. Record new violation                     ┃  ┃ 15. Add new notification                     ┃\n"
+                "┃  2. Edit Member Information                  ┃  ┃  5. Mark Fine as Paid                        ┃  ┃ 17. Update notification                      ┃\n"
+                "┃  3. Remove Member                            ┃  ┃  6. View Violation List                      ┃  ┃ 18. Delete notification                      ┃\n"
+                "┃  8. Check warning/kick list                  ┃  ┃  7. Statistics by Department                 ┃  ┃ 19. Show all notifications                   ┃\n"
+                "┃  9. View Member in Sorted List               ┃  ┃ 11. View Violations by Time Range            ┃  ┃ 21. Notification manager                     ┃\n"
+                "┃ 10. Change Member's Password                 ┃  ┃ 16. Delete violation                         ┃  ┃                                              ┃\n"
+                "┃ 14. Switch to Member Menu                    ┃  ┃ 20. Violation manager                        ┃  ┃                                              ┃\n"
+                "┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛  ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛  ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛\n");
+
+            printf("%s", UI_TABLE_HEADER);
+            printf("\n%-48s\n", "SYSTEM");
+            printf("%s", UI_RESET);
+            printf(
+                "┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓\n"
+                "┃ 12. Log Out                                  ┃\n"
+                "┃ 13. Exit                                     ┃\n"
+                "┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛\n");
             inputIntegerInRange(&choice, 1, 21,
                                 " ==> Enter your selection: ");
 
@@ -514,8 +515,9 @@ int main(int argc, char *argv[])
                 break;
             case 21:
                 notificationManager();
+                break;
             default:
-                printf("Invalid option, please try again.");
+                uiError("Invalid option, please try again.\n");
                 break;
             }
         }

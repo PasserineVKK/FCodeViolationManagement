@@ -41,7 +41,7 @@ int loadViolations(ViolationList *violations, MemberList *members)
 
     if (!isLoadSuccess)
     {
-        printf("No initial data");
+        uiWarning("No initial data");
         violations->count = 0;
         return 1;
     }
@@ -149,7 +149,7 @@ void updateIsPaidField(const char *violationId, ViolationList *violations, int v
     Violation *v = findViolationById(violationId, violations);
     if (v->isPaid != NOT_HAVE_TO_PAY)
     {
-        printf("This violation don't have to pay, can't update paid");
+        uiError("This violation don't have to pay, can't update paid");
         return;
     }
     if (v != NULL)
@@ -303,7 +303,7 @@ void recordViolationView(ViolationList *violations, MemberList *members)
         mIndex = searchMemberByIdInM(members, studentID);
         if (mIndex == -1)
         {
-            printf("Error: Student ID not found.\n");
+            uiError("Error: Student ID not found.\n");
             continue;
         }
 
@@ -361,7 +361,7 @@ void recordViolationView(ViolationList *violations, MemberList *members)
 
             if (!addViolation(violations, &newV))
             {
-                printf("Error: Violation list is full.\n");
+                uiError("Error: Violation list is full.\n");
                 continue;
             }
 
@@ -375,7 +375,7 @@ void recordViolationView(ViolationList *violations, MemberList *members)
             saveViolations(violations);
             saveMembers(members);
 
-            printf("Violation recorded successfully.\n");
+            uiSuccess("Violation recorded successfully.\n");
             maxCount++;
         }
 
@@ -405,13 +405,13 @@ void checkAndWarnOutClub(MemberList *members, AccountList *accounts, ViolationLi
         // validate studentID
         if (!isValidStudentID(studentKickedID))
         {
-            printf("Please enter a valid student ID.\n");
+            uiError("Please enter a valid student ID.\n");
         }
 
         int mIndex = searchMemberByIdInM(members, studentKickedID);
         if (mIndex == -1)
         {
-            printf("Member not found.\n");
+            uiError("Member not found.\n");
             printf("Press Enter to continue...");
             while (getchar() != '\n')
                 ;
@@ -422,7 +422,7 @@ void checkAndWarnOutClub(MemberList *members, AccountList *accounts, ViolationLi
 
         if (targetMem->isPending != 1)
         {
-            printf("This member is not in kick list.\n");
+            uiError("This member is not in kick list.\n");
             printf("Press Enter to continue...");
             while (getchar() != '\n')
                 ;
@@ -450,10 +450,11 @@ void displayWarningList(const MemberList *members, const ViolationList *violatio
 
     if (firstIndex == -1)
     {
-        printf("No members in warning list.");
+        uiError("No members in warning list.");
     }
     else
     {
+        uiTableTitle("WARNING LIST");
         printf("\n┏━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━┓\n");
 
         printf("┃ %-12s ┃ %-24s ┃ %-20s ┃\n",
@@ -482,6 +483,7 @@ void displayWarningList(const MemberList *members, const ViolationList *violatio
 // Display members in kick list
 void displayKickList(const MemberList *members, const ViolationList *violations)
 {
+    uiTableTitle("KICK LIST");
     printf("\n┏━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━┓\n");
 
     printf("┃ %-12s ┃ %-24s ┃ %-21s ┃ %-20s ┃\n",
