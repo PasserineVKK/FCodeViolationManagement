@@ -494,6 +494,7 @@ void exportViolationReportToFile(MemberList *members, ViolationList *violations)
     fclose(file);
 
     printf("\033[1;32m[SUCCESS] Report exported to: %s\033[0m\n", filename);
+}
 void displayNotificationManagerMenu()
 {
     printf("\n┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓"
