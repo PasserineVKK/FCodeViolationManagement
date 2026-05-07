@@ -6,14 +6,15 @@
 #include <string.h>
 #include "../include/model.h"
 
+// 123456.78 to 123,456.78 VND
 
-// 123456.789 to 123,456.789 VN�
 int formatCurrency(double amount, char* outputString, size_t availableLen);
+
 // use: declare char outputString[], then call this function.
 // after this func operate, the value of this outputString is the desired
 // currency format
 
-int normalizeName(char* name);
+int normalizeName(char *name);
 
 const char* translateRole(int role);
 const char* translateTeam(int team);
@@ -31,5 +32,6 @@ char* getLastWord(char* inputString);
 void sortViolation(ViolationList* list, Violation* sortPointerList[], char* compareCommand);
 
 void sortMember(MemberList* list, Member* sortPointerList[], char* compareCommand);
+
 
 

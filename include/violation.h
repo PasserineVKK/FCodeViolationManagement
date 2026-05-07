@@ -30,13 +30,13 @@ int loadViolations(ViolationList *violations, MemberList *members);
 int saveViolations(ViolationList *violations);
 
 double calculateFine(int role, int reason);
-void refreshFineAfterRolechange(const char* memberId, int role, ViolationList *violations);
+void refreshFineAfterRolechange(const char *memberId, int role, ViolationList *violations);
 
-Violation* findViolationById(const char* violationId, ViolationList *violations);
+Violation *findViolationById(const char *violationId, ViolationList *violations);
 
-int getViolationIndexById(const ViolationList *violations, const char* violationId);
+int getViolationIndexById(const ViolationList *violations, const char *violationId);
 
-void updateIsPaidField(const char* violationId, ViolationList *violations, int value);
+void updateIsPaidField(const char *violationId, ViolationList *violations, int value);
 int addViolation(ViolationList *violations, const Violation *newV);
 
 void deleteViolation(ViolationList *list);
@@ -49,12 +49,12 @@ void displayWarningList(const MemberList *members, const ViolationList *violatio
 void displayKickList(const MemberList *members, const ViolationList *violations);
 int isMemberInWarningList(const Member *member, const ViolationList *violations);
 
-int hasViolenceViolation(const char* studentID, const ViolationList *violations);
+int hasViolenceViolation(const char *studentID, const ViolationList *violations);
 
-void removeMemberById(const char* id, MemberList *members, AccountList *accounts, ViolationList *violations);
+void removeMemberById(const char *id, MemberList *members, AccountList *accounts, ViolationList *violations);
 void checkAndWarnOutClub(MemberList *members, AccountList *accounts, ViolationList *violations, const char *actorID);
 
-void removeOneViolation (ViolationList* list, const char *violationId);
+void removeOneViolation(ViolationList *list, const char *violationId);
 
 int checkTotalBOD(MemberList *members);
 

@@ -8,16 +8,16 @@
 #define TYPE_VIOLATION 1
 #define TYPE_MEMBER 2
 
-// 123456789.1234 to 123,456,789.123
+// 123456789.12 to 123,456,789.12
 int formatCurrency(double amount, char* outputString, size_t availableLen){
 	char temp[64];
 	// 1. Prepare
 	
-	//parse amount (3 decimal) to string and set to temp
-	snprintf(temp, sizeof(temp), "%.3f VND", amount);
+	//parse amount (2 decimal) to string and set to temp
+	snprintf(temp, sizeof(temp), "%.2f VND", amount);
 	int len = strlen(temp);
 
-	int dotIndex = len - 4 - 4;
+	int dotIndex = len - 4 - 3;
 	// the number of comma, from begin to the dot
 	int commaCount = (dotIndex > 0) ? (dotIndex - 1) / 3 : 0;
 	int newLen = len + commaCount; 
@@ -34,8 +34,8 @@ int formatCurrency(double amount, char* outputString, size_t availableLen){
 	outputString[j--] = '\0';
 	int i;
 
-	// 2. Copy 3 digits after the dot and the dot
-	for (i = 0; i < 8; i++){
+	// 2. Copy 2 digits after the dot and the dot
+	for (i = 0; i < 7; i++){
 		outputString[j--] = temp[len - 1 - i];
 	}
 	

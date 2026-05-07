@@ -9,8 +9,6 @@
 // @attention base notification path
 #define NOTIFICATION_PATH "data/notification.dat"
 
-#define IGNORE_NOTI_TYPE -1
-
 // @warning Must call when use notification struc.
 // Call free if not using any more
 void initNotificationList();
@@ -20,24 +18,24 @@ void freeNotificationList();
 
 void displayNotificationList();
 
-void displaySingleNotification(Notification* n);
+void displaySingleNotification(Notification *n);
 
-void displayNotificationByMemberID(const char* memberId, int type);
+void displayNotificationByMemberID(const char *memberId, int type);
 
 void displayGlobalNotification();
 
-Notification* createNotification(const char* receiverID, int type,
-                                 const char* message, time_t deleteTime,
+Notification *createNotification(const char *receiverID, int type,
+                                 const char *message, time_t deleteTime,
                                  int isSave);
 
-void updateNotification(Notification* n, const char* receiverID, int type,
-                        const char* message, time_t deleteTime);
+void updateNotification(Notification *n, const char *receiverID, int type,
+                        const char *message, time_t deleteTime);
 
-void deleteNotification(Notification* n);
-void deleteNotificationByMemberId(const char* memberId);
+void deleteNotification(Notification *n);
+void deleteNotificationByMemberId(const char *memberId);
 void autoDeleteOutDateNotification();
 
-Notification* findNotificationById(const char* notificationId);
+Notification *findNotificationById(const char *notificationId);
 
 // 2.7 Show fine statistics by team
 void showFineStatsByTeam(MemberList *member, ViolationList *violations);
@@ -46,9 +44,26 @@ void showFineStatsByTeam(MemberList *member, ViolationList *violations);
 int listViolationsByTimeRange(Violation violations[], int vCount,
                               Violation results[]);
 
-Notification* notifyAdmin(const char* content, const char* adminId, int isSave);
-Notification* warningMember(const char* content, const char* memberId,
+Notification *notifyAdmin(const char *content, const char *adminId, int isSave);
+Notification *warningMember(const char *content, const char *memberId,
                             int isSave);
-Notification* globalNotification(const char* content);
+Notification *globalNotification(const char *content);
+
+// View menu
+void createNotificationView();
+void updateNotificationView();
+void deleteNotificationView();
+void displayNotificationManagerMenu();
+
+void displaySingleNotification(Notification *n);
+void displayNotificationList();
+void displayGlobalNotification();
+void displayNotificationByMemberID(const char *studentId, int type);
+void displayWarning(const char *memberId);
+void displayNotifications(int type);
+
+// 2.10 - Advanced feature: Export violation report to .txt file
+// Includes timestamp, summary by team, and members with outstanding fines
+void exportViolationReportToFile(MemberList *members, ViolationList *violations);
 
 #endif
