@@ -5,7 +5,9 @@
 #include <stdlib.h>
 #include <string.h>
 #include "../include/model.h"
+
 // 123456.78 to 123,456.78 VND
+
 int formatCurrency(double amount, char* outputString, size_t availableLen);
 
 // use: declare char outputString[], then call this function.
@@ -14,17 +16,22 @@ int formatCurrency(double amount, char* outputString, size_t availableLen);
 
 int normalizeName(char *name);
 
-const char *translateRole(int role);
-const char *translateTeam(int team);
-const char *translateIsPaid(int isPaid);
-const char *translatePenalty(int penalty);
+const char* translateRole(int role);
+const char* translateTeam(int team);
+const char* translateIsPaid(int isPaid);
+const char* translatePenalty(int penalty);
 
-char *getLastWord(char *inputString);
+char* getLastWord(char* inputString);
 
 // declare a sortPointerList first, then use it as OUTPUT param
 // compare command:
-// reason: r DESC, R ASC
-// paid: p DESC, P ASC
-// team: t DESC, T ASC
-// valid command example: rtp, prt, PrT, tR, R, P, T, t,..
-void sortViolation(ViolationList *list, Violation *sortPointerList[], char *compareCommand);
+	// reason: r DESC, R ASC
+	// paid: p DESC, P ASC
+	// team: t DESC, T ASC
+	// valid command example: rtp, prt, PrT, tR, R, P, T, t,..
+void sortViolation(ViolationList* list, Violation* sortPointerList[], char* compareCommand);
+
+void sortMember(MemberList* list, Member* sortPointerList[], char* compareCommand);
+
+
+

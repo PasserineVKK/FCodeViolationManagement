@@ -76,6 +76,7 @@ int updateConsecutiveAbsences(MemberList* members, const char* id) {
         // Use pointer to update directly
         Member* targetMem = &members->data[index];
         targetMem->consecutiveAbsences++;
+        saveMembers(members);
         //-> function trigger warning if absence = 2 may be insert here
         return 1;
     } else {
@@ -174,6 +175,7 @@ void addMember(MemberList* members, AccountList* accounts) {
 
                 // Print success message
                 printf("Member added successfully!\n");
+                
             } else {
                 printf("Member not added.\n");
             }

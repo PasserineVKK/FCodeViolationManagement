@@ -141,19 +141,20 @@ int addViolation(ViolationList *violations, const Violation *newV)
     // Use pointer copy directly into memory block
     violations->data[violations->count] = *newV;
     violations->count++;
+    saveViolations(violations);
     return 1;
 }
 
 void updateIsPaidField(const char *violationId, ViolationList *violations, int value)
 {
     Violation *v = findViolationById(violationId, violations);
-    if (v->isPaid != NOT_HAVE_TO_PAY)
+    if (v == NULL) return;
+    else if (v->isPaid == NOT_HAVE_TO_PAY)
     {
         uiError("This violation don't have to pay, can't update paid");
         return;
     }
-    if (v != NULL)
-        v->isPaid = value;
+    else v->isPaid = value;
 }
 
 int ensureCapacity(ViolationList *list)

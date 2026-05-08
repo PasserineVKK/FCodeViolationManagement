@@ -26,6 +26,7 @@
 
 #define ALREADY_PAID 1
 #define NOT_PAY 0
+#define NOT_HAVE_TO_PAY 2
 
 #define PENALTY_FINANCIAL 0
 #define PENALTY_KICK 1
@@ -128,6 +129,8 @@ void seedSampleData(MemberList *members, ViolationList *violations, AccountList 
     strcpy(violations->data[4].note, "Daily report meeting");
     violations->data[4].penalty = PENALTY_KICK;
     violations->data[4].fine = 0;
+    violations->data[4].isPaid = NOT_HAVE_TO_PAY;
+    violations->data[4].owner->isPending = PENDING;
 
     // SE200003
     for (int i = 5; i < 9; i++)
@@ -199,8 +202,9 @@ void config() {
     enableAnsiColors();
 }
 
-int main(int argc, char *argv[])
-{
+
+int main(int argc, char* argv[]) {
+
     config();
     char studentID[10];
 
@@ -257,13 +261,13 @@ int main(int argc, char *argv[])
                     return 0;
                 else
                     continue;
-            }
-            else
-            {
-                menuRole = loginRole;
-                mIndex = searchMemberByIdInM(&members, studentID);
-                vIndex = getViolationIndexById(&violations, studentID);
 
+            } else {
+                
+		        mIndex = searchMemberByIdInM(&members, studentID);
+
+                vIndex = getViolationIndexById(&violations, studentID);
+				menuRole = (members.data[mIndex].isPending == PENDING) ? 0 : loginRole;
                 isStayLogin = 1;
                 // login successfully ==> Assign value for menuRole to open
                 // menu, and memberIndex to identify user
@@ -529,6 +533,7 @@ int main(int argc, char *argv[])
     return 0;
 }
 
+
 void violationManager(ViolationList violations, MemberList members)
 {
     int choice;
@@ -602,3 +607,4 @@ void notificationManager()
         pauseProgram();
     } while (1);
 }
+
