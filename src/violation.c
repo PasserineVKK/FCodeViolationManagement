@@ -78,6 +78,55 @@ int saveViolations(ViolationList *violations)
     return saveToFile(VIOLATIONS_FILE, violations->data, sizeof(Violation) - sizeof(Member *), violations->count);
 }
 
+char *transferIDtoHexa (int number){
+    char c;
+    if (number < 0) return '\0';
+    if (number > 10){
+        switch (number){
+            case 10:
+                c = 'A';
+                break;
+            case 11:
+                c = 'B';
+                break;  
+            case 12:
+                c = 'C';
+                break;
+            case 13:
+                c = 'D';
+                break;
+            case 14: 
+                c = 'E';
+                break;
+            case 15:
+                c = 'F';    
+                break;        
+        }
+    }
+    else  {
+        c =  (char)number;
+    }
+}
+
+char DecimalToHexa (int vioID){
+    if (vioID <= 65535){
+        char newID [5];
+        int numList [4];
+        numList[3] = vioID%16;
+        numList[2] = numList[4]%16;
+        numList[1] = numList[3]%16;
+        numList[0] = numList[2]%16;
+        
+        for ( int i = 0; i < 4; i++){
+            newID[i] = transferIDtoHexa (numList[i]);
+        }
+        return newID;
+    }
+    else {
+        return;
+    }
+}
+
 double calculateFine(int role, int reason)
 {
     if (reason == REASON_VIOLENCE)
