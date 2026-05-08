@@ -136,6 +136,8 @@ void changePassword(AccountList *accounts, char* actorID, int role) {
     // Display student ID which want to change password
     printf("Student ID: %s\n", studentID);
 
+    int targetRole = accounts->data[aIndex].role;
+
     // if actor is normal member OR actor is changing his/her own pass
     if (role == 0 || strcmp(actorID, studentID) == 0) {
         // Enter old password
@@ -152,6 +154,9 @@ void changePassword(AccountList *accounts, char* actorID, int role) {
             }
             printf("Incorrect old password. Please try again.\n");
         } while (1);
+    } else if (role < 2 && targetRole == 2) {
+        printf("You are not granted permission to change BOD password.\n");
+        return;
     }
 
     char newPassword[30];

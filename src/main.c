@@ -210,7 +210,7 @@ int main(int argc, char* argv[]) {
             switch (choice)
             {
             case 1:
-                addMember(&members, &accounts);
+                addMember(&members, &accounts, studentID);
                 break;
             case 2:
                 updateMember(&members, &violations, studentID);
@@ -497,6 +497,5 @@ void seedSampleData(MemberList *members, ViolationList *violations, AccountList 
 
     printf("Created sample data with Pending status in data/ folder.\n");
 }
-/* run this program using the console pauser or add your own getch,
- * system("pause") or input loop */
+
 
