@@ -22,6 +22,8 @@ static int reasonFilterSetting = REASON_NOT_UNIFORM;
 static int paidFilterSetting = ALREADY_PAID;
 static time_t beginTimeFilterSetting;
 static time_t endTimeFilterSetting;
+static const int VIOLATION_PAGE_SIZE = 500;
+static int violationRowNumber = 0;
 
 static long order = ASC;
 
@@ -30,17 +32,21 @@ static char currentSortCommand[3];
 
 void displayViolationTableHeader()
 {
-    printf(
+    printf("%s"
         "\n┏━━━━━━━━━━━━┳━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━"
         "━━━━┳━━━━━━━━━━┳━━━━━━━━━━┳━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-        "━━━━┳━━━━━━━━━━━━━━┓\n");
-    printf(
-        "┃ %-10s ┃ %-10s ┃ %-20s ┃ %-20s ┃ %-8s ┃ %-8s ┃ %-10s ┃ %-32s ┃ %-12s ┃\n",
-        "ID", "Student", "Reason", "Time", "Fine", "Paid", "Penalty", "Note", "Pending");
-    printf(
+        "━━━━┳━━━━━━━━━━━━━━┓\n%s", UI_TABLE_BORDER, UI_RESET);
+
+    printf("%s"
+        "┃ %-10s ┃ %-10s ┃ %-20s ┃ %-20s ┃ %-8s ┃ %-8s ┃ %-10s ┃ %-32s ┃ %-12s ┃\n%s",
+        UI_TABLE_HEADER,
+        "ID", "Student", "Reason", "Time", "Fine", "Paid", "Penalty", "Note", "Pending",
+        UI_RESET);
+
+    printf("%s"
         "┣━━━━━━━━━━━━╋━━━━━━━━━━━━╋━━━━━━━━━━━━━━━━━━━━━━╋━━━━━━━━━━━━━━━━━━━━"
         "━━╋━━━━━━━━━━╋━━━━━━━━━━╋━━━━━━━━━━━━╋━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-        "━━╋━━━━━━━━━━━━━━┫\n");
+        "━━╋━━━━━━━━━━━━━━┫\n%s", UI_TABLE_BORDER, UI_RESET);
 }
 
 void displayViolationTableFooter()
@@ -49,6 +55,7 @@ void displayViolationTableFooter()
         "┗━━━━━━━━━━━━┻━━━━━━━━━━━━┻━━━━━━━━━━━━━━━━━━━━━━┻━━━━━━━━━━━━━━━━━━━━"
         "━━┻━━━━━━━━━━┻━━━━━━━━━━┻━━━━━━━━━━━━┻━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
         "━━┻━━━━━━━━━━━━━━┛\n");
+    printf("%s", UI_RESET);
 }
 
 void displayViolationRow(const Violation *v)
@@ -80,26 +87,66 @@ void displayViolationRow(const Violation *v)
     const char *penaltyStr = v->penalty ? "Kick" : "Financial";
     const char *pendingStr = v->owner->isPending ? "Pending" : "Resolved";
 
+    const char *rowBg = ((violationRowNumber / 5) % 2 == 0) ? UI_RESET : UI_ROW_ALT;
+
+    printf("%s", rowBg);
     printf(
         "┃ %-10s ┃ %-10s ┃ %-20s ┃ %-20s ┃ %-8.0f ┃ %-8s ┃ %-10s ┃ %-32s ┃ %-12s ┃\n",
         v->violationID, v->studentID, reasonStr, timeField, v->fine, paidStr, penaltyStr, v->note, pendingStr);
+    printf("%s", UI_RESET);
+    violationRowNumber++;
 }
 
 void displayViolationList(const Violation violations[], int vCount)
 {
+    int shown = 0;
+    int showMore = 1;
+
+    if (vCount <= 0) {
+        uiWarning("No violations to display.\n");
+        return;
+    }
+
+    violationRowNumber = 0;
     displayViolationTableHeader();
     for (int i = 0; i < vCount; i++)
+    {
         displayViolationRow(&violations[i]);
+
+        shown++;
+        //max: 500 lines
+        if (shown % VIOLATION_PAGE_SIZE == 0 && shown < vCount)
+        {
+            displayViolationTableFooter();
+            inputYesNo(&showMore, "\nShow next violations? (1: Yes, 0: No): ");
+            if (!showMore) return;
+            displayViolationTableHeader();
+        }
+    }
     displayViolationTableFooter();
 }
 
 void displayViolationByStudentId(const char *id, const ViolationList *violations)
 {
+    int shown = 0;
+    int showMore = 1;
+
+    violationRowNumber = 0;
     displayViolationTableHeader();
     for (int i = 0; i < violations->count; i++)
     {
         if (strcmp(id, violations->data[i].studentID) == 0)
+        {
             displayViolationRow(&violations->data[i]);
+            shown++;
+            if (shown % VIOLATION_PAGE_SIZE == 0 && i < violations->count - 1)
+            {
+                displayViolationTableFooter();
+                inputYesNo(&showMore, "\nShow next 500 violations? (1: Yes, 0: No): ");
+                if (!showMore) return;
+                displayViolationTableHeader();
+            }
+        }
     }
     displayViolationTableFooter();
 }
@@ -114,7 +161,7 @@ void markFineAsPaidView(ViolationList *violations, MemberList *members)
     int vIndex = getViolationIndexById(violations, violationID);
     if (vIndex == -1)
     {
-        printf("Error: Violation ID not found.\n");
+        uiError("Error: Violation ID not found.\n");
         return;
     }
 
@@ -156,11 +203,12 @@ void displayViolationsByTimeRange(const ViolationList *violations)
 
     if (resultCount == 0)
     {
-        printf("No violations found in the specified time range.\n");
+        uiError("No violations found in the specified time range.\n");
         free(results);
         return;
     }
 
+    violationRowNumber = 0;
     displayViolationTableHeader();
     for (int i = 0; i < resultCount; i++)
     {
@@ -316,7 +364,7 @@ void changeFilterOption()
         case 1:
             clearOption();
             printf("All filter is off!\n");
-            break;
+        break;
         case 2:
         {
             int option;
@@ -411,6 +459,7 @@ void flexibleDisplayViolationList(ViolationList violations, MemberList members)
         printf("Violation list is displayed by team %s\n", team);
     }
 
+    violationRowNumber = 0;
     displayViolationTableHeader();
 
     Violation *tempList[violations.count];
@@ -430,6 +479,8 @@ void flexibleDisplayViolationList(ViolationList violations, MemberList members)
         }
     }
 
+    int shown = 0;
+    int showMore = 1;
     for (int i = 0; i < violations.count; i++)
     {
         Violation *v = tempList[i];
@@ -439,6 +490,14 @@ void flexibleDisplayViolationList(ViolationList violations, MemberList members)
         if (isFiltered(v, m->team))
         {
             displayViolationRow(v);
+            shown++;
+            if (shown % VIOLATION_PAGE_SIZE == 0 && i < violations.count - 1)
+            {
+                displayViolationTableFooter();
+                inputYesNo(&showMore, "\nShow next 500 violations? (1: Yes, 0: No): ");
+                if (!showMore) return;
+                displayViolationTableHeader();
+            }
         }
     }
 

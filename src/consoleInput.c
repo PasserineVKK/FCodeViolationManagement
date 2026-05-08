@@ -7,6 +7,7 @@
 #include <time.h>
 
 #include "../include/validate.h"
+#include "../include/view/viewUtil.h"
 
 void inputIntegerInRange(int* target, int min, int max, const char* prompt) {
     char buf[50];
@@ -17,8 +18,8 @@ void inputIntegerInRange(int* target, int min, int max, const char* prompt) {
         buf[strcspn(buf, "\n")] = '\0';
 
         if (!isIntegerBelongRange(buf, min, max)) {
-            printf("Please enter a valid integer only from %d to %d.\n", min,
-                   max);
+            uiError("Please enter a valid integer only from %d to %d.\n", min,
+                    max);
             continue;
         }
         *target = atoi(buf);
@@ -36,8 +37,8 @@ void inputDoubleInRange(double* target, double min, double max,
         buf[strcspn(buf, "\n")] = '\0';
 
         if (!isDoubleBelongRange(buf, min, max)) {
-            printf("Please enter a valid number only from %.2f to %.2f.\n", min,
-                   max);
+            uiError("Please enter a valid number only from %.2f to %.2f.\n", min,
+                    max);
             continue;
         }
         *target = atof(buf);
@@ -75,11 +76,11 @@ void inputMemberName(char* target, const char* prompt) {
     char buf[50];
     while (1) {
         if (!inputString(buf, sizeof(buf), prompt)) {
-            printf("Please enter a valid name.\n");
+            uiError("Please enter a valid name.\n");
             continue;
         }
         if (!isValidName(buf)) {
-            printf("Please enter a valid name.\n");
+            uiError("Please enter a valid name.\n");
             continue;
         }
         strcpy(target, buf);
@@ -92,11 +93,11 @@ void inputMemberEmail(char* target, const char* prompt) {
     char buf[50];
     while (1) {
         if (!inputString(buf, sizeof(buf), prompt)) {
-            printf("Please enter a valid name.\n");
+            uiError("Please enter a valid name.\n");
             continue;
         }
         if (!isValidEmail(buf)) {
-            printf("Please enter a valid email.\n");
+            uiError("Please enter a valid email.\n");
             continue;
         }
         strcpy(target, buf);
@@ -109,12 +110,12 @@ void inputStudentID(char* target, const char* prompt) {
     char buf[10];
     while (1) {
         if (!inputString(buf, sizeof(buf), prompt)) {
-            printf("Please enter a valid student ID.\n");
+            uiError("Please enter a valid student ID.\n");
             continue;
         }
 
         if (!isValidStudentID(buf)) {
-            printf("Please enter a valid student ID.\n");
+            uiError("Please enter a valid student ID.\n");
             continue;
         }
         strcpy(target, buf);
@@ -127,12 +128,12 @@ void inputMemberPhone(char* target, const char* prompt) {
     char buf[15];
     while (1) {
         if (!inputString(buf, sizeof(buf), prompt)) {
-            printf("Please enter a valid phone number.\n");
+            uiError("Please enter a valid phone number.\n");
             continue;
         }
 
         if (!isValidPhone(buf)) {
-            printf("Please enter a valid phone number.\n");
+            uiError("Please enter a valid phone number.\n");
             continue;
         }
         strcpy(target, buf);
@@ -154,11 +155,11 @@ void inputPassword(char* target, const char* prompt) {
     char buf[30];
     while (1) {
         if (!inputString(buf, sizeof(buf), prompt)) {
-            printf("Please enter a valid password.\n");
+            uiError("Please enter a valid password.\n");
             continue;
         }
         if (strlen(buf) < 6) {
-            printf("Password must be at least 6 characters long.\n");
+            uiError("Password must be at least 6 characters long.\n");
             continue;
         }
         strcpy(target, buf);
@@ -190,7 +191,7 @@ void inputValidTime(time_t* target, const char* prompt) {
                    &hour,
                    &minute) != 5) {
 
-            printf("Please enter a valid time in format YYYY-MM-DD HH:MM.\n");
+           uiError("Please enter a valid time in format YYYY-MM-DD HH:MM.\n");
             continue;
         }
 
@@ -224,7 +225,7 @@ void inputTimeRange(time_t* start, time_t* end, const char* prompt) {
         );
 
         if (*start > *end) {
-            printf("Start time must be before end time.\n");
+            uiError("Start time must be before end time.\n");
             continue;
         }
 
