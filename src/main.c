@@ -389,7 +389,7 @@ int main(int argc, char* argv[]) {
             switch (choice)
             {
             case 1:
-                addMember(&members, &accounts);
+                addMember(&members, &accounts, studentID);
                 break;
             case 2:
                 updateMember(&members, &violations, studentID);

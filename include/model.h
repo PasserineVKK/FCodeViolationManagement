@@ -6,7 +6,7 @@
 typedef struct {
     char studentID[10];  // SE000000\0
     char password[30];
-    int role;       // 0 = Member, 1 = BOD
+    int role;       // 0 = Member, 1 = Leader/Vice, 2 = BOD
     int isLocked;   // 1 = This account locked after 3 failed trials
     int failCount;  // consecutive failed trials
 } Account;
