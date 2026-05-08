@@ -126,10 +126,11 @@ void displayInSortByVioCount(Member members[], int mCount, int sortMode) {
 
 void displayInSort(MemberList* list, int isAdmin){
 	int count = list->count;
-	char* compareCommand;
+	char compareCommand[20];
 	printf("Uppercase = ASC, Lowercase is DESC.\n");
 	printf("[T]eam - [R]ole - [N]ame %s", (isAdmin) ? "- Total[Fine] - [V]iolationCount" : "");
-	printf("e.g: Tn - Team ascending, Name descending.");
+	printf("\ne.g: Tn - Team ascending, Name descending.\n");
+	printf("Press Enter if sort is not needed\n");
     inputString(compareCommand, sizeof(compareCommand), "Enter your command: ");
     Member* sortPointerList[count];
     sortMember(list, sortPointerList, compareCommand);
@@ -137,19 +138,19 @@ void displayInSort(MemberList* list, int isAdmin){
 	
 	    printf(
         "┏━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━┓\n");
-    printf("┃ %-10s ┃ %-22s ┃ %-10s ┃ %-18d ┃ %-18s ┃", "Student ID",
+    printf("┃ %-10s ┃ %-22s ┃ %-10s ┃ %-18s ┃ ", "Student ID",
            "Full Name", "Team", "Role");
-           if (isAdmin) printf("%-18d ┃ %-18s ┃", "Violations", "TotalFine");
+           if (isAdmin) printf("%-18s ┃ %-18s ┃", "Violations", "TotalFine");
     printf(
-        "┣━━━━━━━━━━━━╋━━━━━━━━━━━━━━━━━━━━━━━━╋━━━━━━━━━━━━╋━━━━━━━━━━━━━━━━━━━━╋━━━━━━━━━━━━━━━━━━━━╋━━━━━━━━━━━━━━━━━━━━┫\n");
+        "\n┣━━━━━━━━━━━━╋━━━━━━━━━━━━━━━━━━━━━━━━╋━━━━━━━━━━━━╋━━━━━━━━━━━━━━━━━━━━╋━━━━━━━━━━━━━━━━━━━━╋━━━━━━━━━━━━━━━━━━━━┫");
     for (int i = 0; i < count; i++) {
         printf("\n┃ %-10s ┃ %-22s ┃ %-10s ┃ %-18s ┃",
-               sortPointerList[i]->studentID, normalizeName(sortPointerList[i]->fullName), 
+               sortPointerList[i]->studentID, sortPointerList[i]->fullName, 
 			   translateTeam(sortPointerList[i]->team), translateRole(sortPointerList[i]->role));
 			if (isAdmin){
 				char formattedFine[20];
 				formatCurrency(sortPointerList[i]->totalFine, formattedFine, sizeof(formattedFine));
-				printf("%-18d ┃ %-18s ┃", sortPointerList[i]->violationCount,formattedFine);
+				printf(" %-18d ┃ %-18s ┃", sortPointerList[i]->violationCount,formattedFine);
 			} 
                
     }

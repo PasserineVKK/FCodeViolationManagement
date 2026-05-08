@@ -32,7 +32,7 @@ void displayViolationsByTimeRange(const ViolationList *violations);
 
 void displayViolationManagerMenu();
 
-void flexibleDisplayViolationList(ViolationList violations, MemberList members);
+void flexibleDisplayViolationList(ViolationList* violations, MemberList* members);
 void changeFilterOption();
 
 #endif
