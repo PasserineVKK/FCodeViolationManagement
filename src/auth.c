@@ -154,7 +154,7 @@ void changePassword(AccountList *accounts, char* actorID, int role) {
             }
             printf("Incorrect old password. Please try again.\n");
         } while (1);
-    } else if (targetRole == 2) {
+    } else if (role < 2 && targetRole == 2) {
         printf("You are not granted permission to change BOD password.\n");
         return;
     }
