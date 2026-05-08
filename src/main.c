@@ -15,6 +15,8 @@
 #include "../include/view/viewUtil.h"
 #include "../include/view/violationView.h"
 #include "../include/violation.h"
+
+
 void config() {
     SetConsoleOutputCP(65001);
     enableAnsiColors();
@@ -134,7 +136,7 @@ int main(int argc, char* argv[]) {
                 viewMyUnpaidFines(studentID, &violations);
                 break;
             case 4:
-                displayMemberList(members.data, members.count);
+                displayMemberInSort(&members, 0);
                 break;
             case 5:
                 changePassword(&accounts, studentID, menuRole);
@@ -148,6 +150,7 @@ int main(int argc, char* argv[]) {
             case 7:
                 // if choice = 7, save the data end return.
                 isRunning = 0;
+                break;
             case 8:
                 if ((loginRole == 1 || loginRole == 2) && members.data[mIndex].isPending == 1)
                 {
@@ -165,8 +168,8 @@ int main(int argc, char* argv[]) {
                     break;
                 }
             case 9:
-                displayNotificationByMemberID(members.data[mIndex].studentID, ADMIN_WARNING);
-                displayGlobalNotification();
+                displayNotificationByMemberID(studentID, ADMIN_WARNING);
+               // displayGlobalNotification();
                 break;
             default:
                 uiError("Invalid option, please try again.");
@@ -219,7 +222,7 @@ int main(int argc, char* argv[]) {
             	checkAndWarnOutClub(&members, &accounts, &violations, studentID);
                 break;
             case 5:
-                displayInSort(&members, 1);
+                displayMemberInSort(&members, 1);
                 break;
             case 6:
 				changePassword(&accounts, studentID, menuRole);
@@ -297,9 +300,7 @@ int main(int argc, char* argv[]) {
             	}
             case 16:
             	{
-                char removeId[6];
-                inputString(removeId, 6, "Enter remove notification id: ");
-                deleteNotification(findNotificationById(removeId));
+                deleteNotificationView();
                 printf("Delete notification");
                 break;
             	}
