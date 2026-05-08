@@ -22,7 +22,7 @@ int updateMemberTotalFine(MemberList* members, const ViolationList* violations, 
 int countUnpaidViolations(const char* id, const ViolationList* violations);
 
 // Features 2.1: Add member
-void addMember(MemberList* members, AccountList* accounts);
+void addMember(MemberList* members, AccountList* accounts, const char *actorID);
 
 // Features 2.2: Remove member
 void removeMember(MemberList* members, AccountList* accounts, ViolationList* violations, const char *actorID);
