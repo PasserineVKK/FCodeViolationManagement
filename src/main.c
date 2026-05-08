@@ -26,6 +26,7 @@
 
 #define ALREADY_PAID 1
 #define NOT_PAY 0
+#define NOT_HAVE_TO_PAY 2
 
 #define PENALTY_FINANCIAL 0
 #define PENALTY_KICK 1
@@ -128,6 +129,8 @@ void seedSampleData(MemberList *members, ViolationList *violations, AccountList 
     strcpy(violations->data[4].note, "Daily report meeting");
     violations->data[4].penalty = PENALTY_KICK;
     violations->data[4].fine = 0;
+    violations->data[4].isPaid = NOT_HAVE_TO_PAY;
+    violations->data[4].owner->isPending = PENDING;
 
     // SE200003
     for (int i = 5; i < 9; i++)
@@ -199,8 +202,9 @@ void config() {
     enableAnsiColors();
 }
 
-int main(int argc, char *argv[])
-{
+
+int main(int argc, char* argv[]) {
+
     config();
     char studentID[10];
 
@@ -257,13 +261,13 @@ int main(int argc, char *argv[])
                     return 0;
                 else
                     continue;
-            }
-            else
-            {
-                menuRole = loginRole;
-                mIndex = searchMemberByIdInM(&members, studentID);
-                vIndex = getViolationIndexById(&violations, studentID);
 
+            } else {
+                
+		        mIndex = searchMemberByIdInM(&members, studentID);
+
+                vIndex = getViolationIndexById(&violations, studentID);
+				menuRole = (members.data[mIndex].isPending == PENDING) ? 0 : loginRole;
                 isStayLogin = 1;
                 // login successfully ==> Assign value for menuRole to open
                 // menu, and memberIndex to identify user
@@ -364,8 +368,8 @@ int main(int argc, char *argv[])
                 "┃  1. Add New Member                           ┃  ┃  4. Record new violation                     ┃  ┃ 15. Add new notification                     ┃\n"
                 "┃  2. Edit Member Information                  ┃  ┃  5. Mark Fine as Paid                        ┃  ┃ 17. Update notification                      ┃\n"
                 "┃  3. Remove Member                            ┃  ┃  6. View Violation List                      ┃  ┃ 18. Delete notification                      ┃\n"
-                "┃  8. Check warning/kick list                  ┃  ┃  7. Statistics by Department                 ┃  ┃ 19. Show all notifications                   ┃\n"
-                "┃  9. View Member in Sorted List               ┃  ┃ 11. View Violations by Time Range            ┃  ┃ 21. Notification manager                     ┃\n"
+                "┃  4. Check warning/kick list                  ┃  ┃  7. Statistics by Department                 ┃  ┃ 19. Show all notifications                   ┃\n"
+                "┃  5. View Member in Sorted List               ┃  ┃ 11. View Violations by Time Range            ┃  ┃ 21. Notification manager                     ┃\n"
                 "┃ 10. Change Member's Password                 ┃  ┃ 16. Delete violation                         ┃  ┃                                              ┃\n"
                 "┃ 14. Switch to Member Menu                    ┃  ┃ 20. Violation manager                        ┃  ┃                                              ┃\n"
                 "┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛  ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛  ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛\n");
@@ -394,11 +398,15 @@ int main(int argc, char *argv[])
                 removeMember(&members, &accounts, &violations, studentID);
                 break;
             case 4:
-                recordViolationView(&violations, &members);
+            	checkAndWarnOutClub(&members, &accounts, &violations, studentID);
                 break;
+                //recordViolationView(&violations, &members);
             case 5:
-                markFineAsPaidView(&violations, &members);
+                //markFineAsPaidView(&violations, &members);
+                {
+                
                 break;
+            }
             case 6:
                 displayViolationList(violations.data, violations.count);
                 // not sorted by team, role yet
@@ -407,20 +415,9 @@ int main(int argc, char *argv[])
                 showFineStatsByTeam(&members, &violations);
                 break;
             case 8:
-                checkAndWarnOutClub(&members, &accounts, &violations, studentID);
-                break;
+                
             case 9:
-            {
-                int sortMode;
-                inputYesNo(
-                    &sortMode,
-                    "Sort mode: \n 1. ASC\n 0. DESC\n Your choice: ");
-                if (sortMode == 0)
-                    sortMode = -1;
-                // sortMode only accept 1 as ASC or -1 asc DESC.
-                displayInSortByVioCount(members.data, members.count, sortMode);
-                break;
-            }
+            
             case 10:
             {
                 changePassword(&accounts, studentID, menuRole);
@@ -529,6 +526,7 @@ int main(int argc, char *argv[])
     return 0;
 }
 
+
 void violationManager(ViolationList violations, MemberList members)
 {
     int choice;
@@ -602,3 +600,4 @@ void notificationManager()
         pauseProgram();
     } while (1);
 }
+

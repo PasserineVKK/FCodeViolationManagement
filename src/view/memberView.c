@@ -4,6 +4,8 @@
 #include "../../include/utils.h"
 #include "../../include/view/memberView.h"
 #include "../../include/view/viewUtil.h"
+#include "../../include/model.h"
+#include "../../include/consoleInput.h"
 
 void displayOneMemberInfo(Member member) {
     uiTableTitle("MEMBER PROFILE");
@@ -120,4 +122,39 @@ void displayInSortByVioCount(Member members[], int mCount, int sortMode) {
     }
     printf(
         "┗━━━━━━━━━━━━┻━━━━━━━━━━━━━━━━━━━━━━━━┻━━━━━━━━━━━━┻━━━━━━━━━━━━━━━━━━━━┻━━━━━━━━━━━━━━━━━━━━┛\n");
+ }
+
+void displayInSort(MemberList* list, int isAdmin){
+	int count = list->count;
+	char* compareCommand;
+	printf("Uppercase = ASC, Lowercase is DESC.\n");
+	printf("[T]eam - [R]ole - [N]ame %s", (isAdmin) ? "- Total[Fine] - [V]iolationCount" : "");
+	printf("e.g: Tn - Team ascending, Name descending.");
+    inputString(compareCommand, sizeof(compareCommand), "Enter your command: ");
+    Member* sortPointerList[count];
+    sortMember(list, sortPointerList, compareCommand);
+	uiTableTitle("CLUB MEMBER SORTED LIST");
+	
+	    printf(
+        "┏━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━┓\n");
+    printf("┃ %-10s ┃ %-22s ┃ %-10s ┃ %-18d ┃ %-18s ┃", "Student ID",
+           "Full Name", "Team", "Role");
+           if (isAdmin) printf("%-18d ┃ %-18s ┃", "Violations", "TotalFine");
+    printf(
+        "┣━━━━━━━━━━━━╋━━━━━━━━━━━━━━━━━━━━━━━━╋━━━━━━━━━━━━╋━━━━━━━━━━━━━━━━━━━━╋━━━━━━━━━━━━━━━━━━━━╋━━━━━━━━━━━━━━━━━━━━┫\n");
+    for (int i = 0; i < count; i++) {
+        printf("\n┃ %-10s ┃ %-22s ┃ %-10s ┃ %-18s ┃",
+               sortPointerList[i]->studentID, normalizeName(sortPointerList[i]->fullName), 
+			   translateTeam(sortPointerList[i]->team), translateRole(sortPointerList[i]->role));
+			if (isAdmin){
+				char formattedFine[20];
+				formatCurrency(sortPointerList[i]->totalFine, formattedFine, sizeof(formattedFine));
+				printf("%-18d ┃ %-18s ┃", sortPointerList[i]->violationCount,formattedFine);
+			} 
+               
+    }
+    printf(
+        "\n┗━━━━━━━━━━━━┻━━━━━━━━━━━━━━━━━━━━━━━━┻━━━━━━━━━━━━┻━━━━━━━━━━━━━━━━━━━━┻━━━━━━━━━━━━━━━━━━━━┻━━━━━━━━━━━━━━━━━━━━┛\n");
+ 
+	
 }
