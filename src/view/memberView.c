@@ -3,8 +3,10 @@
 
 #include "../../include/utils.h"
 #include "../../include/view/memberView.h"
+#include "../../include/view/viewUtil.h"
 
 void displayOneMemberInfo(Member member) {
+    uiTableTitle("MEMBER PROFILE");
     printf(
         "┏━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━┓\n");
 
@@ -25,6 +27,7 @@ void displayOneMemberInfo(Member member) {
 
 void displayMemberList(Member members[], int count) {
     printf("\n");
+    uiTableTitle("CLUB MEMBER LIST");
     printf(
         "┏━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━┓\n");
 
@@ -102,6 +105,7 @@ void displayInSortByVioCount(Member members[], int mCount, int sortMode) {
         len = 0;
     }
     printf("\n");
+    uiTableTitle("MEMBERS SORTED BY VIOLATION COUNT");
     printf(
         "┏━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━┓\n");
     printf("┃ %-10s ┃ %-22s ┃ %-10s ┃ %-18s ┃ %-18s ┃\n", "Student ID",
