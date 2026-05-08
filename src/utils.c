@@ -2,6 +2,11 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
+#include "../include/model.h"
+#define VIOLATION_FACTORS 3
+#define MEMBER_FACTORS 3
+#define TYPE_VIOLATION 1
+#define TYPE_MEMBER 2
 
 // 123456789.12 to 123,456,789.12
 int formatCurrency(double amount, char* outputString, size_t availableLen){
@@ -129,3 +134,141 @@ int normalizeName(char* name){
     name[j] = '\0'; // end of full name
     return 1;
 }
+
+char* getLastWord(char* inputString){
+	char* output;
+	int len = strlen(inputString);
+	for (int i = len - 1; i > 0 ;i--){
+		if (isalpha(inputString[i]) && isspace(inputString[i-1])){
+			output = &inputString[i];
+			return output;
+		}
+	}
+	return inputString;
+}
+
+
+
+// comparator, accept vio data type
+// compare by team, reason, isPaid
+// command: TRP
+static int violationComparator(Violation* v1, Violation* v2, char* compareCommand){
+	int len = (strlen(compareCommand) > VIOLATION_FACTORS) ? VIOLATION_FACTORS : strlen(compareCommand);
+	int result = 0;
+	for (int i = 0; i < len; i++){
+			// upper = ASC, lower = DESC
+		char currentCommand = compareCommand[i];
+		int direction = isupper(currentCommand) ? 1 : -1 ;
+		currentCommand = toupper(currentCommand);
+		switch (currentCommand){
+			case 'T':	
+				result = v1->owner->team - v2->owner->team;
+				break;
+			case 'R':
+				result = v1->reason - v2->reason;
+				break;
+			case 'P':
+				result = v1->isPaid - v2->isPaid;
+				break;
+			default:
+				result = 0;
+		}
+		// if the first factor is equal, continue to the next, until end of commands
+		if (result != 0) return direction*result;
+	}
+	return 0;
+}
+
+// comparator, accept member data type
+// compare by team, role, violationCount, totalFine
+static int memberComparator(Member* m1, Member* m2, char* compareCommand){
+	int len = (strlen(compareCommand) > VIOLATION_FACTORS) ? VIOLATION_FACTORS : strlen(compareCommand);
+	int result = 0;
+	for (int i = 0; i < len; i++){
+			// upper = ASC, lower = DESC
+		char currentCommand = compareCommand[i];
+		int direction = isupper(currentCommand) ? 1 : -1 ;
+		currentCommand = toupper(currentCommand);
+		switch (currentCommand){
+			case 'T':	
+				result = m1->team - m2->team;
+				break;
+			case 'R':
+				result = m1->role - m2->role;
+				break;
+			case 'V':
+				result = m1->violationCount - m2->violationCount;
+				break;
+			case 'F':
+				if (m1->totalFine > m2->totalFine) result = 1;
+				else if (m1->totalFine == m2->totalFine) result = 0;
+				else result = -1;
+				break;
+			case 'N':
+				result = strcmp(getLastWord(m1->fullName), getLastWord(m2->fullName));
+				break;
+			default:
+				result = 0;
+		}
+		// if the first factor is equal, continue to the next, until end of commands
+		if (result != 0) return direction*result;
+	}
+	return 0;
+}
+
+void sortViolation(ViolationList* list, Violation* sortPointerList[], char* compareCommand){
+	if (list == NULL || list->count <= 1) return;
+	int count = list->count;
+	for (int i = 0; i < count; i++){
+		sortPointerList[i] = &list->data[i];
+	}
+	int minIndex = 0, maxIndex = count - 1;
+	int start = 0, end = count - 1;
+	for (int i = 0; i < count - 1; i++) {
+        int minIndex = i;
+
+        for (int j = i + 1; j < count; j++) {
+            if (violationComparator(sortPointerList[j], sortPointerList[minIndex], compareCommand) < 0) {
+                minIndex = j;
+            }
+        }
+
+        // Swap
+        if (minIndex != i) {
+            Violation* temp = sortPointerList[minIndex];
+            sortPointerList[minIndex] = sortPointerList[i];
+            sortPointerList[i] = temp;
+        }
+    }		
+}
+
+void sortMember(MemberList* list, Member* sortPointerList[], char* compareCommand){
+	if (list == NULL || list->count <= 1) return;
+	int count = list->count;
+	for (int i = 0; i < count; i++){
+		sortPointerList[i] = &list->data[i];
+	}
+	
+	int minIndex = 0, maxIndex = count - 1;
+	int start = 0, end = count - 1;
+	for (int i = 0; i < count - 1; i++) {
+        int minIndex = i;
+
+        for (int j = i + 1; j < count; j++) {
+            if (memberComparator(sortPointerList[j], sortPointerList[minIndex], compareCommand) < 0) {
+                minIndex = j;
+            }
+        }
+
+        // Swap
+        if (minIndex != i) {
+            Member* temp = sortPointerList[minIndex];
+            sortPointerList[minIndex] = sortPointerList[i];
+            sortPointerList[i] = temp;
+        }
+    }	
+	
+}
+
+
+
