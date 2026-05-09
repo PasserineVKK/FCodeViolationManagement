@@ -155,7 +155,7 @@ void changePassword(AccountList *accounts, char* actorID, int role) {
     // Update new password to account
     strcpy(accounts->data[aIndex].password, newPassword);
     saveAccounts(accounts);
-    printf("Password changed successfully.\n");
+    uiSuccess("Password changed successfully.\n");
  
     return;
 }

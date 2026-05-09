@@ -185,7 +185,7 @@ void markFineAsPaidView(ViolationList *violations, MemberList *members)
         updateMemberTotalFine(members, violations, violations->data[vIndex].studentID);
         saveViolations(violations);
         saveMembers(members);
-        printf("Marked as paid successfully.\n");
+        uiSuccess("Marked as paid successfully.\n");
     }
 }
 

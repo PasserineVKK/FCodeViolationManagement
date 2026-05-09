@@ -178,7 +178,7 @@ void addMember(MemberList* members, AccountList* accounts, const char *actorID) 
                 saveAccounts(accounts);
 
                 // Print success message
-                printf("Member added successfully!\n");
+                uiSuccess("Member added successfully!\n");
 
                 // Give back account info to user
                 printf("\nAccount information for this member:\n");
@@ -186,7 +186,7 @@ void addMember(MemberList* members, AccountList* accounts, const char *actorID) 
                 printf("Password: %s\n", newAcc->password);
 
                 // Print success message
-                printf("Member added successfully!\n");
+                uiSuccess("Member added successfully!\n");
                 
             } else {
                 printf("Member not added.\n");
@@ -277,7 +277,7 @@ void removeOneMember (MemberList *members, AccountList *accounts, ViolationList 
                 deleteNotificationByMemberId(id); 
 
                 // Print success message
-                printf("Member removed successfully!\n");
+                uiSuccess("Member removed successfully!\n");
             } 
             else {
                 printf("Member not removed.\n");

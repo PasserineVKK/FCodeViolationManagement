@@ -277,7 +277,7 @@ int checkTotalBOD(MemberList *members)
     return bodCount;
 }
 
-void recordViolationView(ViolationList *violations, MemberList *members)
+void recordViolationView(ViolationList *violations, MemberList *members, int actorIndex)
 {
     int continueRecord = 1;
     while (continueRecord)
@@ -298,7 +298,7 @@ void recordViolationView(ViolationList *violations, MemberList *members)
         int penalty;
         char note[100];
 
-        printf("\n--- Record New Violation ---\n");
+        uiTableTitle("   RECORD VIOLATION");
         inputStudentID(studentID, "Enter Student ID: ");
 
         mIndex = searchMemberByIdInM(members, studentID);
@@ -310,7 +310,10 @@ void recordViolationView(ViolationList *violations, MemberList *members)
 
         // Pointer directly points to the member in array to avoid shallow copy
         Member *owner = &members->data[mIndex];
-
+		if (members->data[actorIndex].role == 1 && owner->role == 2){
+			uiError("Permission Denied. Only BOD members can record violations for other BOD members");
+			return;
+		}
         printf("Reasons:\n");
         printf("%d. Not uniform\n", REASON_NOT_UNIFORM);
         printf("%d. Meeting absence\n", REASON_MEETING_ABSENCE);
