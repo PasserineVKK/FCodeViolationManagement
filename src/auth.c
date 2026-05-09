@@ -6,7 +6,7 @@
 #include "../include/consoleInput.h"
 #include "../include/fileio.h"
 #include "../include/member.h"
-
+#include "../include/view/viewUtil.h"
 // file
 int loadAccounts(AccountList *accounts) {
     return loadFromFile(ACCOUNTS_FILE, accounts->data, sizeof(Account), MAX_ACCOUNTS,
@@ -28,28 +28,6 @@ int searchMemberByIdInA(AccountList *accounts, const char* id) {
     return -1;
 }
 
-static int inputPasswordOrCancel(char* target, const char* prompt) {
-    char buf[30];
-    while (1) {
-        if (!inputString(buf, sizeof(buf), prompt)) {
-            printf("Please enter a valid password.\n");
-            continue;
-        }
-
-        if (strcmp(buf, "q") == 0 || strcmp(buf, "quit") == 0 ||
-            strcmp(buf, "back") == 0) {
-            return 0;
-        }
-
-        if (strlen(buf) < 6) {
-            printf("Password must be at least 6 characters long.\n");
-            continue;
-        }
-
-        strcpy(target, buf);
-        return 1;
-    }
-}
 
 // Return role of logged in account
 int login(AccountList *accounts, char* studentID) {
@@ -110,7 +88,8 @@ int login(AccountList *accounts, char* studentID) {
 
 // Change password of logged in account
 void changePassword(AccountList *accounts, char* actorID, int role) {
-    printf("===== CHANGE PASSWORD =====\n");
+    uiInfo("CHANGE PASSWORD\n");
+
     int aIndex = -1;
 
     char studentID[9];  // SE000000\0
@@ -125,7 +104,6 @@ void changePassword(AccountList *accounts, char* actorID, int role) {
             "Enter student ID of the member you want to change password: ");
     }
 
-    // Truy?n con tr? accounts
     aIndex = searchMemberByIdInA(accounts, studentID);
 
     if (aIndex == -1) {
