@@ -371,8 +371,7 @@ void updateMember(MemberList* members, ViolationList* violations, const char *ac
             do {
                 printf("\nWhich field do you want to update?\n");
                 printf(
-                    "1: Name\n2: Email\n3: Phone Number\n4: Team\n5: Role\n=> "
-                    "Your choice: ");
+                    "1: Name\n2: Email\n3: Phone Number\n4: Team\n5: Role\n");
                 inputIntegerInRange(&fieldChoice, 1, 5,
                                     "=> Your choice (only 1-5): ");
                 while (getchar() != '\n');
@@ -390,10 +389,10 @@ void updateMember(MemberList* members, ViolationList* violations, const char *ac
                     inputMemberPhone(phoneNumber, "Enter New Phone Number: ");
                     break;
                 case 4:
-                    inputMemberTeam(&team, "Enter New Team (0-3): ");
+                    inputMemberTeam(&team, "0. Academic\n1. Planning\n2. HR\n3. Media\nEnter New Team (0-3): ");
                     break;
                 case 5:
-                    inputMemberRole(&role, "Enter New Role (0-2): ");
+                    inputMemberRole(&role, "0. Member\n1. Leader/Vice\n2. BOD\nEnter New Role (0-2): ");
                     break;
             }
 
