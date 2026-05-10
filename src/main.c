@@ -181,7 +181,7 @@ int main(int argc, char* argv[]) {
         case 2:
         {    
             printf("%s", UI_TABLE_HEADER);
-            printf("\n%-48s  %-48s  %-48s\n", "MEMBER", "VIOLATION / REPORT", "NOTIFICATION");
+            printf("\n%-48s  %-48s  %-48s\n", " MEMBER", "VIOLATION / REPORT", "NOTIFICATION");
             printf("%s", UI_RESET);
 
             printf(
@@ -197,7 +197,7 @@ int main(int argc, char* argv[]) {
 	            "┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛  ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛  ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛\n");
 
             printf("%s", UI_TABLE_HEADER);
-            printf("\n%-48s\n", "SYSTEM");
+            printf("\n%-48s\n", " SYSTEM");
             printf("%s", UI_RESET);
             printf(
                 "┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓\n"

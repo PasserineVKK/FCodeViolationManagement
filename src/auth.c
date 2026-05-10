@@ -31,7 +31,7 @@ int searchMemberByIdInA(AccountList *accounts, const char* id) {
 
 // Return role of logged in account
 int login(AccountList *accounts, char* studentID) {
-    printf("===== LOGIN =====\n");
+    uiInfo("   LOGIN\n");
 
     char password[30];
     
