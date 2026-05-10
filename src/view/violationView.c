@@ -425,7 +425,7 @@ int isFiltered(Violation *v, int team)
            (!timeRangeFilter || isInTimeRange(v->violationTime, beginTimeFilterSetting, endTimeFilterSetting)) && (!paidFilter || paidFilterSetting == v->isPaid);
 }
 
-void flexibleDisplayViolationList(ViolationList violations, MemberList members)
+void flexibleDisplayViolationList(ViolationList* violations, MemberList* members)
 {
     if (teamFilter)
     {
@@ -454,36 +454,36 @@ void flexibleDisplayViolationList(ViolationList violations, MemberList members)
     violationRowNumber = 0;
     displayViolationTableHeader();
 
-    Violation *tempList[violations.count];
+    Violation *tempList[violations->count];
     if (enableSortOption)
     {
-        for (int i = 0; i < violations.count; i++)
+        for (int i = 0; i < violations->count; i++)
         {
-            tempList[i] = &violations.data[i];
+            tempList[i] = &violations->data[i];
         }
-        sortViolation(&violations, tempList, currentSortCommand);
+        sortViolation(violations, tempList, currentSortCommand);
     }
     else
     {
-        for (int i = 0; i < violations.count; i++)
+        for (int i = 0; i < violations->count; i++)
         {
-            tempList[i] = &violations.data[i];
+            tempList[i] = &violations->data[i];
         }
     }
 
     int shown = 0;
     int showMore = 1;
-    for (int i = 0; i < violations.count; i++)
+    for (int i = 0; i < violations->count; i++)
     {
         Violation *v = tempList[i];
-        Member *m = getMemberById(v->studentID, &members);
+        Member *m = getMemberById(v->studentID, members);
         if (m == NULL)
             continue;
         if (isFiltered(v, m->team))
         {
             displayViolationRow(v);
             shown++;
-            if (shown % VIOLATION_PAGE_SIZE == 0 && i < violations.count - 1)
+            if (shown % VIOLATION_PAGE_SIZE == 0 && i < violations->count - 1)
             {
                 displayViolationTableFooter();
                 inputYesNo(&showMore, "\nShow next 500 violations? (1: Yes, 0: No): ");

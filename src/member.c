@@ -76,6 +76,7 @@ int updateConsecutiveAbsences(MemberList* members, const char* id) {
         // Use pointer to update directly
         Member* targetMem = &members->data[index];
         targetMem->consecutiveAbsences++;
+        saveMembers(members);
         //-> function trigger warning if absence = 2 may be insert here
         return 1;
     } else {
@@ -84,7 +85,7 @@ int updateConsecutiveAbsences(MemberList* members, const char* id) {
 }
 
 // ===== Feature 2.1: ADD MEMBER =====
-void addMember(MemberList* members, AccountList* accounts) {
+void addMember(MemberList* members, AccountList* accounts, const char *actorID) {
     if (members->count >= MAX) {
         printf("Member list is full!\n");
         return;
@@ -96,6 +97,13 @@ void addMember(MemberList* members, AccountList* accounts) {
     char studentID[10];  // SE000000\0
     int team;            // 0 = Academic, 1 = Planning, 2 = HR, 3 = Media
     int role;
+    int actorIndex = searchMemberByIdInM(members, actorID);
+
+    if (actorIndex == -1) {
+        printf("Actor not found!\n");
+        return;
+    }
+    int actorRole = members->data[actorIndex].role;
 
     int continueAdd = 1;
     // Use loop to let user add multiple member until they choose to stop
@@ -126,6 +134,11 @@ void addMember(MemberList* members, AccountList* accounts) {
             printf("1. Leader/Vice\n");
             printf("2. Board of Directors\n");
             inputMemberRole(&role, "Enter role (0-2): ");
+
+            if (role == 2 && actorRole < 2) {
+                printf("You are not granted permission to create BOD accounts.\n");
+                continue;
+            }
 
             // Confirm to add member
             int confirm;
@@ -174,6 +187,7 @@ void addMember(MemberList* members, AccountList* accounts) {
 
                 // Print success message
                 printf("Member added successfully!\n");
+                
             } else {
                 printf("Member not added.\n");
             }
@@ -206,13 +220,20 @@ void removeOneMember (MemberList *members, AccountList *accounts, ViolationList 
         printf("\nStudent found:\n");
         displayOneMemberInfo(members->data[mIndex]);
 
-        //Only BOD can remove BOD
-        if (members->data[mIndex].role == 2 && members->data[actorIndex].role == 1){
+        if (actorIndex == -1) {
+            printf("Actor not found!\n");
+            return;
+        }
+
+        // Only BOD can remove BOD
+        if (members->data[mIndex].role == 2 && members->data[actorIndex].role < 2){
             printf ("You are only Vice/Leader, you are not granted permission to remove BOD\n");
+            return;
         }    
         else if (members->data[mIndex].role == 2 && members->data[actorIndex].role == 2  && checkTotalBOD (members)== 1){
             //Only can remove themself if they are not the last BOD
             printf ("You are the last BOD, can't remove yourself\n");
+            return;
         }
         else {
             // Confirm to remove member
@@ -325,7 +346,7 @@ void updateMember(MemberList* members, ViolationList* violations, const char *ac
 
         // Find member by ID
         mIndex = searchMemberByIdInM(members, studentID);
-        actorIndex = searchMemberByIdInM(members, studentID);
+        actorIndex = searchMemberByIdInM(members, actorID);
 
 
         // If found
@@ -334,9 +355,15 @@ void updateMember(MemberList* members, ViolationList* violations, const char *ac
             printf("\nStudent found:\n");
             displayOneMemberInfo(members->data[mIndex]);
 
-            //Only BOD can update BOD
-            if (members->data[mIndex].role == 2 && members->data[actorIndex].role == 1){
+            if (actorIndex == -1) {
+                printf("Actor not found!\n");
+                continue;
+            }
+
+            // Only BOD can update BOD
+            if (members->data[mIndex].role == 2 && members->data[actorIndex].role < 2){
                 printf ("You are only Vice/Leader, you are not granted permission to update BOD\n");
+                continue;
             }    
 
             // Ask which field want to update
@@ -394,11 +421,21 @@ void updateMember(MemberList* members, ViolationList* violations, const char *ac
                         targetMem->team = team;
                         break;
                     case 5: {
+                        if (role == 2 && members->data[actorIndex].role < 2) {
+                            printf ("You are not granted permission to promote this member to BOD.\n");
+                            break;
+                        }
+                        if (members->data[mIndex].role == 2 
+                            && members->data[actorIndex].role < 2){
+                            printf ("You are only Vice/Leader, you are not granted permission to change BOD role.\n");
+                            break;
+                        }
                         if (members->data[mIndex].role == 2 
                             && members->data[actorIndex].role == 2  
                             && checkTotalBOD (members)== 1){
-                            //Only can remove themself if they are not the last BOD
+                            // The last BOD cannot downgrade themselves.
                             printf ("You are the last BOD, cannot change your role to another role.\n");
+                            break;
                         }
                         int oldRole = targetMem->role; // Save old role before assign new role
                         targetMem->role = role;        // Assign new role

@@ -16,24 +16,328 @@
 #include "../include/view/violationView.h"
 #include "../include/violation.h"
 
-#define REASON_NOT_UNIFORM 0
-#define REASON_MEETING_ABSENCE 1
-#define REASON_NO_CLUB_ACTIVITY 2
-#define REASON_VIOLENCE 3
 
-#define PENDING 1
-#define NOT_PENDING 0
+void config() {
+    SetConsoleOutputCP(65001);
+    enableAnsiColors();
+}
 
-#define ALREADY_PAID 1
-#define NOT_PAY 0
+void seedSampleData(MemberList *members, ViolationList *violations, AccountList *accounts);
+int main(int argc, char* argv[]) {
 
-#define PENALTY_FINANCIAL 0
-#define PENALTY_KICK 1
+    config();
+    char studentID[10];
 
-// #include "../sampleData/sampleData.h"
+    // set the array to be empty.
+    MemberList members;
+    ViolationList violations;
+    initViolationList(&violations, 3000);
+    AccountList accounts;
 
-void violationManager(ViolationList violations, MemberList members);
-void notificationManager();
+    initNotificationList();
+    autoDeleteOutDateNotification();
+
+    loadMembers(&members);
+    loadViolations(&violations, &members);
+    loadAccounts(&accounts);
+
+    // loginRole represent the role of this account
+    // menuRole represent which menu will be open.
+    int loginRole = -1, menuRole = -1;
+    int choice = -1, isStayLogin = 0;
+    // isStayedLogin check whether user is auth-ed. 0 = No, 1 = Yes;
+    int mIndex = -1, vIndex = -1;
+	
+	int isRunning = 1;
+    do
+    {
+        // Firstly, auth. If stay login ==> do not check
+        //				  If not stay login =>> check again.
+        if (isStayLogin == 0)
+        {
+            loginRole = login(&accounts, studentID);
+            // If loginRole = -2 => Student ID not found
+            if (loginRole == -2)
+            {
+                int isExit = 0;
+                inputYesNo(
+                    &isExit,
+                    "\nDo you want to exit? \n1. Yes\n 0. No\n=>Your choice: ");
+                printf("\n");
+                if (isExit == 1)
+                    return 0;
+                else
+                    continue;
+            }
+            // If loginRole = -1 => Account locked
+            else if (loginRole == -1)
+            {
+                int isExit = 0;
+                inputYesNo(
+                    &isExit,
+                    "\nDo you want to exit? \n1. Yes\n 0. No\n=>Your choice: ");
+                printf("\n");
+                if (isExit == 1)
+                    return 0;
+                else
+                    continue;
+
+            } else {
+                
+		        mIndex = searchMemberByIdInM(&members, studentID);
+
+                vIndex = getViolationIndexById(&violations, studentID);
+				menuRole = (members.data[mIndex].isPending == PENDING) ? 0 : loginRole;
+                isStayLogin = 1;
+                // login successfully ==> Assign value for menuRole to open
+                // menu, and memberIndex to identify user
+
+                displayNotificationByMemberID(members.data[mIndex].studentID,
+                                              ADMIN_WARNING);
+                pauseProgram();
+                clearScreen();
+            }
+        }
+
+        clearScreen();
+        switch (menuRole)
+        {
+        case 0:
+        {
+            printf("%s", UI_TABLE_HEADER);
+            printf("\nMEMBER MENU\n");
+            printf("%s", UI_RESET);
+            printf(
+                "┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓\n"
+                "┃  1. View Profile                             ┃\n"
+                "┃  2. View Violation History                   ┃\n"
+                "┃  3. View Total Unpaid Fines                  ┃\n"
+                "┃  4. View Club Member List                    ┃\n"
+                "┃  5. Reset Password                           ┃\n"
+                "┃  6. Log Out                                  ┃\n"
+                "┃  7. Exit                                     ┃\n"
+                "┃  8. Switch to Admin Menu                     ┃\n"
+                "┃  9. View notification                        ┃\n"
+                "┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛\n");
+
+            inputIntegerInRange(&choice, 1, 9,
+                                "==> Enter your selection: ");
+
+            clearScreen();
+            switch (choice)
+            {
+            case 1:
+                displayOneMemberInfo(members.data[mIndex]);
+                break;
+            case 2:
+                displayViolationByStudentId(studentID, &violations);
+                break;
+            case 3:
+                viewMyUnpaidFines(studentID, &violations);
+                break;
+            case 4:
+                displayMemberInSort(&members, 0);
+                break;
+            case 5:
+                changePassword(&accounts, studentID, menuRole);
+                break;
+            case 6:
+                isStayLogin = 0;
+                loginRole = -1;
+                menuRole = -1;
+                // mark as not login, reset menu role
+                continue;
+            case 7:
+                // if choice = 7, save the data end return.
+                isRunning = 0;
+                break;
+            case 8:
+                if ((loginRole == 1 || loginRole == 2) && members.data[mIndex].isPending == 1)
+                {
+                    uiError("Pending account. Can only use member menu now. ");
+                    break;
+                }
+                if ((loginRole == 1 || loginRole == 2) && members.data[mIndex].isPending != 1)
+                {
+                    menuRole = 1;
+                    continue;
+                }
+                else
+                {
+                    uiError("Permission denied. Try again.\n");
+                    break;
+                }
+            case 9:
+                displayNotificationByMemberID(studentID, ADMIN_WARNING);
+               // displayGlobalNotification();
+                break;
+            default:
+                uiError("Invalid option, please try again.");
+            }
+            break;
+        }
+
+        case 1:
+        case 2:
+        {    
+            printf("%s", UI_TABLE_HEADER);
+            printf("\n%-48s  %-48s  %-48s\n", "MEMBER", "VIOLATION / REPORT", "NOTIFICATION");
+            printf("%s", UI_RESET);
+
+            printf(
+                "┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓  ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓  ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓\n"
+                "┃  1. Add New Member                           ┃  ┃  7. Record new violation                     ┃  ┃ 14. Add new notification                     ┃\n"
+                "┃  2. Edit Member Information                  ┃  ┃  8. Mark Fine as Paid                        ┃  ┃ 15. Update notification                      ┃\n"
+                "┃  3. Remove Member                            ┃  ┃  9. View Violation List                      ┃  ┃ 16. Delete notification                      ┃\n"
+                "┃  4. Check warning/kick list                  ┃  ┃ 10. Statistics by Department                 ┃  ┃ 17. Show all notifications                   ┃\n"
+                "┃  5. View Member in Sorted List               ┃  ┃ 11. View Violations by Time Range            ┃  ┃                                              ┃\n"
+                "┃  6. Change Member's Password                 ┃  ┃ 12. Delete violation                         ┃  ┃                                              ┃\n"
+                "┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛  ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛  ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛\n");
+
+            printf("%s", UI_TABLE_HEADER);
+            printf("\n%-48s\n", "SYSTEM");
+            printf("%s", UI_RESET);
+            printf(
+                "┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓\n"
+                "┃ 18. Log Out                                  ┃\n"
+                "┃ 19. Exit                                     ┃\n"
+	            "┃ 20. Switch to Member Menu                    ┃\n"
+                "┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛\n");
+            inputIntegerInRange(&choice, 1, 21,
+                                " ==> Enter your selection: ");
+
+            clearScreen();
+            switch (choice)
+            {
+            case 1:
+                addMember(&members, &accounts, studentID);
+                break;
+            case 2:
+                updateMember(&members, &violations, studentID);
+                break;
+            case 3:
+                removeMember(&members, &accounts, &violations, studentID);
+                break;
+            case 4:
+            	checkAndWarnOutClub(&members, &accounts, &violations, studentID);
+                break;
+            case 5:
+                displayMemberInSort(&members, 1);
+                break;
+            case 6:
+				changePassword(&accounts, studentID, menuRole);
+                break;
+            case 7:
+                recordViolationView(&violations, &members);
+                break;
+            case 8:
+                markFineAsPaidView(&violations, &members);
+                break;
+            case 9:
+            	flexibleDisplayViolationList(&violations, &members);
+            	break;
+            case 10:
+            	showFineStatsByTeam(&members, &violations);
+                break;
+            case 11:
+                displayViolationsByTimeRange(&violations);
+                break;
+            case 12:
+            	deleteViolation(&violations);
+            	break;
+            case 13:
+            	changeFilterOption();
+            	break;
+            case 14:
+            	{
+                int type;
+                inputIntegerInRange(
+                    &type, 0, 2,
+                    "Enter type of notification, global(0), notice "
+                    "(1), warning (2): ");
+                char content[200];
+                inputString(content, 200, "Enter notify content: ");
+                if (type == ADMIN_NOTICE || type == ADMIN_WARNING)
+                {
+                    char memberId[6];
+                    inputString(memberId, 6, "Enter member id: ");
+                    createNotification(memberId, type, content,
+                                       time(NULL) + BASE_DELETE_TIME,
+                                       1);
+                }
+                else
+                {
+                    createNotification(NULL, type, content,
+                                       time(NULL) + BASE_DELETE_TIME,
+                                       1);
+                }
+                break;
+            	}
+            case 15:
+            	{
+                char id[6];
+                inputString(id, 6, "Enter notification id: ");
+                Notification *n = findNotificationById(id);
+
+                if (n == NULL)
+                    break;
+
+                int updateType;
+                inputIntegerInRange(
+                    &updateType, 0, 2,
+                    "Enter type of notification, global(0), notice "
+                    "(1), warning (2): ");
+                char updateContent[200];
+                inputString(updateContent, 200,
+                            "Enter notify content: ");
+                char memberId[6];
+                inputString(memberId, 6, "Enter member id: ");
+                if (strcmp(memberId, "") == 0)
+                    break;
+                updateNotification(n, memberId, updateType,
+                                   updateContent, n->deleteTime);
+                break;
+            	}
+            case 16:
+            	{
+                deleteNotificationView();
+                printf("Delete notification");
+                break;
+            	}
+            case 17:
+            	displayNotificationList();
+                break;
+            case 18:
+                isStayLogin = 0;
+                loginRole = -1;
+                menuRole = -1;
+				continue;
+                // mark as not login, reset menu role
+            case 19:
+                isRunning = 0;
+            case 20:
+               	menuRole = 0;
+                continue;
+            default:
+                uiError("Invalid option, please try again.\n");
+                break;
+            }
+        }
+        }
+        pauseProgram();
+    } while (isRunning);
+	
+	saveAccounts(&accounts);
+	saveMembers(&members);
+	saveViolations(&violations);
+	
+	if (violations.data != NULL) {
+        free(violations.data);
+    }
+    freeNotificationList();
+    return 0;
+}
+
 
 void seedSampleData(MemberList *members, ViolationList *violations, AccountList *accounts)
 {
@@ -192,414 +496,5 @@ void seedSampleData(MemberList *members, ViolationList *violations, AccountList 
 
     printf("Created sample data with Pending status in data/ folder.\n");
 }
-/* run this program using the console pauser or add your own getch,
- * system("pause") or input loop */
 
-void config() {
-    SetConsoleOutputCP(65001);
-    enableAnsiColors();
-}
 
-int main(int argc, char *argv[])
-{
-    config();
-    char studentID[10];
-
-    // set the array to be empty.
-    MemberList members;
-    ViolationList violations;
-    initViolationList(&violations, 3000);
-    AccountList accounts;
-
-    initNotificationList();
-    autoDeleteOutDateNotification();
-
-    seedSampleData(&members, &violations, &accounts);
-    loadMembers(&members);
-    loadViolations(&violations, &members);
-    loadAccounts(&accounts);
-
-    // loginRole represent the role of this account
-    // menuRole represent which menu will be open.
-    int loginRole = -1, menuRole = -1;
-    int choice = -1, isStayLogin = 0;
-    // isStayedLogin check whether user is auth-ed. 0 = No, 1 = Yes;
-    int mIndex = -1, vIndex = -1;
-
-    do
-    {
-        // Firstly, auth. If stay login ==> do not check
-        //				  If not stay login =>> check again.
-        if (isStayLogin == 0)
-        {
-            loginRole = login(&accounts, studentID);
-            // If loginRole = -2 => Student ID not found
-            if (loginRole == -2)
-            {
-                int isExit = 0;
-                inputYesNo(
-                    &isExit,
-                    "\nDo you want to exit? \n1. Yes\n 0. No\n=>Your choice: ");
-                printf("\n");
-                if (isExit == 1)
-                    return 0;
-                else
-                    continue;
-            }
-            // If loginRole = -1 => Account locked
-            else if (loginRole == -1)
-            {
-                int isExit = 0;
-                inputYesNo(
-                    &isExit,
-                    "\nDo you want to exit? \n1. Yes\n 0. No\n=>Your choice: ");
-                printf("\n");
-                if (isExit == 1)
-                    return 0;
-                else
-                    continue;
-            }
-            else
-            {
-                menuRole = loginRole;
-                mIndex = searchMemberByIdInM(&members, studentID);
-                vIndex = getViolationIndexById(&violations, studentID);
-
-                isStayLogin = 1;
-                // login successfully ==> Assign value for menuRole to open
-                // menu, and memberIndex to identify user
-
-                displayNotificationByMemberID(members.data[mIndex].studentID,
-                                              ADMIN_WARNING);
-                pauseProgram();
-                clearScreen();
-            }
-        }
-
-        clearScreen();
-        switch (menuRole)
-        {
-        case 0:
-        {
-            printf("%s", UI_TABLE_HEADER);
-            printf("\nMEMBER MENU\n");
-            printf("%s", UI_RESET);
-            printf(
-                "┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓\n"
-                "┃  1. View Profile                             ┃\n"
-                "┃  2. View Violation History                   ┃\n"
-                "┃  3. View Total Unpaid Fines                  ┃\n"
-                "┃  4. View Club Member List                    ┃\n"
-                "┃  5. Reset Password                           ┃\n"
-                "┃  6. Log Out                                  ┃\n"
-                "┃  7. Exit                                     ┃\n"
-                "┃  8. Switch to Admin Menu                     ┃\n"
-                "┃  9. View notification                        ┃\n"
-                "┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛\n");
-
-            inputIntegerInRange(&choice, 1, 9,
-                                "==> Enter your selection: ");
-
-            clearScreen();
-            switch (choice)
-            {
-            case 1:
-                displayOneMemberInfo(members.data[mIndex]);
-                break;
-            case 2:
-                displayViolationByStudentId(studentID, &violations);
-                break;
-            case 3:
-                viewMyUnpaidFines(studentID, &violations);
-                break;
-            case 4:
-                displayMemberList(members.data, members.count);
-                break;
-            case 5:
-                changePassword(&accounts, studentID, menuRole);
-                break;
-            case 6:
-                isStayLogin = 0;
-                loginRole = -1;
-                menuRole = -1;
-                // mark as not login, reset menu role
-                continue;
-            case 7:
-                // if choice = 7, save the data end return.
-                return 0;
-            case 8:
-                if ((loginRole == 1 || loginRole == 2) && members.data[mIndex].isPending == 1)
-                {
-                    uiError("Pending account. Can only use member menu now. ");
-                    break;
-                }
-                if ((loginRole == 1 || loginRole == 2) && members.data[mIndex].isPending != 1)
-                {
-                    menuRole = 1;
-                    continue;
-                }
-                else
-                {
-                    uiError("Permission denied. Try again.\n");
-                    break;
-                }
-            case 9:
-                displayNotificationByMemberID(members.data[mIndex].studentID, ADMIN_WARNING);
-                displayGlobalNotification();
-                break;
-            default:
-                uiError("Invalid option, please try again.");
-            }
-            break;
-        }
-
-        case 1:
-        case 2:
-        {    
-            printf("%s", UI_TABLE_HEADER);
-            printf("\n%-48s  %-48s  %-48s\n", "MEMBER", "VIOLATION / REPORT", "NOTIFICATION");
-            printf("%s", UI_RESET);
-
-            printf(
-                "┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓  ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓  ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓\n"
-                "┃  1. Add New Member                           ┃  ┃  4. Record new violation                     ┃  ┃ 15. Add new notification                     ┃\n"
-                "┃  2. Edit Member Information                  ┃  ┃  5. Mark Fine as Paid                        ┃  ┃ 17. Update notification                      ┃\n"
-                "┃  3. Remove Member                            ┃  ┃  6. View Violation List                      ┃  ┃ 18. Delete notification                      ┃\n"
-                "┃  8. Check warning/kick list                  ┃  ┃  7. Statistics by Department                 ┃  ┃ 19. Show all notifications                   ┃\n"
-                "┃  9. View Member in Sorted List               ┃  ┃ 11. View Violations by Time Range            ┃  ┃ 21. Notification manager                     ┃\n"
-                "┃ 10. Change Member's Password                 ┃  ┃ 16. Delete violation                         ┃  ┃                                              ┃\n"
-                "┃ 14. Switch to Member Menu                    ┃  ┃ 20. Violation manager                        ┃  ┃                                              ┃\n"
-                "┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛  ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛  ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛\n");
-
-            printf("%s", UI_TABLE_HEADER);
-            printf("\n%-48s\n", "SYSTEM");
-            printf("%s", UI_RESET);
-            printf(
-                "┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓\n"
-                "┃ 12. Log Out                                  ┃\n"
-                "┃ 13. Exit                                     ┃\n"
-                "┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛\n");
-            inputIntegerInRange(&choice, 1, 21,
-                                " ==> Enter your selection: ");
-
-            clearScreen();
-            switch (choice)
-            {
-            case 1:
-                addMember(&members, &accounts);
-                break;
-            case 2:
-                updateMember(&members, &violations, studentID);
-                break;
-            case 3:
-                removeMember(&members, &accounts, &violations, studentID);
-                break;
-            case 4:
-                recordViolationView(&violations, &members);
-                break;
-            case 5:
-                markFineAsPaidView(&violations, &members);
-                break;
-            case 6:
-                displayViolationList(violations.data, violations.count);
-                // not sorted by team, role yet
-                break;
-            case 7:
-                showFineStatsByTeam(&members, &violations);
-                break;
-            case 8:
-                checkAndWarnOutClub(&members, &accounts, &violations, studentID);
-                break;
-            case 9:
-            {
-                int sortMode;
-                inputYesNo(
-                    &sortMode,
-                    "Sort mode: \n 1. ASC\n 0. DESC\n Your choice: ");
-                if (sortMode == 0)
-                    sortMode = -1;
-                // sortMode only accept 1 as ASC or -1 asc DESC.
-                displayInSortByVioCount(members.data, members.count, sortMode);
-                break;
-            }
-            case 10:
-            {
-                changePassword(&accounts, studentID, menuRole);
-                break;
-            }
-            case 11:
-            {
-                displayViolationsByTimeRange(&violations);
-                break;
-            }
-
-            case 12:
-                isStayLogin = 0;
-                loginRole = -1;
-                menuRole = -1;
-                // mark as not login, reset menu role
-                continue;
-            case 13:
-                return 0;
-            case 14:
-                menuRole = 0;
-                continue;
-            case 15:
-            {
-                int type;
-                inputIntegerInRange(
-                    &type, 0, 2,
-                    "Enter type of notification, global(0), notice "
-                    "(1), warning (2): ");
-                char content[200];
-                inputString(content, 200, "Enter notify content: ");
-                if (type == ADMIN_NOTICE || type == ADMIN_WARNING)
-                {
-                    char memberId[6];
-                    inputString(memberId, 6, "Enter member id: ");
-                    createNotification(memberId, type, content,
-                                       time(NULL) + BASE_DELETE_TIME,
-                                       1);
-                }
-                else
-                {
-                    createNotification(NULL, type, content,
-                                       time(NULL) + BASE_DELETE_TIME,
-                                       1);
-                }
-                break;
-            }
-            case 16:
-            {
-
-                deleteViolation(&violations);
-                break;
-            }
-            case 17:
-            {
-                char id[6];
-                inputString(id, 6, "Enter notification id: ");
-                Notification *n = findNotificationById(id);
-
-                if (n == NULL)
-                    break;
-
-                int updateType;
-                inputIntegerInRange(
-                    &updateType, 0, 2,
-                    "Enter type of notification, global(0), notice "
-                    "(1), warning (2): ");
-                char updateContent[200];
-                inputString(updateContent, 200,
-                            "Enter notify content: ");
-                char memberId[6];
-                inputString(memberId, 6, "Enter member id: ");
-                if (strcmp(memberId, "") == 0)
-                    break;
-                updateNotification(n, memberId, updateType,
-                                   updateContent, n->deleteTime);
-                break;
-            }
-            case 18:
-            {
-                char removeId[6];
-                inputString(removeId, 6, "Enter remove notification id: ");
-                deleteNotification(findNotificationById(removeId));
-                printf("Delete notification");
-                break;
-            }
-            case 19:
-                displayNotificationList();
-                break;
-            case 20:
-                violationManager(violations, members);
-                break;
-            case 21:
-                notificationManager();
-                break;
-            default:
-                uiError("Invalid option, please try again.\n");
-                break;
-            }
-        }
-        }
-        pauseProgram();
-    } while (1);
-
-    freeNotificationList();
-    return 0;
-}
-
-void violationManager(ViolationList violations, MemberList members)
-{
-    int choice;
-    int isContinue = 1;
-
-    do
-    {
-        clearScreen();
-        displayViolationManagerMenu();
-        inputIntegerInRange(&choice, 1, 6, "\nEnter your choice: ");
-        clearScreen();
-        switch (choice)
-        {
-        case 1:
-            flexibleDisplayViolationList(violations, members);
-            break;
-        case 2:
-            recordViolationView(&violations, &members);
-            break;
-        case 3:
-            changeFilterOption();
-            break;
-        case 4:
-            markFineAsPaidView(&violations, &members);
-            break;
-        case 5:
-        {
-            deleteViolation(&violations);
-            break;
-        }
-        case 6:
-            return;
-        default:
-            printf("\nThere is no service with this command code!\n");
-            break;
-        }
-        pauseProgram();
-    } while (isContinue);
-}
-
-void notificationManager()
-{
-    int choice;
-
-    do
-    {
-        clearScreen();
-        displayNotificationManagerMenu();
-        inputIntegerInRange(&choice, 1, 5, "\nEnter your choice: ");
-        clearScreen();
-        switch (choice)
-        {
-        case 1:
-            createNotificationView();
-            break;
-        case 2:
-            updateNotificationView();
-            break;
-        case 3:
-            deleteNotificationView();
-            break;
-        case 4:
-            displayNotificationList();
-            break;
-        case 5:
-            return;
-        default:
-            printf("\nThere is no service with this command code!\n");
-            break;
-        }
-        pauseProgram();
-    } while (1);
-}

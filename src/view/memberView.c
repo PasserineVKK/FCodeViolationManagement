@@ -4,6 +4,8 @@
 #include "../../include/utils.h"
 #include "../../include/view/memberView.h"
 #include "../../include/view/viewUtil.h"
+#include "../../include/model.h"
+#include "../../include/consoleInput.h"
 
 void displayOneMemberInfo(Member member) {
     uiTableTitle("MEMBER PROFILE");
@@ -50,7 +52,7 @@ void displayMemberList(Member members[], int count) {
 
 
 
-void displayInSortByVioCount(Member members[], int mCount, int sortMode) {
+void displayMemberInSortByVioCount(Member members[], int mCount, int sortMode) {
 	// 1. Prepare a copy list before sorting
     Member sortList[mCount];
     for (int i = 0; i < mCount; i++) {
@@ -120,4 +122,41 @@ void displayInSortByVioCount(Member members[], int mCount, int sortMode) {
     }
     printf(
         "┗━━━━━━━━━━━━┻━━━━━━━━━━━━━━━━━━━━━━━━┻━━━━━━━━━━━━┻━━━━━━━━━━━━━━━━━━━━┻━━━━━━━━━━━━━━━━━━━━┛\n");
+ }
+
+void displayMemberInSort(MemberList* list, int isAdmin){
+	int count = list->count;
+	char compareCommand[20];
+	
+	printf("Uppercase = ASC, Lowercase = DESC.\n");
+	printf("[T]eam - [R]ole - [N]ame %s", (isAdmin) ? "- Total[Fine] - [V]iolationCount" : "");
+	printf("\ne.g: Tn - Team ascending, Name descending.\n");
+	printf("Press Enter if sort is not needed\n");
+    inputString(compareCommand, sizeof(compareCommand), "Enter your command: ");
+    Member* sortPointerList[count];
+    sortMember(list, sortPointerList, compareCommand);
+	uiTableTitle("CLUB MEMBER SORTED LIST");
+	
+	    printf(
+        "┏━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━�%s┓\n", (isAdmin)?"┳━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━":"");
+    printf("┃ %-10s ┃ %-22s ┃ %-10s ┃ %-18s ┃ ", "Student ID",
+           "Full Name", "Team", "Role");
+           if (isAdmin) printf("%-18s ┃ %-18s ┃", "Violations", "TotalFine");
+    printf(
+        "\n┣━━━━━━━━━━━━╋━━━━━━━━━━━━━━━━━━━━━━━━╋━━━━━━━━━━━━╋━━━━━━━━━━━━━━━━━━━━%s�┫", (isAdmin)?"╋━━━━━━━━━━━━━━━━━━━━╋━━━━━━━━━━━━━━━━━━━�":"");
+    for (int i = 0; i < count; i++) {
+        printf("\n┃ %-10s ┃ %-22s ┃ %-10s ┃ %-18s ┃",
+               sortPointerList[i]->studentID, sortPointerList[i]->fullName, 
+			   translateTeam(sortPointerList[i]->team), translateRole(sortPointerList[i]->role));
+			if (isAdmin){
+				char formattedFine[20];
+				formatCurrency(sortPointerList[i]->totalFine, formattedFine, sizeof(formattedFine));
+				printf(" %-18d ┃ %-18s ┃", sortPointerList[i]->violationCount,formattedFine);
+			} 
+               
+    }
+    printf(
+        "\n┗━━━━━━━━━━━━┻━━━━━━━━━━━━━━━━━━━━━━━━┻━━━━━━━━━━━━┻━━━━━━━━━━━━━━━━━━━━%s┛\n", (isAdmin)?"┻━━━━━━━━━━━━━━━━━━━━┻━━━━━━━━━━━━━━━━━━━━�":"");
+ 
+	
 }

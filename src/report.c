@@ -26,7 +26,7 @@ int isValidateNotification(Notification *n)
         return 0;
     if (n->type == ADMIN_WARNING && !isValidStudentID(n->memberId))
         return 0;
-    else if (n->type != ADMIN_WARNING && (isBlank(n->memberId) || !isValidStudentID(n->memberId) || !(n->memberId == NULL)))
+    else if (n->type != ADMIN_WARNING && (isBlank(n->memberId) || !isValidStudentID(n->memberId)))
         return 0;
     return 1;
 }
@@ -278,13 +278,16 @@ void deleteNotification(Notification *n)
 void deleteNotificationByMemberId(const char *memberId)
 {
     for (int i = 0; i < count; i++)
-        if (strcmp(memberId, notifications[i].memberId) == 0)
+        if (strcmp(memberId, notifications[i].memberId) == 0){
         {
-            for (int j = 0; j < i - 1; j++)
+            for (int j = i; j < count - 1; j++)
                 notifications[j] = notifications[j + 1];
             count--;
+            i--;
         }
-
+		
+		
+	}
     saveNotification();
 }
 
@@ -294,9 +297,10 @@ void autoDeleteOutDateNotification()
     for (int i = 0; i < count; i++)
         if (now > notifications[i].deleteTime)
         {
-            for (int j = 0; j < i - 1; j++)
+            for (int j = i; j < count - 1; j++)
                 notifications[j] = notifications[j + 1];
             count--;
+            i--;
         }
 
     saveNotification();
@@ -645,13 +649,13 @@ void deleteNotificationView()
     do
     {
         displayNotificationList();
-        char removeId[6];
-        inputString(removeId, 6, "\nEnter remove notification id: ");
+        char removeId[7];
+        inputString(removeId, sizeof(removeId), "\nEnter remove notification id: ");
         Notification *foundNotification = findNotificationById(removeId);
         if (foundNotification != NULL)
         {
             int confirm;
-            inputYesNo(&confirm, "Are you sure to delete this notification: ");
+            inputYesNo(&confirm, "Are you sure to delete this notification [Yes = 1; No = 0]: ");
             if (confirm)
             {
                 deleteNotification(foundNotification);
@@ -663,7 +667,7 @@ void deleteNotificationView()
             notifyAdmin("Can not find this notification!!", NULL, NOT_SAVE);
         }
 
-        inputYesNo(&option, "\nDo you want to delete another notification: ");
+        inputYesNo(&option, "\nDo you want to delete another notification [Yes = 1; No = 0]: ");
         if (option)
         {
             clearScreen();

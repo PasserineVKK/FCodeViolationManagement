@@ -6,7 +6,6 @@
 
 sampleData/
 data/
-!data/.gitkeep
 *.dev
 *.layout
 *.clang-format

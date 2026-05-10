@@ -3,10 +3,24 @@
 #define MAX 1000
 #include <time.h>
 
+#define REASON_NOT_UNIFORM 0
+#define REASON_MEETING_ABSENCE 1
+#define REASON_NO_CLUB_ACTIVITY 2
+#define REASON_VIOLENCE 3
+
+#define PENDING 1
+#define NOT_PENDING 0
+
+#define ALREADY_PAID 1
+#define NOT_PAY 0
+#define NOT_HAVE_TO_PAY 2
+
+#define PENALTY_FINANCIAL 0
+#define PENALTY_KICK 1
 typedef struct {
     char studentID[10];  // SE000000\0
     char password[30];
-    int role;       // 0 = Member, 1 = BOD
+    int role;       // 0 = Member, 1 = Leader/Vice, 2 = BOD
     int isLocked;   // 1 = This account locked after 3 failed trials
     int failCount;  // consecutive failed trials
 } Account;
