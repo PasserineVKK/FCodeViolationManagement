@@ -184,60 +184,53 @@ int ensureCapacity(ViolationList *list)
     return 1;
 }
 
-void createViolationID(int index, char *buffer)
-{
-    sprintf(buffer, "%06d", index);
-}
-
-void removeOneViolation(ViolationList *list, const char *violationId)
-{
-    Violation *v = findViolationById(violationId, list);
-    if (list == NULL || list->data == NULL || v == NULL || list->count <= 0)
-    {
-        if (v == NULL)
-            notifyAdmin("Can not find violation with given id!", NULL, NOT_SAVE);
+// Only for user
+void deleteViolation(ViolationList *violations){
+    printf ("=== DELETE VIOLATIONS ===\n");
+    if (violations->count <= 0){
+        printf ("Don't have any violation to delete\n");
         return;
     }
-    for (int i = 0; i < list->count; i++)
-    {
-        // if address of data[i] == address of v
-        if (&list->data[i] == v)
-        {
-            printf("Owner address: %p\n", (void *)v->owner);
-            // remove from pending list, or change totalFine
-            if (v->reason == REASON_VIOLENCE || v->owner->consecutiveAbsences == 3)
-            {
-                v->owner->isPending = 0;
-            }
-            else
-            {
-                v->owner->totalFine = (v->owner->totalFine) - ((v->owner->role == 0) ? 20000 : 50000);
-            }
+    int continueDelete = 1;
+    char violationID[9];
 
-            // if reason is meeting absence -> reduce absence times
-            if (v->reason == REASON_MEETING_ABSENCE)
-            {
-                v->owner->consecutiveAbsences--;
-            }
-
-            for (int j = i; j < list->count - 1; j++)
-            {
-                list->data[j] = list->data[j + 1];
-            }
-            list->count--;
-            break;
+    while (continueDelete){
+        inputString(violationID, 10, "Enter violation id: ");
+        int vIndex = getViolationIndexById(violations, violationID);
+        if (vIndex == -1){
+            uiError ("This ID do not exist\n");
         }
-    }
+        else {
+            uiInfo ("The violation you choose: ");
+            simpleDisplayViolation (&violations->data[vIndex]);
+            
+            int confirm;
+            inputYesNo(&confirm, "Confirm to record this violation? (1: Yes, 0: No): ");
+            if (!confirm){
+                printf("Violation not recorded.\n");
+            }
+            else{
+                if (violations->data[vIndex].reason == REASON_VIOLENCE || violations->data[vIndex].owner->consecutiveAbsences == 3){
+                    violations->data[vIndex].owner->isPending = 0;
+                }
+                else{
+                    violations->data[vIndex].owner->totalFine = (violations->data[vIndex].owner->totalFine) - ((violations->data[vIndex].owner->role == 0) ? 20000 : 50000);
+                }
 
-    saveViolations(list);
-}
+                // if reason is meeting absence -> reduce absence times
+                if (violations->data[vIndex].reason == REASON_MEETING_ABSENCE){
+                    violations->data[vIndex].owner->consecutiveAbsences--;
+                }
 
-// Only for user
-void deleteViolation(ViolationList *list)
-{
-    char violationId[10];
-    inputString(violationId, 10, "Enter violation id: ");
-    removeOneViolation(list, violationId);
+                for (int i = vIndex; i < violations->count-1; i++){
+                    violations->data[i] = violations->data[i + 1];
+                }
+                violations->count--;
+                uiSuccess ("That violation has deleted\n");
+            }  
+        }
+        inputYesNo(&continueDelete, "\nDelete another violation?\n1: Yes\n0: No\n=> Your choice: ");
+    }     
 }
 
 void handleSeriousViolation(const Member *m, const Violation *newV)

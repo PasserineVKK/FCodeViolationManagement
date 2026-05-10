@@ -165,41 +165,49 @@ void displayViolationByStudentId(const char *id, const ViolationList *violations
     displayViolationTableFooter();
 }
 
-void markFineAsPaidView(ViolationList *violations, MemberList *members)
-{
-    char violationID[50];
-    printf("\n--- Mark Fine as Paid ---\n");
-    printf("Enter Violation ID: ");
-    scanf("%s", violationID);
-
-    int vIndex = getViolationIndexById(violations, violationID);
-    if (vIndex == -1)
-    {
-        uiError("Error: Violation ID not found.\n");
+void markFineAsPaidView(ViolationList *violations, MemberList *members){
+    if (violations->count <= 0){
+        printf ("No violation recored\n");
         return;
     }
-
-    if (violations->data[vIndex].isPaid == ALREADY_PAID)
-    {
-        printf("This violation is already paid.\n");
+    if (members->count <= 0){
+        printf ("No member in list\n");
         return;
     }
+    int continueMarkFine = 1;
+    while (continueMarkFine){
+        char violationID[8];
+        printf("\n=== Mark Fine as Paid ===\n");
+        inputString(violationID, sizeof(violationID), "Enter Violation ID: ");
 
-    if (violations->data[vIndex].isPaid == NOT_HAVE_TO_PAY)
-    {
-        printf("This violation is not have to pay\n");
-        return;
-    }
-
-    int confirm;
-    inputYesNo(&confirm, "Confirm mark as paid? (1: Yes, 0: No): ");
-    if (confirm)
-    {
-        violations->data[vIndex].isPaid = ALREADY_PAID;
-        updateMemberTotalFine(members, violations, violations->data[vIndex].studentID);
-        saveViolations(violations);
-        saveMembers(members);
-        uiSuccess("Marked as paid successfully.\n");
+        int vIndex = getViolationIndexById(violations, violationID);
+        if (vIndex == -1){
+            uiError("Error: Violation ID not found.\n");
+        }
+        else if (violations->data[vIndex].isPaid == ALREADY_PAID){
+            printf("This violation is already paid.\n");
+        }
+        else if (violations->data[vIndex].isPaid == NOT_HAVE_TO_PAY){
+            printf("This violation is not have to pay\n");
+            continue;
+        }
+        else {
+            int confirm;
+            inputYesNo(&confirm, "Confirm mark as paid? (1: Yes, 0: No): ");
+            if (confirm){
+                violations->data[vIndex].isPaid = ALREADY_PAID;
+                updateMemberTotalFine(members, violations, violations->data[vIndex].studentID);
+                saveViolations(violations);
+                saveMembers(members);
+                simpleDisplayViolation(&violations->data[vIndex]);
+                uiSuccess("Marked as paid successfully.\n");
+            }
+            else {
+                printf ("Fine didn't mark as paid\n");
+            }
+        }     
+        inputYesNo(&continueMarkFine, 
+            "\nContinue to mark as paid with another fine?\n1: Yes\n0: No\n=> Your choice: ");
     }
 }
 
@@ -223,12 +231,7 @@ void displayViolationsByTimeRange(const ViolationList *violations)
     }
 
     violationRowNumber = 0;
-    displayViolationTableHeader();
-    for (int i = 0; i < resultCount; i++)
-    {
-        displayViolationRow(&results[i]);
-    }
-    displayViolationTableFooter();
+    displayViolationList(results,resultCount);
 
     free(results);
 }

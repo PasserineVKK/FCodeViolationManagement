@@ -41,7 +41,7 @@ int getViolationIndexById(const ViolationList *violations, const char *violation
 void updateIsPaidField(const char *violationId, ViolationList *violations, int value);
 int addViolation(ViolationList *violations, const Violation *newV);
 
-void deleteViolation(ViolationList *list);
+void deleteViolation(ViolationList *violations);
 
 void recordViolationView(ViolationList *violations, MemberList *members, int actorIndex);
 
@@ -56,8 +56,8 @@ int hasViolenceViolation(const char *studentID, const ViolationList *violations)
 void removeMemberById(const char *id, MemberList *members, AccountList *accounts, ViolationList *violations);
 void checkAndWarnOutClub(MemberList *members, AccountList *accounts, ViolationList *violations, const char *actorID);
 
-void removeOneViolation(ViolationList *list, const char *violationId);
-
 int checkTotalBOD(MemberList *members);
+
+void simpleDisplayViolation(const Violation *v);
 
 #endif

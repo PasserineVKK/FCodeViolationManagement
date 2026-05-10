@@ -31,7 +31,7 @@ int searchMemberByIdInA(AccountList *accounts, const char* id) {
 
 // Return role of logged in account
 int login(AccountList *accounts, char* studentID) {
-    uiInfo("   LOGIN\n");
+    uiInfo("===LOGIN===\n");
 
     char password[30];
     
@@ -117,9 +117,7 @@ void changePassword(AccountList *accounts, char* actorID, int role) {
         strcpy(studentID, actorID);
     } else {
         // Input student ID which want to change password
-        inputStudentID(
-            studentID,
-            "Enter student ID of the member you want to change password: ");
+        inputString(studentID,sizeof(studentID),"Enter student ID of the member you want to change password: ");
     }
 
     aIndex = searchMemberByIdInA(accounts, studentID);
