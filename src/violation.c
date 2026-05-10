@@ -34,8 +34,7 @@ void initViolationList(ViolationList *list, int initialCapacity)
     list->data = malloc(sizeof(Violation) * list->capacity);
 }
 
-int loadViolations(ViolationList *violations, MemberList *members)
-{
+int loadViolations(ViolationList *violations, MemberList *members){
     int isLoadSuccess = loadFromFile(VIOLATIONS_FILE, violations->data, sizeof(Violation) - sizeof(Member *),
                                      MAX_VIOLATIONS, &violations->count);
 
@@ -43,7 +42,7 @@ int loadViolations(ViolationList *violations, MemberList *members)
     {
         uiWarning("No initial data");
         violations->count = 0;
-        return 1;
+        return 0;
     }
     else
     {
@@ -64,11 +63,17 @@ int loadViolations(ViolationList *violations, MemberList *members)
         }
     }
 
-    const char *lastId = violations->data[violations->count - 1].violationID;
-    if (strncmp(lastId, "VIO", 3) == 0)
-        maxCount = atoi(lastId + 3);
-    else
-        maxCount = atoi(lastId);
+    if (violations->count > 0){
+        const char *lastId = violations->data[violations->count - 1].violationID;
+
+        if (strncmp(lastId, "VIO", 3) == 0)
+            sscanf(lastId + 3, "%x", &maxCount);
+        else
+            sscanf(lastId, "%x", &maxCount);
+    }
+    else{
+        maxCount = 0;
+    }
 
     return 1;
 }
@@ -279,6 +284,12 @@ int checkTotalBOD(MemberList *members)
 
 void recordViolationView(ViolationList *violations, MemberList *members)
 {
+    if (violations->count > MAX_3_DIGIT_HEX){
+        printf ("Note enough space to record violation");
+        while (getchar() != '\n');
+        return;
+    }
+
     int continueRecord = 1;
     while (continueRecord)
     {
@@ -297,87 +308,91 @@ void recordViolationView(ViolationList *violations, MemberList *members)
         int isPaid;
         int penalty;
         char note[100];
+        char violationID[7];
 
         printf("\n--- Record New Violation ---\n");
         inputStudentID(studentID, "Enter Student ID: ");
 
         mIndex = searchMemberByIdInM(members, studentID);
-        if (mIndex == -1)
-        {
+        if (mIndex == -1){
             uiError("Error: Student ID not found.\n");
             continue;
         }
-
-        // Pointer directly points to the member in array to avoid shallow copy
-        Member *owner = &members->data[mIndex];
-
-        printf("Reasons:\n");
-        printf("%d. Not uniform\n", REASON_NOT_UNIFORM);
-        printf("%d. Meeting absence\n", REASON_MEETING_ABSENCE);
-        printf("%d. No Club activity\n", REASON_NO_CLUB_ACTIVITY);
-        printf("%d. Violence\n", REASON_VIOLENCE);
-        inputIntegerInRange(&reason, 0, 3, "Enter reason: ");
-
-        inputString(note, 100, "Enter note (optional): ");
-
-        violationTime = time(NULL);
-
-        int confirm;
-        inputYesNo(&confirm, "Confirm to record this violation? (1: Yes, 0: No): ");
-        if (!confirm)
-        {
-            printf("Violation not recorded.\n");
-        }
-        else
-        {
-            Violation newV;
-
-            if (reason == REASON_MEETING_ABSENCE)
-            {
-                owner->consecutiveAbsences++;
+        else { 
+            // Pointer directly points to the member in array to avoid shallow copy
+            Member *owner = &members->data[mIndex];
+            
+            if (owner->isPending == 1){
+                printf ("This member has already been kicked. "
+                    "No more violations can be added. "
+                    "Please process this person from the kick list.\n");
             }
-            if (owner->consecutiveAbsences >= 3 || reason == REASON_VIOLENCE)
-            {
-                penalty = PENALTY_KICK;
-                fine = 0;
-                isPaid = NOT_HAVE_TO_PAY;
-                owner->isPending = 1;
-            }
-            else
-            {
-                fine = calculateFine(owner->role, reason);
-                isPaid = NOT_PAY;
-                penalty = PENALTY_FINANCIAL;
-            }
+            else {
+                printf("Reasons:\n");
+                printf("%d. Not uniform\n", REASON_NOT_UNIFORM);
+                printf("%d. Meeting absence\n", REASON_MEETING_ABSENCE);
+                printf("%d. No Club activity\n", REASON_NO_CLUB_ACTIVITY);
+                printf("%d. Violence\n", REASON_VIOLENCE);
+                inputIntegerInRange(&reason, 0, 3, "Enter reason: ");
 
-            strcpy(newV.studentID, studentID);
-            snprintf(newV.violationID, sizeof(newV.violationID), "%06d", maxCount + 1);
-            newV.reason = reason;
-            newV.violationTime = violationTime;
-            strcpy(newV.note, note);
-            newV.fine = fine;
-            newV.isPaid = isPaid;   // 0 = Not yet, 1 = Already
-            newV.penalty = penalty; // 0 = Financial penalty, 1 = Kick
-            newV.owner = owner;
+                inputString(note, 100, "Enter note (optional): ");
 
-            if (!addViolation(violations, &newV))
-            {
-                uiError("Error: Violation list is full.\n");
-                continue;
-            }
+                violationTime = time(NULL);
 
-            if (reason == REASON_MEETING_ABSENCE || reason == REASON_VIOLENCE)
-            {
-                handleSeriousViolation(owner, &newV);
-            }
+                int confirm;
+                inputYesNo(&confirm, "Confirm to record this violation? (1: Yes, 0: No): ");
+                if (!confirm){
+                    printf("Violation not recorded.\n");
+                }
+                else{
+                    Violation newV;
 
-            updateMemberTotalFine(members, violations, studentID);
+                    if (reason == REASON_MEETING_ABSENCE){
+                        owner->consecutiveAbsences++;
+                    }
+                    if (owner->consecutiveAbsences >= 3 || reason == REASON_VIOLENCE){
+                        penalty = PENALTY_KICK;
+                        fine = 0;
+                        isPaid = NOT_HAVE_TO_PAY;
+                        owner->isPending = 1;
+                    }
+                    else{
+                        fine = calculateFine(owner->role, reason);
+                        isPaid = NOT_PAY;
+                        penalty = PENALTY_FINANCIAL;
+                    }
 
-            saveViolations(violations);
-            saveMembers(members);
+                    //Make newID in hexa
+                    snprintf(violationID, sizeof(violationID), "VIO%03X", maxCount + 1);
 
-            uiSuccess("Violation recorded successfully.\n");
-            maxCount++;
+                    strcpy(newV.studentID, studentID);
+                    strcpy(newV.violationID, violationID);
+                    newV.reason = reason;
+                    newV.violationTime = violationTime;
+                    strcpy(newV.note, note);
+                    newV.fine = fine;
+                    newV.isPaid = isPaid;   // 0 = Not yet, 1 = Already
+                    newV.penalty = penalty; // 0 = Financial penalty, 1 = Kick
+                    newV.owner = owner;
+
+                    if (!addViolation(violations, &newV)) {
+                        uiError("Error: Violation list is full.\n");
+                        continue;
+                    }
+
+                    if (reason == REASON_MEETING_ABSENCE || reason == REASON_VIOLENCE){
+                        handleSeriousViolation(owner, &newV);
+                    }
+
+                    updateMemberTotalFine(members, violations, studentID);
+
+                    saveViolations(violations);
+                    saveMembers(members);
+
+                    uiSuccess("Violation recorded successfully.\n");
+                    maxCount++;
+                }
+            }    
         }
 
         inputYesNo(&continueRecord, "\nRecord another violation?\n1: Yes\n0: No\n=> Your choice: ");
@@ -451,7 +466,7 @@ void displayWarningList(const MemberList *members, const ViolationList *violatio
 
     if (firstIndex == -1)
     {
-        uiError("No members in warning list.");
+        uiError("No members in warning list.\n");
     }
     else
     {
