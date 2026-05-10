@@ -39,7 +39,7 @@ int countUnpaidViolations(const char* id, const ViolationList* violations) {
         // Use pointer to access directly and avoid copying
         Violation* v = &violations->data[i];
         if (strcmp(v->studentID, id) == 0 &&
-            v->isPaid == NOT_PAY && v->owner->isPending == 0) {
+            v->isPaid == NOT_PAY && v->owner->isPending == NOT_PENDING) {
             unpaidCount++;
         }
     }
@@ -58,7 +58,7 @@ int updateMemberTotalFine(MemberList* members, const ViolationList* violations, 
     for (int i = 0; i < violations->count; i++) {
         Violation* v = &violations->data[i];
         if (strcmp(v->studentID, id) == 0 &&
-            v->isPaid == NOT_PAY && v->owner->isPending == 0) {
+            v->isPaid == NOT_PAY && v->owner->isPending == NOT_PENDING) {
             totalFine += v->fine;
         }
     }
@@ -158,7 +158,7 @@ void addMember(MemberList* members, AccountList* accounts, const char *actorID) 
                 newMem->violationCount = 0;
                 newMem->consecutiveAbsences = 0;
                 newMem->totalFine = 0;
-                newMem->isPending = 0;
+                newMem->isPending = NOT_PENDING;
 
                 // Create account for this member with default password "123456" (using ID as default based on logic)
                 Account* newAcc = &accounts->data[accounts->count];
@@ -446,7 +446,7 @@ void updateMember(MemberList* members, ViolationList* violations, const char *ac
                                 Violation* vPtr = &violations->data[i];
                                 if (strcmp(vPtr->studentID, studentID) == 0 &&
                                     vPtr->isPaid == NOT_PAY &&
-                                    vPtr->owner->isPending == 0 &&
+                                    vPtr->owner->isPending == NOT_PENDING &&
                                     vPtr->fine != 0) {
                                     
                                     double newFine = calculateFine(role, vPtr->reason);
@@ -491,3 +491,5 @@ Member* getMemberById(const char* studentId, MemberList* members) {
     }
     return NULL;
 }
+
+

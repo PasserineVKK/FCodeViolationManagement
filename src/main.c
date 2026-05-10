@@ -152,18 +152,17 @@ int main(int argc, char* argv[]) {
                 isRunning = 0;
                 break;
             case 8:
-                if ((loginRole == 1 || loginRole == 2) && members.data[mIndex].isPending == 1)
-                {
-                    uiError("Pending account. Can only use member menu now. ");
-                    break;
+                if ((loginRole == 1 || loginRole == 2)){
+                    if (members.data[mIndex].isPending == PENDING){
+                        uiError("Pending account. Can only use member menu now. ");
+                        break;
+                    }
+                    else if (members.data[mIndex].isPending == NOT_PENDING){
+                        menuRole = 1;
+                        continue;
+                    }
                 }
-                if ((loginRole == 1 || loginRole == 2) && members.data[mIndex].isPending != 1)
-                {
-                    menuRole = 1;
-                    continue;
-                }
-                else
-                {
+                else{
                     uiError("Permission denied. Try again.\n");
                     break;
                 }
@@ -186,14 +185,14 @@ int main(int argc, char* argv[]) {
 
             printf(
                 "┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓  ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓  ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓\n"
-                "┃  1. Add New Member                           ┃  ┃  7. Record new violation                     ┃  ┃ 15. Add new notification                     ┃\n"
-                "┃  2. Edit Member Information                  ┃  ┃  8. Mark Fine as Paid                        ┃  ┃ 16. Update notification                      ┃\n"
-                "┃  3. Remove Member                            ┃  ┃  9. View Violation List                      ┃  ┃ 17. Delete notification                      ┃\n"
-                "┃  4. Check warning/kick list                  ┃  ┃ 10. Statistics by Department                 ┃  ┃ 18. Show all notifications                   ┃\n"
-                "┃  5. View Member in Sorted List               ┃  ┃ 11. View Violations by Time Range            ┃  ┃                                              ┃\n"
-                "┃  6. Change Member's Password                 ┃  ┃ 12. Delete Violation                         ┃  ┃                                              ┃\n"
-                "┃                                              ┃  ┃ 13. Change Violations Filter/Sort Settings   ┃  ┃                                              ┃\n"
-	            "┃                                              ┃  ┃ 14. Export Violation Report                  ┃  ┃                                              ┃\n"
+                "┃  1. Add New Member                           ┃  ┃  8. Record new violation                     ┃  ┃ 16. Add new notification                     ┃\n"
+                "┃  2. Edit Member Information                  ┃  ┃  9. Mark Fine as Paid                        ┃  ┃ 17. Update notification                      ┃\n"
+                "┃  3. Remove Member                            ┃  ┃ 10. View Violation List                      ┃  ┃ 18. Delete notification                      ┃\n"
+                "┃  4. Check warning/kick list                  ┃  ┃ 11. Statistics by Department                 ┃  ┃ 19. Show all notifications                   ┃\n"
+                "┃  5. View Member in Sorted List               ┃  ┃ 12. View Violations by Time Range            ┃  ┃                                              ┃\n"
+                "┃  6. Change Member's Password                 ┃  ┃ 13. Delete Violation                         ┃  ┃                                              ┃\n"
+                "┃  7. Unlock Member Account                    ┃  ┃ 14. Change Violations Filter/Sort Settings   ┃  ┃                                              ┃\n"
+	            "┃                                              ┃  ┃ 15. Export Violation Report                  ┃  ┃                                              ┃\n"
 	            "┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛  ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛  ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛\n");
 
             printf("%s", UI_TABLE_HEADER);
@@ -201,9 +200,9 @@ int main(int argc, char* argv[]) {
             printf("%s", UI_RESET);
             printf(
                 "┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓\n"
-                "┃ 19. Log Out                                  ┃\n"
-                "┃ 20. Exit                                     ┃\n"
-	            "┃ 21. Switch to Member Menu                    ┃\n"
+                "┃ 20. Log Out                                  ┃\n"
+                "┃ 21. Exit                                     ┃\n"
+	            "┃ 22. Switch to Member Menu                    ┃\n"
                 "┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛\n");
             inputIntegerInRange(&choice, 1, 21,
                                 " ==> Enter your selection: ");
@@ -230,30 +229,33 @@ int main(int argc, char* argv[]) {
 				changePassword(&accounts, studentID, menuRole);
                 break;
             case 7:
-                recordViolationView(&violations, &members, mIndex);
+                handleLockedAccount(&accounts);
                 break;
             case 8:
-                markFineAsPaidView(&violations, &members);
+                recordViolationView(&violations, &members, mIndex);
                 break;
             case 9:
+            	markFineAsPaidView(&violations, &members);
+                break;
+            case 10:
             	flexibleDisplayViolationList(&violations, &members);
             	break;
-            case 10:
-            	showFineStatsByTeam(&members, &violations);
-                break;
             case 11:
-                displayViolationsByTimeRange(&violations);
+                showFineStatsByTeam(&members, &violations);
                 break;
             case 12:
+            	displayViolationsByTimeRange(&violations);
+                break;
+            case 13:
             	deleteViolation(&violations);
             	break;
-            case 13:
+            case 14:
             	changeFilterOption();
             	break;
-            case 14:
+            case 15:
             	exportViolationReportToFile(&members, &violations);
             	break;
-            case 15:
+			case 16:
             	{
                 int type;
                 inputIntegerInRange(
@@ -278,7 +280,7 @@ int main(int argc, char* argv[]) {
                 }
                 break;
             	}
-            case 16:
+            case 17:
             	{
                 char id[6];
                 inputString(id, 6, "Enter notification id: ");
@@ -303,24 +305,24 @@ int main(int argc, char* argv[]) {
                                    updateContent, n->deleteTime);
                 break;
             	}
-            case 17:
-            	{
+            case 18:
+                {
                 deleteNotificationView();
                 printf("Delete notification");
                 break;
             	}
-            case 18:
+            case 19:
                 displayNotificationList();
                 break;
-            case 19:
-                isStayLogin = 0;
+            case 20:
+               	isStayLogin = 0;
                 loginRole = -1;
                 menuRole = -1;
 				continue;
                 // mark as not login, reset menu role
-            case 20:
-               	isRunning = 0;
             case 21:
+            	isRunning = 0;
+            case 22: 
             	menuRole = 0;
                 continue;
             default:
@@ -360,7 +362,7 @@ void seedSampleData(MemberList *members, ViolationList *violations, AccountList 
     members->data[0].violationCount = 2;
     members->data[0].consecutiveAbsences = 1;
     members->data[0].totalFine = 40000.0;
-    members->data[0].isPending = 0;
+    members->data[0].isPending = NOT_PENDING;
 
     // --- Member 1: Leader, HR, absent 3 times in a row -> pending kick ---
     strcpy(members->data[1].fullName, "Tran Thi Bich");
@@ -372,7 +374,7 @@ void seedSampleData(MemberList *members, ViolationList *violations, AccountList 
     members->data[1].violationCount = 3;
     members->data[1].consecutiveAbsences = 3;
     members->data[1].totalFine = 150000.0;
-    members->data[1].isPending = 1;
+    members->data[1].isPending = PENDING;
 
     // --- Member 2: BCN, Planning, warning ---
     strcpy(members->data[2].fullName, "Le Hoang Cuong");
@@ -384,9 +386,8 @@ void seedSampleData(MemberList *members, ViolationList *violations, AccountList 
     members->data[2].violationCount = 4;
     members->data[2].consecutiveAbsences = 1;
     members->data[2].totalFine = 200000.0;
-    members->data[2].isPending = 0;
+    members->data[2].isPending = NOT_PENDING;
 
-    // C?p nh?t s? lu?ng
     members->count = 3;
 
     // =============================================================
@@ -401,7 +402,7 @@ void seedSampleData(MemberList *members, ViolationList *violations, AccountList 
         violations->data[i].fine = 20000.0;
         violations->data[i].penalty = 0;
         violations->data[i].owner = &members->data[0];
-        violations->data[i].owner->isPending = 0;
+        violations->data[i].owner->isPending = NOT_PENDING;
     }
     strcpy(violations->data[0].violationID, "VIO001");
     violations->data[0].reason = REASON_MEETING_ABSENCE;
@@ -411,13 +412,12 @@ void seedSampleData(MemberList *members, ViolationList *violations, AccountList 
     strcpy(violations->data[1].violationID, "VIO002");
     violations->data[1].reason = REASON_NOT_UNIFORM;
     violations->data[1].isPaid = 0;
-    strcpy(violations->data[1].note, "05/05/2026, Tuesday");
+    strcpy(violations->data[1].note, "");
 
     // SE200002
     for (int i = 2; i < 5; i++)
     {
         strcpy(violations->data[i].studentID, members->data[1].studentID);
-        violations->data[i].isPaid = ALREADY_PAID;
         violations->data[i].penalty = PENALTY_FINANCIAL;
         violations->data[i].owner = &members->data[1];
     }
@@ -426,11 +426,13 @@ void seedSampleData(MemberList *members, ViolationList *violations, AccountList 
     violations->data[2].reason = REASON_MEETING_ABSENCE;
     violations->data[2].fine = 50000.0;
     strcpy(violations->data[2].note, "Retrospective meeting");
+    violations->data[2].isPaid = ALREADY_PAID;
 
     strcpy(violations->data[3].violationID, "VIO004");
     violations->data[3].reason = REASON_MEETING_ABSENCE;
     violations->data[3].fine = 50000.0;
     strcpy(violations->data[3].note, "SUMMER semester meeting");
+    violations->data[3].isPaid = ALREADY_PAID;
 
     strcpy(violations->data[4].violationID, "VIO005");
     violations->data[4].reason = REASON_MEETING_ABSENCE;
@@ -438,7 +440,6 @@ void seedSampleData(MemberList *members, ViolationList *violations, AccountList 
     violations->data[4].penalty = PENALTY_KICK;
     violations->data[4].fine = 0;
     violations->data[4].isPaid = NOT_HAVE_TO_PAY;
-    violations->data[4].owner->isPending = PENDING;
 
     // SE200003
     for (int i = 5; i < 9; i++)
@@ -447,7 +448,7 @@ void seedSampleData(MemberList *members, ViolationList *violations, AccountList 
         violations->data[i].fine = 50000.0;
         violations->data[i].penalty = 0;
         violations->data[i].owner = &members->data[2];
-        violations->data[i].owner->isPending = 0;
+        violations->data[i].owner->isPending = NOT_PENDING;
     }
 
     strcpy(violations->data[5].violationID, "VIO006");
