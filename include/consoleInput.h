@@ -37,6 +37,8 @@ void inputMemberRole(int* target, const char* prompt);
 void inputMemberTeam(int* target, const char* prompt);
 
 // Input password
+int inputPasswordOrCancel(char* target, const char* prompt);
+
 void inputPassword(char* target, const char* prompt);
 
 int inputString(char* buf, int size, const char* prompt);

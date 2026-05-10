@@ -275,7 +275,7 @@ int checkTotalBOD(MemberList *members)
     return bodCount;
 }
 
-void recordViolation(ViolationList *violations, MemberList *members)
+void recordViolationView(ViolationList *violations, MemberList *members, int actorIndex)
 {
     if (violations->count > MAX_3_DIGIT_HEX){
         printf ("Note enough space to record violation");
@@ -303,15 +303,19 @@ void recordViolation(ViolationList *violations, MemberList *members)
         char note[100];
         char violationID[7];
 
-        printf("\n--- Record New Violation ---\n");
+        uiTableTitle("   RECORD VIOLATION");
         inputStudentID(studentID, "Enter Student ID: ");
 
         mIndex = searchMemberByIdInM(members, studentID);
+        
+        if (members->data[actorIndex].role == 1 && members->data[mIndex].role == 2){
+        	uiError("You are only Leader/Vice. Can not record violations for BOD");
+        	return;
+		}
         if (mIndex == -1){
             uiError("Error: Student ID not found.\n");
             continue;
-        }
-        else { 
+        } else { 
             // Pointer directly points to the member in array to avoid shallow copy
             Member *owner = &members->data[mIndex];
             
@@ -319,6 +323,7 @@ void recordViolation(ViolationList *violations, MemberList *members)
                 printf ("This member has already been kicked. "
                     "No more violations can be added. "
                     "Please process this person from the kick list.\n");
+
             }
             else {
                 printf("Reasons:\n");
@@ -540,7 +545,6 @@ void displayKickList(const MemberList *members, const ViolationList *violations)
             found = 1;
         }
     }
-    printf("┣━━━━━━━━━━━━━━╋━━━━━━━━━━━━━━━━━━━━━━━━━━╋━━━━━━━━━━━━━━━━━━━━━━━╋━━━━━━━━━━━━━━━━━━━━━━┫\n");
 
     if (!found)
     {

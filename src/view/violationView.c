@@ -89,7 +89,7 @@ void displayViolationRow(const Violation *v)
         break;
     }
 
-    const char *paidStr = v->isPaid ? ((v->isPaid == ALREADY_PAID) ? "Yes" : "Not have to pay") : "No";
+    const char *paidStr = v->isPaid ? ((v->isPaid == ALREADY_PAID) ? "Yes" : "NHTP") : "No";
     const char *penaltyStr = v->penalty ? "Kick" : "Financial";
     const char *rowBg = ((violationRowNumber / 5) % 2 == 0) ? UI_RESET : UI_ROW_ALT;
 

@@ -43,7 +43,7 @@ int addViolation(ViolationList *violations, const Violation *newV);
 
 void deleteViolation(ViolationList *violations);
 
-void recordViolation(ViolationList *violations, MemberList *members);
+void recordViolationView(ViolationList *violations, MemberList *members, int actorIndex);
 
 void handleSeriousViolation(const Member *member, const Violation *violation);
 

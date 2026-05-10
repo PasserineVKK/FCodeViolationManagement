@@ -101,3 +101,25 @@ int uiPromptNextPage(int shownCount, int totalCount) {
     if (buf[0] == 'q' || buf[0] == 'Q') return 0;
     return 1;
 }
+
+
+
+void displayCountdown(int seconds) {
+    while (seconds >= 0) {
+        int mins = seconds / 60;
+        int secs = seconds % 60;
+
+        // screen pointer change to line:
+        uiWarning("\r%02d:%02d \n ", mins, secs);
+        fflush(stdout);  // push to screen
+
+        #ifdef _WIN32
+            Sleep(1000); // milisecond of win
+        #else
+            sleep(1);    // second of linux
+        #endif
+
+        seconds--;
+    }
+
+}

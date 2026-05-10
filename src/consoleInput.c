@@ -167,6 +167,30 @@ void inputPassword(char* target, const char* prompt) {
     }
 }
 
+
+int inputPasswordOrCancel(char* target, const char* prompt) {
+    char buf[30];
+    while (1) {
+        if (!inputString(buf, sizeof(buf), prompt)) {
+            uiError("Please enter a valid password.\n");
+            continue;
+        }
+
+        if (strcmp(buf, "q") == 0 || strcmp(buf, "quit") == 0 ||
+            strcmp(buf, "back") == 0) {
+            return 0;
+        }
+
+        if (strlen(buf) < 6) {
+            uiError("Password must be at least 6 characters long. \nTry again: ");
+            continue;
+        }
+
+        strcpy(target, buf);
+        return 1;
+    }
+}
+
 void inputValidTime(time_t* target, const char* prompt) {
     char buf[50];
 
