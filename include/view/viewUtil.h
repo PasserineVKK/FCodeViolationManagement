@@ -29,5 +29,6 @@ void uiWarning(const char *format, ...);
 void uiSuccess(const char *format, ...);
 void uiInfo(const char *format, ...);
 void uiTableTitle(const char *title);
+void displayCountdown(int seconds);
 
 #endif

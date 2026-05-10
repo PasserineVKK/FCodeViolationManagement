@@ -17,4 +17,7 @@ int login(AccountList *accounts, char *studentID);
 // Change password of logged in account
 void changePassword(AccountList *accounts, char* actorID, int role);
 
+long getRemainingLockTime(Account *acc);
+
+void handleLockedAccount(AccountList* accounts);
 #endif

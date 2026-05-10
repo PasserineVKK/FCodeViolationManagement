@@ -23,6 +23,7 @@ typedef struct {
     int role;       // 0 = Member, 1 = Leader/Vice, 2 = BOD
     int isLocked;   // 1 = This account locked after 3 failed trials
     int failCount;  // consecutive failed trials
+    time_t lockedFrom; // time start lock
 } Account;
 
 typedef struct {

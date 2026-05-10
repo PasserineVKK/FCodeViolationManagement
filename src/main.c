@@ -180,27 +180,29 @@ int main(int argc, char* argv[]) {
         case 2:
         {    
             printf("%s", UI_TABLE_HEADER);
-            printf("\n%-48s  %-48s  %-48s\n", "MEMBER", "VIOLATION / REPORT", "NOTIFICATION");
+            printf("\n%-48s  %-48s  %-48s\n", " MEMBER", "VIOLATION / REPORT", "NOTIFICATION");
             printf("%s", UI_RESET);
 
             printf(
                 "┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓  ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓  ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓\n"
-                "┃  1. Add New Member                           ┃  ┃  7. Record new violation                     ┃  ┃ 14. Add new notification                     ┃\n"
-                "┃  2. Edit Member Information                  ┃  ┃  8. Mark Fine as Paid                        ┃  ┃ 15. Update notification                      ┃\n"
-                "┃  3. Remove Member                            ┃  ┃  9. View Violation List                      ┃  ┃ 16. Delete notification                      ┃\n"
-                "┃  4. Check warning/kick list                  ┃  ┃ 10. Statistics by Department                 ┃  ┃ 17. Show all notifications                   ┃\n"
-                "┃  5. View Member in Sorted List               ┃  ┃ 11. View Violations by Time Range            ┃  ┃                                              ┃\n"
-                "┃  6. Change Member's Password                 ┃  ┃ 12. Delete violation                         ┃  ┃                                              ┃\n"
-                "┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛  ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛  ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛\n");
+                "┃  1. Add New Member                           ┃  ┃  8. Record new violation                     ┃  ┃ 16. Add new notification                     ┃\n"
+                "┃  2. Edit Member Information                  ┃  ┃  9. Mark Fine as Paid                        ┃  ┃ 17. Update notification                      ┃\n"
+                "┃  3. Remove Member                            ┃  ┃ 10. View Violation List                      ┃  ┃ 18. Delete notification                      ┃\n"
+                "┃  4. Check warning/kick list                  ┃  ┃ 11. Statistics by Department                 ┃  ┃ 19. Show all notifications                   ┃\n"
+                "┃  5. View Member in Sorted List               ┃  ┃ 12. View Violations by Time Range            ┃  ┃                                              ┃\n"
+                "┃  6. Change Member's Password                 ┃  ┃ 13. Delete Violation                         ┃  ┃                                              ┃\n"
+                "┃  7. Unlock Member Account                    ┃  ┃ 14. Change Violations Filter/Sort Settings   ┃  ┃                                              ┃\n"
+	            "┃                                              ┃  ┃ 15. Export Violation Report                  ┃  ┃                                              ┃\n"
+	            "┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛  ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛  ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛\n");
 
             printf("%s", UI_TABLE_HEADER);
-            printf("\n%-48s\n", "SYSTEM");
+            printf("\n%-48s\n", " SYSTEM");
             printf("%s", UI_RESET);
             printf(
                 "┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓\n"
-                "┃ 18. Log Out                                  ┃\n"
-                "┃ 19. Exit                                     ┃\n"
-	            "┃ 20. Switch to Member Menu                    ┃\n"
+                "┃ 20. Log Out                                  ┃\n"
+                "┃ 21. Exit                                     ┃\n"
+	            "┃ 22. Switch to Member Menu                    ┃\n"
                 "┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛\n");
             inputIntegerInRange(&choice, 1, 21,
                                 " ==> Enter your selection: ");
@@ -227,27 +229,33 @@ int main(int argc, char* argv[]) {
 				changePassword(&accounts, studentID, menuRole);
                 break;
             case 7:
-                recordViolationView(&violations, &members);
+                handleLockedAccount(&accounts);
                 break;
             case 8:
-                markFineAsPaidView(&violations, &members);
+                recordViolationView(&violations, &members, mIndex);
                 break;
             case 9:
+            	markFineAsPaidView(&violations, &members);
+                break;
+            case 10:
             	flexibleDisplayViolationList(&violations, &members);
             	break;
-            case 10:
-            	showFineStatsByTeam(&members, &violations);
-                break;
             case 11:
-                displayViolationsByTimeRange(&violations);
+                showFineStatsByTeam(&members, &violations);
                 break;
             case 12:
+            	displayViolationsByTimeRange(&violations);
+                break;
+            case 13:
             	deleteViolation(&violations);
             	break;
-            case 13:
+            case 14:
             	changeFilterOption();
             	break;
-            case 14:
+            case 15:
+            	exportViolationReportToFile(&members, &violations);
+            	break;
+			case 16:
             	{
                 int type;
                 inputIntegerInRange(
@@ -272,7 +280,7 @@ int main(int argc, char* argv[]) {
                 }
                 break;
             	}
-            case 15:
+            case 17:
             	{
                 char id[6];
                 inputString(id, 6, "Enter notification id: ");
@@ -297,25 +305,25 @@ int main(int argc, char* argv[]) {
                                    updateContent, n->deleteTime);
                 break;
             	}
-            case 16:
-            	{
+            case 18:
+                {
                 deleteNotificationView();
                 printf("Delete notification");
                 break;
             	}
-            case 17:
-            	displayNotificationList();
+            case 19:
+                displayNotificationList();
                 break;
-            case 18:
-                isStayLogin = 0;
+            case 20:
+               	isStayLogin = 0;
                 loginRole = -1;
                 menuRole = -1;
 				continue;
                 // mark as not login, reset menu role
-            case 19:
-                isRunning = 0;
-            case 20:
-               	menuRole = 0;
+            case 21:
+            	isRunning = 0;
+            case 22: 
+            	menuRole = 0;
                 continue;
             default:
                 uiError("Invalid option, please try again.\n");
