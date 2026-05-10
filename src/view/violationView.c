@@ -33,28 +33,21 @@ static char currentSortCommand[3];
 void displayViolationTableHeader()
 {
     printf("%s"
-        "\n┏━━━━━━━━━━━━┳━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━"
-        "━━━━┳━━━━━━━━━━┳━━━━━━━━━━┳━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-        "━━━━┳━━━━━━━━━━━━━━┓\n%s", UI_TABLE_BORDER, UI_RESET);
+        "\n┏━━━━━━━━━━┳━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━┓\n%s",
+        UI_TABLE_BORDER, UI_RESET);
 
     printf("%s"
-        "┃ %-10s ┃ %-10s ┃ %-20s ┃ %-20s ┃ %-8s ┃ %-8s ┃ %-10s ┃ %-32s ┃ %-12s ┃\n%s",
-        UI_TABLE_HEADER,
-        "ID", "Student", "Reason", "Time", "Fine", "Paid", "Penalty", "Note", "Pending",
-        UI_RESET);
+        "┃ %-8s ┃ %-8s ┃ %-16s ┃ %-16s ┃ %-8s ┃ %-16s ┃ %-10s ┃ %-28s ┃ %-10s ┃\n%s",
+        UI_TABLE_HEADER,"ID", "Student", "Reason", "Time", "Fine", "Paid", "Penalty", "Note", "Pending", UI_RESET);
 
     printf("%s"
-        "┣━━━━━━━━━━━━╋━━━━━━━━━━━━╋━━━━━━━━━━━━━━━━━━━━━━╋━━━━━━━━━━━━━━━━━━━━"
-        "━━╋━━━━━━━━━━╋━━━━━━━━━━╋━━━━━━━━━━━━╋━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-        "━━╋━━━━━━━━━━━━━━┫\n%s", UI_TABLE_BORDER, UI_RESET);
+        "┣━━━━━━━━━━╋━━━━━━━━━━╋━━━━━━━━━━━━━━━━━━╋━━━━━━━━━━━━━━━━━━╋━━━━━━━━━━╋━━━━━━━━━━━━━━━━━━╋━━━━━━━━━━━━╋━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╋━━━━━━━━━━━━┫\n%s",
+        UI_TABLE_BORDER, UI_RESET);
 }
 
 void displayViolationTableFooter()
 {
-    printf(
-        "┗━━━━━━━━━━━━┻━━━━━━━━━━━━┻━━━━━━━━━━━━━━━━━━━━━━┻━━━━━━━━━━━━━━━━━━━━"
-        "━━┻━━━━━━━━━━┻━━━━━━━━━━┻━━━━━━━━━━━━┻━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-        "━━┻━━━━━━━━━━━━━━┛\n");
+    printf("┗━━━━━━━━━━┻━━━━━━━━━━┻━━━━━━━━━━━━━━━━━━┻━━━━━━━━━━━━━━━━━━┻━━━━━━━━━━┻━━━━━━━━━━━━━━━━━━┻━━━━━━━━━━━━┻━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┻━━━━━━━━━━━━┛\n");
     printf("%s", UI_RESET);
 }
 
@@ -64,8 +57,7 @@ void displayViolationRow(const Violation *v)
     getFormatTime(timeField, 30, v->violationTime);
 
     const char *reasonStr;
-    switch (v->reason)
-    {
+    switch (v->reason) {
     case REASON_NOT_UNIFORM:
         reasonStr = "Not uniform";
         break;
@@ -73,7 +65,7 @@ void displayViolationRow(const Violation *v)
         reasonStr = "Meeting absence";
         break;
     case REASON_NO_CLUB_ACTIVITY:
-        reasonStr = "No Club activity";
+        reasonStr = "No club activity";
         break;
     case REASON_VIOLENCE:
         reasonStr = "Violence";
@@ -86,13 +78,13 @@ void displayViolationRow(const Violation *v)
     const char *paidStr = v->isPaid ? ((v->isPaid == ALREADY_PAID) ? "Yes" : "Not have to pay") : "No";
     const char *penaltyStr = v->penalty ? "Kick" : "Financial";
     const char *pendingStr = v->owner->isPending ? "Pending" : "Resolved";
-
     const char *rowBg = ((violationRowNumber / 5) % 2 == 0) ? UI_RESET : UI_ROW_ALT;
 
     printf("%s", rowBg);
-    printf(
-        "┃ %-10s ┃ %-10s ┃ %-20s ┃ %-20s ┃ %-8.0f ┃ %-8s ┃ %-10s ┃ %-32s ┃ %-12s ┃\n",
+
+    printf("┃ %-8s ┃ %-8s ┃ %-16.16s ┃ %-16.16s ┃ %-8.0f ┃ %-16.16s ┃ %-10.10s ┃ %-28.28s ┃ %-10.10s ┃\n",
         v->violationID, v->studentID, reasonStr, timeField, v->fine, paidStr, penaltyStr, v->note, pendingStr);
+
     printf("%s", UI_RESET);
     violationRowNumber++;
 }

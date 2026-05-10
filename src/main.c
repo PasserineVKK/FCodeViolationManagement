@@ -77,7 +77,6 @@ void seedSampleData(MemberList *members, ViolationList *violations, AccountList 
     members->data[2].totalFine = 200000.0;
     members->data[2].isPending = 0;
 
-    // C?p nh?t s? lu?ng
     members->count = 3;
 
     // =============================================================
@@ -102,13 +101,12 @@ void seedSampleData(MemberList *members, ViolationList *violations, AccountList 
     strcpy(violations->data[1].violationID, "VIO002");
     violations->data[1].reason = REASON_NOT_UNIFORM;
     violations->data[1].isPaid = 0;
-    strcpy(violations->data[1].note, "05/05/2026, Tuesday");
+    strcpy(violations->data[1].note, "");
 
     // SE200002
     for (int i = 2; i < 5; i++)
     {
         strcpy(violations->data[i].studentID, members->data[1].studentID);
-        violations->data[i].isPaid = ALREADY_PAID;
         violations->data[i].penalty = PENALTY_FINANCIAL;
         violations->data[i].owner = &members->data[1];
     }
@@ -117,17 +115,20 @@ void seedSampleData(MemberList *members, ViolationList *violations, AccountList 
     violations->data[2].reason = REASON_MEETING_ABSENCE;
     violations->data[2].fine = 50000.0;
     strcpy(violations->data[2].note, "Retrospective meeting");
+    violations->data[2].isPaid = ALREADY_PAID;
 
     strcpy(violations->data[3].violationID, "VIO004");
     violations->data[3].reason = REASON_MEETING_ABSENCE;
     violations->data[3].fine = 50000.0;
     strcpy(violations->data[3].note, "SUMMER semester meeting");
+    violations->data[3].isPaid = ALREADY_PAID;
 
     strcpy(violations->data[4].violationID, "VIO005");
     violations->data[4].reason = REASON_MEETING_ABSENCE;
     strcpy(violations->data[4].note, "Daily report meeting");
     violations->data[4].penalty = PENALTY_KICK;
     violations->data[4].fine = 0;
+    violations->data[4].isPaid = NOT_HAVE_TO_PAY;
 
     // SE200003
     for (int i = 5; i < 9; i++)

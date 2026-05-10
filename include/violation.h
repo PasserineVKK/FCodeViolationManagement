@@ -6,6 +6,8 @@
 
 #include "model.h"
 
+#define MAX_3_DIGIT_HEX 4095
+
 #define REASON_NOT_UNIFORM 0
 #define REASON_MEETING_ABSENCE 1
 #define REASON_NO_CLUB_ACTIVITY 2
