@@ -152,18 +152,17 @@ int main(int argc, char* argv[]) {
                 isRunning = 0;
                 break;
             case 8:
-                if ((loginRole == 1 || loginRole == 2) && members.data[mIndex].isPending == 1)
-                {
-                    uiError("Pending account. Can only use member menu now. ");
-                    break;
+                if ((loginRole == 1 || loginRole == 2)){
+                    if (members.data[mIndex].isPending == PENDING){
+                        uiError("Pending account. Can only use member menu now. ");
+                        break;
+                    }
+                    else if (members.data[mIndex].isPending == NOT_PENDING){
+                        menuRole = 1;
+                        continue;
+                    }
                 }
-                if ((loginRole == 1 || loginRole == 2) && members.data[mIndex].isPending != 1)
-                {
-                    menuRole = 1;
-                    continue;
-                }
-                else
-                {
+                else{
                     uiError("Permission denied. Try again.\n");
                     break;
                 }
@@ -355,7 +354,7 @@ void seedSampleData(MemberList *members, ViolationList *violations, AccountList 
     members->data[0].violationCount = 2;
     members->data[0].consecutiveAbsences = 1;
     members->data[0].totalFine = 40000.0;
-    members->data[0].isPending = 0;
+    members->data[0].isPending = NOT_PENDING;
 
     // --- Member 1: Leader, HR, absent 3 times in a row -> pending kick ---
     strcpy(members->data[1].fullName, "Tran Thi Bich");
@@ -367,7 +366,7 @@ void seedSampleData(MemberList *members, ViolationList *violations, AccountList 
     members->data[1].violationCount = 3;
     members->data[1].consecutiveAbsences = 3;
     members->data[1].totalFine = 150000.0;
-    members->data[1].isPending = 1;
+    members->data[1].isPending = PENDING;
 
     // --- Member 2: BCN, Planning, warning ---
     strcpy(members->data[2].fullName, "Le Hoang Cuong");
@@ -379,7 +378,7 @@ void seedSampleData(MemberList *members, ViolationList *violations, AccountList 
     members->data[2].violationCount = 4;
     members->data[2].consecutiveAbsences = 1;
     members->data[2].totalFine = 200000.0;
-    members->data[2].isPending = 0;
+    members->data[2].isPending = NOT_PENDING;
 
     members->count = 3;
 
@@ -395,7 +394,7 @@ void seedSampleData(MemberList *members, ViolationList *violations, AccountList 
         violations->data[i].fine = 20000.0;
         violations->data[i].penalty = 0;
         violations->data[i].owner = &members->data[0];
-        violations->data[i].owner->isPending = 0;
+        violations->data[i].owner->isPending = NOT_PENDING;
     }
     strcpy(violations->data[0].violationID, "VIO001");
     violations->data[0].reason = REASON_MEETING_ABSENCE;
@@ -441,7 +440,7 @@ void seedSampleData(MemberList *members, ViolationList *violations, AccountList 
         violations->data[i].fine = 50000.0;
         violations->data[i].penalty = 0;
         violations->data[i].owner = &members->data[2];
-        violations->data[i].owner->isPending = 0;
+        violations->data[i].owner->isPending = NOT_PENDING;
     }
 
     strcpy(violations->data[5].violationID, "VIO006");

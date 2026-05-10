@@ -324,7 +324,8 @@ void recordViolationView(ViolationList *violations, MemberList *members)
             
             if (owner->isPending == 1){
                 printf ("This member has already been kicked. "
-                    "No more violations can be added. Please process this person from the kick list.");
+                    "No more violations can be added. "
+                    "Please process this person from the kick list.\n");
             }
             else {
                 printf("Reasons:\n");
@@ -346,19 +347,16 @@ void recordViolationView(ViolationList *violations, MemberList *members)
                 else{
                     Violation newV;
 
-                    if (reason == REASON_MEETING_ABSENCE)
-                    {
+                    if (reason == REASON_MEETING_ABSENCE){
                         owner->consecutiveAbsences++;
                     }
-                    if (owner->consecutiveAbsences >= 3 || reason == REASON_VIOLENCE)
-                    {
+                    if (owner->consecutiveAbsences >= 3 || reason == REASON_VIOLENCE){
                         penalty = PENALTY_KICK;
                         fine = 0;
                         isPaid = NOT_HAVE_TO_PAY;
                         owner->isPending = 1;
                     }
-                    else
-                    {
+                    else{
                         fine = calculateFine(owner->role, reason);
                         isPaid = NOT_PAY;
                         penalty = PENALTY_FINANCIAL;
@@ -468,7 +466,7 @@ void displayWarningList(const MemberList *members, const ViolationList *violatio
 
     if (firstIndex == -1)
     {
-        uiError("No members in warning list.");
+        uiError("No members in warning list.\n");
     }
     else
     {
