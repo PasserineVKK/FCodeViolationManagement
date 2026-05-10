@@ -56,7 +56,7 @@ int hasViolenceViolation(const char *studentID, const ViolationList *violations)
 void removeMemberById(const char *id, MemberList *members, AccountList *accounts, ViolationList *violations);
 void checkAndWarnOutClub(MemberList *members, AccountList *accounts, ViolationList *violations, const char *actorID);
 
-void removeOneViolation(ViolationList *list, const char *violationId);
+//void removeOneViolation(ViolationList *list, const char *violationId);
 
 int checkTotalBOD(MemberList *members);
 
