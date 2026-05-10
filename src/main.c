@@ -227,7 +227,7 @@ int main(int argc, char* argv[]) {
 				changePassword(&accounts, studentID, menuRole);
                 break;
             case 7:
-                recordViolationView(&violations, &members);
+                recordViolation(&violations, &members);
                 break;
             case 8:
                 markFineAsPaidView(&violations, &members);

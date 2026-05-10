@@ -120,12 +120,9 @@ void changePassword(AccountList *accounts, char* actorID, int role) {
         strcpy(studentID, actorID);
     } else {
         // Input student ID which want to change password
-        inputStudentID(
-            studentID,
-            "Enter student ID of the member you want to change password: ");
+        inputString(studentID,sizeof(studentID),"Enter student ID of the member you want to change password: ");
     }
 
-    // Truy?n con tr? accounts
     aIndex = searchMemberByIdInA(accounts, studentID);
 
     if (aIndex == -1) {
