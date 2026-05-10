@@ -314,6 +314,11 @@ void recordViolationView(ViolationList *violations, MemberList *members, int act
         inputStudentID(studentID, "Enter Student ID: ");
 
         mIndex = searchMemberByIdInM(members, studentID);
+        
+        if (members->data[actorIndex].role == 1 && members->data[mIndex].role == 2){
+        	uiError("You are only Leader/Vice. Can not record violations for BOD");
+        	return;
+		}
         if (mIndex == -1){
             uiError("Error: Student ID not found.\n");
             continue;
