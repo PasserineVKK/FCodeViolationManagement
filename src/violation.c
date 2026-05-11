@@ -210,16 +210,18 @@ void deleteViolation(ViolationList *violations){
                 printf("Violation not recorded.\n");
             }
             else{
-                if (violations->data[vIndex].reason == REASON_VIOLENCE || violations->data[vIndex].owner->consecutiveAbsences == 3){
-                    violations->data[vIndex].owner->isPending = 0;
-                }
-                else{
-                    violations->data[vIndex].owner->totalFine = (violations->data[vIndex].owner->totalFine) - ((violations->data[vIndex].owner->role == 0) ? 20000 : 50000);
-                }
+                if (violations->data[vIndex].owner != NULL) {
+                    if (violations->data[vIndex].reason == REASON_VIOLENCE || violations->data[vIndex].owner->consecutiveAbsences == 3){
+                        violations->data[vIndex].owner->isPending = 0;
+                    }
+                    else{
+                        violations->data[vIndex].owner->totalFine = (violations->data[vIndex].owner->totalFine) - ((violations->data[vIndex].owner->role == 0) ? 20000 : 50000);
+                    }
 
-                // if reason is meeting absence -> reduce absence times
-                if (violations->data[vIndex].reason == REASON_MEETING_ABSENCE){
-                    violations->data[vIndex].owner->consecutiveAbsences--;
+                    // if reason is meeting absence -> reduce absence times
+                    if (violations->data[vIndex].reason == REASON_MEETING_ABSENCE){
+                        violations->data[vIndex].owner->consecutiveAbsences--;
+                    }
                 }
 
                 for (int i = vIndex; i < violations->count-1; i++){
@@ -308,14 +310,17 @@ void recordViolationView(ViolationList *violations, MemberList *members, int act
 
         mIndex = searchMemberByIdInM(members, studentID);
         
-        if (members->data[actorIndex].role == 1 && members->data[mIndex].role == 2){
-        	uiError("You are only Leader/Vice. Can not record violations for BOD");
-        	return;
-		}
         if (mIndex == -1){
             uiError("Error: Student ID not found.\n");
             continue;
-        } else { 
+        }
+        
+        if (members->data[actorIndex].role == 1 && members->data[mIndex].role == 2){
+        	uiError("You are only Leader/Vice. Can not record violations for BOD");
+        	return;
+	}
+        
+        {
             // Pointer directly points to the member in array to avoid shallow copy
             Member *owner = &members->data[mIndex];
             

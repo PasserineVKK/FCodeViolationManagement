@@ -58,7 +58,7 @@ int updateMemberTotalFine(MemberList* members, const ViolationList* violations, 
     for (int i = 0; i < violations->count; i++) {
         Violation* v = &violations->data[i];
         if (strcmp(v->studentID, id) == 0 &&
-            v->isPaid == NOT_PAY && v->owner->isPending == NOT_PENDING) {
+            v->isPaid == NOT_PAY && v->owner != NULL && v->owner->isPending == NOT_PENDING) {
             totalFine += v->fine;
         }
     }

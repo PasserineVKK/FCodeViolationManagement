@@ -265,7 +265,7 @@ void viewMyUnpaidFines(const char *myStudentID, const ViolationList *violations)
         const Violation *v = &violations->data[i];
         if (strcmp(v->studentID, myStudentID) != 0)
             continue;
-        if (v->isPaid == ALREADY_PAID && v->isPaid == NOT_HAVE_TO_PAY)
+        if (v->isPaid == ALREADY_PAID || v->isPaid == NOT_HAVE_TO_PAY)
             continue;
 
         char timeStr[20];
