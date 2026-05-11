@@ -162,7 +162,13 @@ static int violationComparator(Violation* v1, Violation* v2, char* compareComman
 		currentCommand = toupper(currentCommand);
 		switch (currentCommand){
 			case 'T':	
-				if (v1->owner != NULL && v2->owner != NULL)
+				if (v1->owner == NULL && v2->owner == NULL)
+					result = 0;
+				else if (v1->owner == NULL)
+					result = 1;
+				else if (v2->owner == NULL)
+					result = -1;
+				else
 					result = v1->owner->team - v2->owner->team;
 				break;
 			case 'R':
