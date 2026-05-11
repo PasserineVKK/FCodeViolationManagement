@@ -2,6 +2,7 @@
 
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
 
 #include "../include/consoleInput.h"
 #include "../include/fileio.h"
@@ -26,7 +27,9 @@ int isValidateNotification(Notification *n)
         return 0;
     if (n->type == ADMIN_WARNING && !isValidStudentID(n->memberId))
         return 0;
-    else if (n->type != ADMIN_WARNING && (isBlank(n->memberId) || !isValidStudentID(n->memberId)))
+    else if (n->type == ADMIN_NOTICE && !isBlank(n->memberId) && !isValidStudentID(n->memberId))
+        return 0;
+    else if (n->type == GLOBAL_NOTICE && !isBlank(n->memberId))
         return 0;
     return 1;
 }
@@ -161,8 +164,11 @@ void displayNotificationList()
 {
     for (int i = 0; i < count; i++)
     {
-        displaySingleNotification(&notifications[i]);
-        printf("Id: %s\n", notifications[i].id);
+        displayNotificationInAdminMode(&notifications[i]);
+        char safeId[7];
+        strncpy(safeId, notifications[i].id, 6);
+        safeId[6] = '\0';
+        printf("Id: %s\n", safeId);
     }
 }
 
@@ -192,6 +198,37 @@ void displaySingleNotification(Notification *n)
     printf("Delete time: %s\n", deleteTime);
 }
 
+void displayNotificationInAdminMode(Notification *n)
+{
+    char timeBuf[30];
+    getFormatTime(timeBuf, 30, n->deleteTime);
+
+    switch (n->type)
+    {
+    case GLOBAL_NOTICE:
+        printf("\033[1;32m[GLOBAL NOTICE]\033[0m [%s]\n", n->content);
+        break;
+    case ADMIN_NOTICE:
+        printf("\033[1;34m[ADMIN NOTICE]\033[0m [%s]\n", n->content);
+        break;
+    case ADMIN_WARNING:
+        printf("\033[1;31m[ADMIN WARNING]\033[0m [%s]\n", n->content);
+        break;
+    default:
+        printf("[UNKNOWN] [%s]\n", n->content);
+        break;
+    }
+
+    if (n->type == ADMIN_NOTICE || n->type == ADMIN_WARNING)
+    {
+        printf("Member ID: %s\n", isBlank(n->memberId) ? "None" : n->memberId);
+    }
+
+    char deleteTime[20];
+    getFormatTime(deleteTime, 20, n->deleteTime);
+    printf("Delete time: %s. Send to: %s\n", deleteTime, n->memberId);
+}
+
 void ensureNotificationCapacity()
 {
     if (count >= capacity)
@@ -211,31 +248,48 @@ Notification *createNotification(const char *receiverID, int type, const char *m
 {
     ensureNotificationCapacity();
     Notification n;
+    memset(&n, 0, sizeof(Notification));
 
-    sprintf(n.id, "%06d", maxCount + 1);
+    snprintf(n.id, sizeof(n.id), "%05d", maxCount + 1);
     n.type = type;
     n.deleteTime = deleteTime;
     n.create_time = time(NULL);
-    strcpy(n.content, message);
-    if (!(receiverID == NULL))
-        strcpy(n.memberId, receiverID);
+    
+    strncpy(n.content, message, sizeof(n.content) - 1);
+    n.content[sizeof(n.content) - 1] = '\0';
+    
+    if (receiverID != NULL)
+    {
+        strncpy(n.memberId, receiverID, sizeof(n.memberId) - 1);
+        n.memberId[sizeof(n.memberId) - 1] = '\0';
+    }
+    
     notifications[count] = n;
-    count++;
     if (isSave)
     {
+        count++;
         maxCount++;
         saveNotification();
+        return &notifications[count - 1];
     }
-    return &notifications[count - 1];
+    return &notifications[count];
 }
 
 Notification *findNotificationById(const char *notificationId)
 {
+    if (notificationId == NULL) return NULL;
+    int len = strlen(notificationId);
     for (int i = 0; i < count; i++)
     {
-        if (strcmp(notificationId, notifications[i].id) == 0)
+        if (len < sizeof(notifications[i].id))
         {
-            return &notifications[i];
+            if (strcmp(notificationId, notifications[i].id) == 0)
+                return &notifications[i];
+        }
+        else if (len == sizeof(notifications[i].id))
+        {
+            if (strncmp(notificationId, notifications[i].id, len) == 0)
+                return &notifications[i];
         }
     }
     return NULL;
@@ -246,8 +300,12 @@ void updateNotification(Notification *n, const char *receiverID, int type, const
     if (n == NULL)
         return;
     n->type = type;
-    strncpy(n->memberId, receiverID, 10);
-    n->memberId[9] = '\0';
+    if (receiverID != NULL) {
+        strncpy(n->memberId, receiverID, 10);
+        n->memberId[9] = '\0';
+    } else {
+        n->memberId[0] = '\0';
+    }
     strncpy(n->content, message, MAX_MESSAGE_LENGTH);
     n->content[MAX_MESSAGE_LENGTH - 1] = '\0';
     n->deleteTime = deleteTime;
@@ -278,16 +336,15 @@ void deleteNotification(Notification *n)
 void deleteNotificationByMemberId(const char *memberId)
 {
     for (int i = 0; i < count; i++)
-        if (strcmp(memberId, notifications[i].memberId) == 0){
+        if (strcmp(memberId, notifications[i].memberId) == 0)
         {
-            for (int j = i; j < count - 1; j++)
-                notifications[j] = notifications[j + 1];
-            count--;
-            i--;
+            {
+                for (int j = i; j < count - 1; j++)
+                    notifications[j] = notifications[j + 1];
+                count--;
+                i--;
+            }
         }
-		
-		
-	}
     saveNotification();
 }
 
@@ -310,13 +367,20 @@ Notification *notifyAdmin(const char *content, const char *adminId, int isSave)
 {
     Notification *n = createNotification(adminId, ADMIN_NOTICE, content, time(NULL) + BASE_DELETE_TIME, isSave);
     displaySingleNotification(n);
+    return n;
 }
 
-Notification *warningMember(const char *content, const char *memberId, int isSave) { createNotification(memberId, ADMIN_WARNING, content, time(NULL) + BASE_DELETE_TIME, isSave); }
+Notification *warningMember(const char *content, const char *memberId, int isSave)
+{
+    return createNotification(memberId, ADMIN_WARNING, content, time(NULL) + BASE_DELETE_TIME, isSave);
+}
 
-Notification *globalNotification(const char *content) { createNotification(NULL, GLOBAL_NOTICE, content, time(NULL) + BASE_DELETE_TIME, 1); }
+Notification *globalNotification(const char *content) { return createNotification(NULL, GLOBAL_NOTICE, content, time(NULL) + BASE_DELETE_TIME, 1); }
 
-void quickNotification(const char *content) { displaySingleNotification(createNotification(NULL, GLOBAL_NOTICE, content, time(NULL), NOT_SAVE)); }
+void quickNotification(const char *content)
+{
+    displaySingleNotification(createNotification(NULL, GLOBAL_NOTICE, content, time(NULL), NOT_SAVE));
+}
 
 void freeNotificationList()
 {
@@ -345,8 +409,10 @@ int listViolationsByTimeRange(Violation violations[], int vCount,
 
 // Advanced feature: Export violation report to .txt file
 // Includes timestamp, summary by team, and members with outstanding fines
-void exportViolationReportToFile(MemberList *members, ViolationList *violations) {
-    if (members == NULL || violations == NULL) {
+void exportViolationReportToFile(MemberList *members, ViolationList *violations)
+{
+    if (members == NULL || violations == NULL)
+    {
         printf("\033[1;31m[ERROR] Invalid data!\033[0m\n");
         return;
     }
@@ -357,7 +423,8 @@ void exportViolationReportToFile(MemberList *members, ViolationList *violations)
     strftime(filename, sizeof(filename), "FCODE_ViolationReport_%Y%m%d_%H%M.txt", timeinfo);
 
     FILE *file = fopen(filename, "w");
-    if (file == NULL) {
+    if (file == NULL)
+    {
         printf("\033[1;31m[ERROR] Cannot create report file!\033[0m\n");
         return;
     }
@@ -368,42 +435,54 @@ void exportViolationReportToFile(MemberList *members, ViolationList *violations)
     fprintf(file, "VIOLATION REPORT\n");
     fprintf(file, "Generated at: %s\n\n", timeStr);
 
-    const char* teamNames[] = {"Academic", "Planning", "HR", "Media"};
+    const char *teamNames[] = {"Academic", "Planning", "HR", "Media"};
     double paidByTeam[4] = {0};
     double unpaidByTeam[4] = {0};
     int violationCountByTeam[4] = {0};
     int memberCountByTeam[4] = {0};
 
-    for (int i = 0; i < violations->count; i++) {
-        Violation* v = &violations->data[i];
+    for (int i = 0; i < violations->count; i++)
+    {
+        Violation *v = &violations->data[i];
         int mIndex = searchMemberByIdInM(members, v->owner->studentID);
-        if (mIndex == -1) continue;
+        if (mIndex == -1)
+            continue;
 
         int team = members->data[mIndex].team;
-        if (team < 0 || team > 3) continue;
+        if (team < 0 || team > 3)
+            continue;
 
         violationCountByTeam[team]++;
-        if (v->isPaid == 1) {
+        if (v->isPaid == 1)
+        {
             paidByTeam[team] += v->fine;
-        } else if (v->isPaid == 0) {
+        }
+        else if (v->isPaid == 0)
+        {
             unpaidByTeam[team] += v->fine;
         }
     }
 
-    for (int team = 0; team < 4; team++) {
-        for (int i = 0; i < members->count; i++) {
+    for (int team = 0; team < 4; team++)
+    {
+        for (int i = 0; i < members->count; i++)
+        {
             int hasViolation = 0;
-            if (members->data[i].team != team) continue;
+            if (members->data[i].team != team)
+                continue;
 
-            for (int v = 0; v < violations->count; v++) {
+            for (int v = 0; v < violations->count; v++)
+            {
                 if (strcmp(violations->data[v].owner->studentID,
-                           members->data[i].studentID) == 0) {
+                           members->data[i].studentID) == 0)
+                {
                     hasViolation = 1;
                     break;
                 }
             }
 
-            if (hasViolation) memberCountByTeam[team]++;
+            if (hasViolation)
+                memberCountByTeam[team]++;
         }
     }
 
@@ -411,13 +490,14 @@ void exportViolationReportToFile(MemberList *members, ViolationList *violations)
     double grandUnpaid = 0;
     int grandViolations = 0;
 
-        fprintf(file, "SUMMARY BY DEPARTMENT\n");
-        fprintf(file, "+----------------+------------+-------------------------+------------------+------------------+------------------+\n");
-        fprintf(file, "| %-14s | %-10s | %-23s | %-16s | %-16s | %-16s |\n",
+    fprintf(file, "SUMMARY BY DEPARTMENT\n");
+    fprintf(file, "+----------------+------------+-------------------------+------------------+------------------+------------------+\n");
+    fprintf(file, "| %-14s | %-10s | %-23s | %-16s | %-16s | %-16s |\n",
             "Department", "Violations", "Members with Violations", "Paid", "Unpaid", "Total");
-        fprintf(file, "+----------------+------------+-------------------------+------------------+------------------+------------------+\n");
+    fprintf(file, "+----------------+------------+-------------------------+------------------+------------------+------------------+\n");
 
-    for (int i = 0; i < 4; i++) {
+    for (int i = 0; i < 4; i++)
+    {
         char paidStr[25], unpaidStr[25], totalStr[25];
         formatCurrency(paidByTeam[i], paidStr, sizeof(paidStr));
         formatCurrency(unpaidByTeam[i], unpaidStr, sizeof(unpaidStr));
@@ -437,43 +517,49 @@ void exportViolationReportToFile(MemberList *members, ViolationList *violations)
     formatCurrency(grandUnpaid, gUnpaid, sizeof(gUnpaid));
     formatCurrency(grandPaid + grandUnpaid, gTotal, sizeof(gTotal));
 
-            fprintf(file, "+----------------+------------+-------------------------+------------------+------------------+------------------+\n");
-            fprintf(file, "| %-14s | %10d | %23s | %-16s | %-16s | %-16s |\n",
+    fprintf(file, "+----------------+------------+-------------------------+------------------+------------------+------------------+\n");
+    fprintf(file, "| %-14s | %10d | %23s | %-16s | %-16s | %-16s |\n",
             "GRAND TOTAL", grandViolations, "", gPaid, gUnpaid, gTotal);
-                fprintf(file, "+----------------+------------+-------------------------+------------------+------------------+------------------+\n");
+    fprintf(file, "+----------------+------------+-------------------------+------------------+------------------+------------------+\n");
 
     fprintf(file, "MEMBERS WITH OUTSTANDING FINES\n");
-                fprintf(file, "+------------+------------------------+--------------+------------+------------------+\n");
-                fprintf(file, "| %-10s | %-22s | %-12s | %-10s | %-16s |\n",
+    fprintf(file, "+------------+------------------------+--------------+------------+------------------+\n");
+    fprintf(file, "| %-10s | %-22s | %-12s | %-10s | %-16s |\n",
             "Student ID", "Full Name", "Department", "Violations", "Fine Amount");
-                fprintf(file, "+------------+------------------------+--------------+------------+------------------+\n");
+    fprintf(file, "+------------+------------------------+--------------+------------+------------------+\n");
 
     int outstandingCount = 0;
     double totalOutstanding = 0;
 
-    for (int team = 0; team < 4; team++) {
+    for (int team = 0; team < 4; team++)
+    {
         int membersInTeam = 0;
 
-        for (int i = 0; i < members->count; i++) {
-            Member* m = &members->data[i];
-            if (m->team != team) continue;
+        for (int i = 0; i < members->count; i++)
+        {
+            Member *m = &members->data[i];
+            if (m->team != team)
+                continue;
 
             double unpaidAmount = 0;
             int unpaidCount = 0;
 
-            for (int v = 0; v < violations->count; v++) {
-                Violation* viol = &violations->data[v];
-                if (strcmp(viol->studentID, m->studentID) == 0 && viol->isPaid == 0) {
+            for (int v = 0; v < violations->count; v++)
+            {
+                Violation *viol = &violations->data[v];
+                if (strcmp(viol->studentID, m->studentID) == 0 && viol->isPaid == 0)
+                {
                     unpaidAmount += viol->fine;
                     unpaidCount++;
                 }
             }
 
-            if (unpaidAmount > 0) {
+            if (unpaidAmount > 0)
+            {
                 char fineStr[25];
                 formatCurrency(unpaidAmount, fineStr, sizeof(fineStr));
                 fprintf(file, "| %-10s | %-22s | %-12s | %10d | %-16s |\n",
-                    m->studentID, m->fullName, teamNames[team], unpaidCount, fineStr);
+                        m->studentID, m->fullName, teamNames[team], unpaidCount, fineStr);
 
                 totalOutstanding += unpaidAmount;
                 outstandingCount++;
@@ -481,12 +567,13 @@ void exportViolationReportToFile(MemberList *members, ViolationList *violations)
             }
         }
 
-        if (membersInTeam == 0) {
-                continue;
+        if (membersInTeam == 0)
+        {
+            continue;
         }
-        }
+    }
 
-            fprintf(file, "+------------+------------------------+--------------+------------+------------------+\n");
+    fprintf(file, "+------------+------------------------+--------------+------------+------------------+\n");
 
     char totalOutstandingStr[25];
     formatCurrency(totalOutstanding, totalOutstandingStr, sizeof(totalOutstandingStr));
@@ -523,18 +610,17 @@ void createNotificationView()
         char content[200];
         inputString(content, sizeof(content), "Enter notification content: ");
 
+        printf("Content is: %s. And is blank: %d\n", content, isBlank(content));
+
         // Content must not be blank
         if (isBlank(content))
         {
             notifyAdmin("Content must not be blank!", NULL, NOT_SAVE);
-            continue;
+            return;
         }
 
-        char memberId[16] = "";
-        if (type == ADMIN_NOTICE || type == ADMIN_WARNING)
-        {
-            inputString(memberId, sizeof(memberId), "Enter member id: ");
-        }
+        char memberId[10] = "";
+        inputString(memberId, sizeof(memberId), "Enter member id: ");
 
         int valid = 1;
         if (type == ADMIN_NOTICE &&
@@ -559,10 +645,7 @@ void createNotificationView()
         if (valid)
         {
             int confirm = 1;
-            if (type == GLOBAL_NOTICE)
-            {
-                inputYesNo(&confirm, "Are you sure to create this global notification? Yes(1), No(0): ");
-            }
+            inputYesNo(&confirm, "Are you sure to create this notification? Yes(1), No(0): ");
             if (confirm)
             {
                 createNotification((isBlank(memberId) ? NULL : memberId),
