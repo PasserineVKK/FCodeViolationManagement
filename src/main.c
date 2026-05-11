@@ -16,14 +16,15 @@
 #include "../include/view/violationView.h"
 #include "../include/violation.h"
 
-
-void config() {
+void config()
+{
     SetConsoleOutputCP(65001);
     enableAnsiColors();
 }
 
 void seedSampleData(MemberList *members, ViolationList *violations, AccountList *accounts);
-int main(int argc, char* argv[]) {
+int main(int argc, char *argv[])
+{
 
     config();
     char studentID[10];
@@ -37,9 +38,13 @@ int main(int argc, char* argv[]) {
     initNotificationList();
     autoDeleteOutDateNotification();
 
+    seedSampleData(&members, &violations, &accounts);
+
     loadMembers(&members);
     loadViolations(&violations, &members);
     loadAccounts(&accounts);
+
+    pauseProgram();
 
     // loginRole represent the role of this account
     // menuRole represent which menu will be open.
@@ -47,8 +52,8 @@ int main(int argc, char* argv[]) {
     int choice = -1, isStayLogin = 0;
     // isStayedLogin check whether user is auth-ed. 0 = No, 1 = Yes;
     int mIndex = -1, vIndex = -1;
-	
-	int isRunning = 1;
+
+    int isRunning = 1;
     do
     {
         // Firstly, auth. If stay login ==> do not check
@@ -81,13 +86,14 @@ int main(int argc, char* argv[]) {
                     return 0;
                 else
                     continue;
+            }
+            else
+            {
 
-            } else {
-                
-		        mIndex = searchMemberByIdInM(&members, studentID);
+                mIndex = searchMemberByIdInM(&members, studentID);
 
                 vIndex = getViolationIndexById(&violations, studentID);
-				menuRole = (members.data[mIndex].isPending == PENDING) ? 0 : loginRole;
+                menuRole = (members.data[mIndex].isPending == PENDING) ? 0 : loginRole;
                 isStayLogin = 1;
                 // login successfully ==> Assign value for menuRole to open
                 // menu, and memberIndex to identify user
@@ -152,23 +158,27 @@ int main(int argc, char* argv[]) {
                 isRunning = 0;
                 break;
             case 8:
-                if ((loginRole == 1 || loginRole == 2)){
-                    if (members.data[mIndex].isPending == PENDING){
+                if ((loginRole == 1 || loginRole == 2))
+                {
+                    if (members.data[mIndex].isPending == PENDING)
+                    {
                         uiError("Pending account. Can only use member menu now. ");
                         break;
                     }
-                    else if (members.data[mIndex].isPending == NOT_PENDING){
+                    else if (members.data[mIndex].isPending == NOT_PENDING)
+                    {
                         menuRole = 1;
                         continue;
                     }
                 }
-                else{
+                else
+                {
                     uiError("Permission denied. Try again.\n");
                     break;
                 }
             case 9:
                 displayNotificationByMemberID(studentID, ADMIN_WARNING);
-               // displayGlobalNotification();
+                // displayGlobalNotification();
                 break;
             default:
                 uiError("Invalid option, please try again.");
@@ -178,7 +188,7 @@ int main(int argc, char* argv[]) {
 
         case 1:
         case 2:
-        {    
+        {
             printf("%s", UI_TABLE_HEADER);
             printf("\n%-48s  %-48s  %-48s\n", " MEMBER", "VIOLATION / REPORT", "NOTIFICATION");
             printf("%s", UI_RESET);
@@ -192,8 +202,8 @@ int main(int argc, char* argv[]) {
                 "┃  5. View Member in Sorted List               ┃  ┃ 12. View Violations by Time Range            ┃  ┃                                              ┃\n"
                 "┃  6. Change Member's Password                 ┃  ┃ 13. Delete Violation                         ┃  ┃                                              ┃\n"
                 "┃  7. Unlock Member Account                    ┃  ┃ 14. Change Violations Filter/Sort Settings   ┃  ┃                                              ┃\n"
-	            "┃                                              ┃  ┃ 15. Export Violation Report                  ┃  ┃                                              ┃\n"
-	            "┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛  ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛  ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛\n");
+                "┃                                              ┃  ┃ 15. Export Violation Report                  ┃  ┃                                              ┃\n"
+                "┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛  ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛  ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛\n");
 
             printf("%s", UI_TABLE_HEADER);
             printf("\n%-48s\n", " SYSTEM");
@@ -202,9 +212,9 @@ int main(int argc, char* argv[]) {
                 "┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓\n"
                 "┃ 20. Log Out                                  ┃\n"
                 "┃ 21. Exit                                     ┃\n"
-	            "┃ 22. Switch to Member Menu                    ┃\n"
+                "┃ 22. Switch to Member Menu                    ┃\n"
                 "┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛\n");
-            inputIntegerInRange(&choice, 1, 21,
+            inputIntegerInRange(&choice, 1, 22,
                                 " ==> Enter your selection: ");
 
             clearScreen();
@@ -220,13 +230,13 @@ int main(int argc, char* argv[]) {
                 removeMember(&members, &accounts, &violations, studentID);
                 break;
             case 4:
-            	checkAndWarnOutClub(&members, &accounts, &violations, studentID);
+                checkAndWarnOutClub(&members, &accounts, &violations, studentID);
                 break;
             case 5:
                 displayMemberInSort(&members, 1);
                 break;
             case 6:
-				changePassword(&accounts, studentID, menuRole);
+                changePassword(&accounts, studentID, menuRole);
                 break;
             case 7:
                 handleLockedAccount(&accounts);
@@ -235,95 +245,54 @@ int main(int argc, char* argv[]) {
                 recordViolationView(&violations, &members, mIndex);
                 break;
             case 9:
-            	markFineAsPaidView(&violations, &members);
+                markFineAsPaidView(&violations, &members);
                 break;
             case 10:
-            	flexibleDisplayViolationList(&violations, &members);
-            	break;
+                flexibleDisplayViolationList(&violations, &members);
+                break;
             case 11:
                 showFineStatsByTeam(&members, &violations);
                 break;
             case 12:
-            	displayViolationsByTimeRange(&violations);
+                displayViolationsByTimeRange(&violations);
                 break;
             case 13:
-            	deleteViolation(&violations);
-            	break;
+                deleteViolation(&violations);
+                break;
             case 14:
-            	changeFilterOption();
-            	break;
+                changeFilterOption();
+                break;
             case 15:
-            	exportViolationReportToFile(&members, &violations);
-            	break;
-			case 16:
-            	{
-                int type;
-                inputIntegerInRange(
-                    &type, 0, 2,
-                    "Enter type of notification, global(0), notice "
-                    "(1), warning (2): ");
-                char content[200];
-                inputString(content, 200, "Enter notify content: ");
-                if (type == ADMIN_NOTICE || type == ADMIN_WARNING)
-                {
-                    char memberId[6];
-                    inputString(memberId, 6, "Enter member id: ");
-                    createNotification(memberId, type, content,
-                                       time(NULL) + BASE_DELETE_TIME,
-                                       1);
-                }
-                else
-                {
-                    createNotification(NULL, type, content,
-                                       time(NULL) + BASE_DELETE_TIME,
-                                       1);
-                }
+                exportViolationReportToFile(&members, &violations);
                 break;
-            	}
+            case 16:
+            {
+                createNotificationView();
+                break;
+            }
             case 17:
-            	{
-                char id[6];
-                inputString(id, 6, "Enter notification id: ");
-                Notification *n = findNotificationById(id);
-
-                if (n == NULL)
-                    break;
-
-                int updateType;
-                inputIntegerInRange(
-                    &updateType, 0, 2,
-                    "Enter type of notification, global(0), notice "
-                    "(1), warning (2): ");
-                char updateContent[200];
-                inputString(updateContent, 200,
-                            "Enter notify content: ");
-                char memberId[6];
-                inputString(memberId, 6, "Enter member id: ");
-                if (strcmp(memberId, "") == 0)
-                    break;
-                updateNotification(n, memberId, updateType,
-                                   updateContent, n->deleteTime);
+            {
+                updateNotificationView();
                 break;
-            	}
+            }
             case 18:
-                {
+            {
                 deleteNotificationView();
-                printf("Delete notification");
                 break;
-            	}
+            }
             case 19:
                 displayNotificationList();
                 break;
             case 20:
-               	isStayLogin = 0;
+                isStayLogin = 0;
                 loginRole = -1;
                 menuRole = -1;
-				continue;
+                continue;
                 // mark as not login, reset menu role
             case 21:
-            	isRunning = 0;
-            case 22: 
-            	menuRole = 0;
+                isRunning = 0;
+            case 22:
+                menuRole = 0;
                 continue;
             default:
                 uiError("Invalid option, please try again.\n");
@@ -333,18 +302,18 @@ int main(int argc, char* argv[]) {
         }
         pauseProgram();
     } while (isRunning);
-	
-	saveAccounts(&accounts);
-	saveMembers(&members);
-	saveViolations(&violations);
-	
-	if (violations.data != NULL) {
+
+    saveAccounts(&accounts);
+    saveMembers(&members);
+    saveViolations(&violations);
+
+    if (violations.data != NULL)
+    {
         free(violations.data);
     }
     freeNotificationList();
     return 0;
 }
-
 
 void seedSampleData(MemberList *members, ViolationList *violations, AccountList *accounts)
 {
@@ -503,5 +472,3 @@ void seedSampleData(MemberList *members, ViolationList *violations, AccountList 
 
     printf("Created sample data with Pending status in data/ folder.\n");
 }
-
-

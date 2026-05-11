@@ -343,9 +343,8 @@ int isValidStudentID(const char *s)
 
 int isBlank(const char *str)
 {
-    for (int i = 0; i != '\0'; i++)
+    for (int i = 0; str[i] != '\0'; i++)
         if (!isblank(str[i]))
             return 0;
     return 1;
 }
-

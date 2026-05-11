@@ -56,6 +56,7 @@ void deleteNotificationView();
 void displayNotificationManagerMenu();
 
 void displaySingleNotification(Notification *n);
+void displayNotificationInAdminMode(Notification *n);
 void displayNotificationList();
 void displayGlobalNotification();
 void displayNotificationByMemberID(const char *studentId, int type);

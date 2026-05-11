@@ -17,58 +17,62 @@
 
 #define PENALTY_FINANCIAL 0
 #define PENALTY_KICK 1
-typedef struct {
-    char studentID[10];  // SE000000\0
+typedef struct
+{
+    char studentID[10]; // SE000000\0
     char password[30];
-    int role;       // 0 = Member, 1 = Leader/Vice, 2 = BOD
-    int isLocked;   // 1 = This account locked after 3 failed trials
-    int failCount;  // consecutive failed trials
+    int role;          // 0 = Member, 1 = Leader/Vice, 2 = BOD
+    int isLocked;      // 1 = This account locked after 3 failed trials
+    int failCount;     // consecutive failed trials
     time_t lockedFrom; // time start lock
 } Account;
 
-typedef struct {
+typedef struct
+{
     char fullName[100];
     char email[100];
     char phoneNumber[11];
-    char studentID[10];  // SE000000\0
-    int team;            // 0 = Academic, 1 = Planning, 2 = HR, 3 = Media
-    int role;            // 0 = Member, 1 = Leader/Vice, 2 = BOD
+    char studentID[10]; // SE000000\0
+    int team;           // 0 = Academic, 1 = Planning, 2 = HR, 3 = Media
+    int role;           // 0 = Member, 1 = Leader/Vice, 2 = BOD
     int violationCount;
     int consecutiveAbsences;
     double totalFine;
-    int isPending;  // 0 = not pending, 1 = pending
+    int isPending; // 0 = not pending, 1 = pending
 } Member;
 
-
-typedef struct {
+typedef struct
+{
     char violationID[50];
-    char studentID[10];  // SE000000\0
-    int reason;  // 0 = Not uniform, 1 = Meeting absence, 2 = Not join in Club
-                 // activity, 3 = Violence
+    char studentID[10]; // SE000000\0
+    int reason;         // 0 = Not uniform, 1 = Meeting absence, 2 = Not join in Club
+                        // activity, 3 = Violence
     time_t violationTime;
     double fine;
-    int isPaid;   // 0 = Not yet, 1 = Already
-    int penalty;  // 0 = Financial penalty, 1 = Kick
+    int isPaid;  // 0 = Not yet, 1 = Already
+    int penalty; // 0 = Financial penalty, 1 = Kick
     char note[100];
-    Member* owner;
+    Member *owner;
 } Violation;
 
-typedef struct {
-	Member data[MAX];
-	int count;
+typedef struct
+{
+    Member data[MAX];
+    int count;
 } MemberList;
 
-typedef struct {
-	Account data[MAX];
-	int count;
+typedef struct
+{
+    Account data[MAX];
+    int count;
 } AccountList;
 
-typedef struct {
-	Violation* data;
-	int count;
-	int capacity;
+typedef struct
+{
+    Violation *data;
+    int count;
+    int capacity;
 } ViolationList;
-
 
 // Notification
 
@@ -83,10 +87,11 @@ typedef struct {
 
 #define WILL_SAVE 1
 #define NOT_SAVE 0
-typedef struct {
+typedef struct
+{
     char id[6];
     int type;
-    char memberId[10];  // Only for Admin waring;
+    char memberId[10]; // Only for Admin waring;
     char content[MAX_MESSAGE_LENGTH];
     time_t create_time;
     time_t deleteTime;
