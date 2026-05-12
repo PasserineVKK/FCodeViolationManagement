@@ -352,7 +352,6 @@ void updateMember(MemberList* members, ViolationList* violations, const char *ac
         // If found
         if (mIndex != -1) {
             // Show student
-            printf("\nStudent found:\n");
             displayOneMemberInfo(members->data[mIndex]);
 
             if (actorIndex == -1) {
@@ -374,8 +373,6 @@ void updateMember(MemberList* members, ViolationList* violations, const char *ac
                     "1: Name\n2: Email\n3: Phone Number\n4: Team\n5: Role\n");
                 inputIntegerInRange(&fieldChoice, 1, 5,
                                     "=> Your choice (only 1-5): ");
-                while (getchar() != '\n');
-
             } while (fieldChoice < 1 || fieldChoice > 5);
 
             switch (fieldChoice) {
@@ -396,6 +393,25 @@ void updateMember(MemberList* members, ViolationList* violations, const char *ac
                     break;
             }
 
+            //fail before confirm 
+            int rolePolicyBlocksConfirm = 0;
+            if (fieldChoice == 5) {
+                if (role == 2 && members->data[actorIndex].role < 2) {
+                    uiError(
+                        "You are not granted permission to promote this member to BOD.\n");
+                    rolePolicyBlocksConfirm = 1;
+                } else if (members->data[mIndex].role == 2
+                           && members->data[actorIndex].role == 2
+                           && checkTotalBOD(members) == 1 && role != 2) {
+                    uiError(
+                        "You are the last BOD, cannot change your role to another role.\n");
+                    rolePolicyBlocksConfirm = 1;
+                }
+            }
+
+            if (rolePolicyBlocksConfirm) {
+                //skip confirm 
+            } else {
             // Confirm to update member
             int confirm;
             inputYesNo(
@@ -420,22 +436,6 @@ void updateMember(MemberList* members, ViolationList* violations, const char *ac
                         targetMem->team = team;
                         break;
                     case 5: {
-                        if (role == 2 && members->data[actorIndex].role < 2) {
-                            printf ("You are not granted permission to promote this member to BOD.\n");
-                            break;
-                        }
-                        if (members->data[mIndex].role == 2 
-                            && members->data[actorIndex].role < 2){
-                            printf ("You are only Vice/Leader, you are not granted permission to change BOD role.\n");
-                            break;
-                        }
-                        if (members->data[mIndex].role == 2 
-                            && members->data[actorIndex].role == 2  
-                            && checkTotalBOD (members)== 1){
-                            // The last BOD cannot downgrade themselves.
-                            printf ("You are the last BOD, cannot change your role to another role.\n");
-                            break;
-                        }
                         int oldRole = targetMem->role; // Save old role before assign new role
                         targetMem->role = role;        // Assign new role
 
@@ -466,6 +466,7 @@ void updateMember(MemberList* members, ViolationList* violations, const char *ac
             } else {
                 printf("Member not updated.\n");
             }
+            } /* end else from !rolePolicyBlocksConfirm */
         } else {
             printf("Member not found!\n");
         }

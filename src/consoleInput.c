@@ -235,8 +235,7 @@ void inputValidTime(time_t* target, const char* prompt) {
 void inputTimeRange(time_t* start, time_t* end, const char* prompt) {
 
     while (1) {
-
-        printf("%s\n", prompt);
+        printf("%s%s%s\n", UI_TABLE_HEADER, prompt, UI_RESET);
 
         inputValidTime(
             start,
