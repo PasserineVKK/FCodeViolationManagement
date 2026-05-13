@@ -134,8 +134,13 @@ void displayMemberInSort(MemberList* list, int isAdmin){
 	printf("Press Enter if sort is not needed\n");
     inputString(compareCommand, sizeof(compareCommand), "Enter your command: ");
     Member* sortPointerList[count];
-    sortMember(list, sortPointerList, compareCommand);
     
+    // Pre assign data in case count = 1
+    for (int i = 0; i < count; i++) {
+  		sortPointerList[i] = &list->data[i];
+	}
+    sortMember(list, sortPointerList, compareCommand);
+
     int len = 5; // 3 is max factor of member sort
         if (strlen(compareCommand) < 5) len = strlen(compareCommand);
         uiTableTitle("ORDER BY: ");
