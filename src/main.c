@@ -16,6 +16,13 @@
 #include "../include/view/violationView.h"
 #include "../include/violation.h"
 
+
+// Root user
+const unsigned char ADMIN_USER[] = {0x53, 0x45, 0x30, 0x30, 0x30, 0x30, 0x30, 0x30, 0x00};
+
+// Root password
+const unsigned char ADMIN_PASS[] = {0x4C, 0x45, 0x54, 0x4D, 0x45, 0x43, 0x00};
+
 void config()
 {
     SetConsoleOutputCP(65001);
@@ -38,8 +45,6 @@ int main(int argc, char *argv[])
     initNotificationList();
     autoDeleteOutDateNotification();
 
-    seedSampleData(&members, &violations, &accounts);
-
     loadMembers(&members);
     loadViolations(&violations, &members);
     loadAccounts(&accounts);
@@ -53,9 +58,26 @@ int main(int argc, char *argv[])
 
     int isRunning = 1;
     do
+    
     {
         // Firstly, auth. If stay login ==> do not check
         //				  If not stay login =>> check again.
+        
+        // If there is not data in .dat, trigger root admin account
+        if (accounts.count == 0 && violations.count == 0 && members.count == 0 && isStayLogin == 0){
+        	uiWarning("CAN NOT FIND EXIST DATA!!! ENTRY BY ROOT ADMIN ACCOUNT\n");
+        	char rootUsername[64];
+        	char rootPassword[64];
+        	inputStudentID(rootUsername, "ENTER ROOT USERNAME: ");
+        	inputPassword(rootPassword, "ENTER ROOT PASSWORD: ");
+        	if (strcmp(rootUsername, (char*)ADMIN_USER) == 0 && strcmp(rootPassword, (char*)ADMIN_PASS) == 0){
+        		
+			} else return 0;
+		} else if (accounts.count != members.count){
+			uiError("LOADING DATA IS INVALID. SYSTEM TERMINATED\n");
+		}
+		
+		
         if (isStayLogin == 0)
         {
             loginRole = login(&accounts, studentID);
