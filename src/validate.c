@@ -307,13 +307,19 @@ int isValidStudentID(const char *s)
     while (s[i] == ' ')
         i++;
 
-    if (!(s[i] == 'S'))
+    if (!(s[i] == 'S' ||
+          s[i] == 'H' ||
+          s[i] == 'Q' ||
+          s[i] == 'D' ||
+          s[i] == 'C' ))
     {
         printf("Student ID must start with 'SE' followed by 6 digits\n");
         return 0;
     }
     i++;
-    if (!(s[i++] == 'E'))
+    if (!(s[i++] == 'S' ||
+          s[i++] == 'E' ||
+          s[i++] == 'A' ))
     {
         printf("Student ID must be in the format 'SE' followed by 6 digits\n");
         return 0;
