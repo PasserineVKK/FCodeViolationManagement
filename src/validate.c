@@ -313,34 +313,34 @@ int isValidStudentID(const char *s)
           s[i] == 'D' ||
           s[i] == 'C' ))
     {
-        printf("Student ID must start with 'SE' followed by 6 digits\n");
+        printf("Invalid first character in student ID\n");
         return 0;
     }
     i++;
-    if (!(s[i++] == 'S' ||
-          s[i++] == 'E' ||
-          s[i++] == 'A' ))
+    if (!(s[i] == 'S' ||
+          s[i] == 'E' ||
+          s[i] == 'A' ))
     {
-        printf("Student ID must be in the format 'SE' followed by 6 digits\n");
+        printf("Invalid second character in student ID\n");
         return 0;
     }
+    i++;
     count += 2;
 
-    // Check valid member
-    for (; s[i] != '\0'; i++)
-    {
-        char c = s[i];
-        if (!isdigit(c))
-        {
-            printf("After 'SE' in student ID, only 6 digits are allowed\n");
-            return 0;
-        }
+    while (isdigit((unsigned char)s[i])){
         count++;
+        i++;
+    }
+    while (isspace((unsigned char)s[i])) i++;
+
+    if (s[i] != '\0'){
+        printf("Student ID must contain only digits after prefix\n");
+        return 0;
     }
 
     if (count != 8)
     {
-        printf("Number of digits after 'SE' must be 6\n");
+        printf("Student ID must contain 2 prefix characters exactly 6 digits\n");
         return 0;
     }
 

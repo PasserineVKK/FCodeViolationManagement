@@ -117,11 +117,13 @@ int main(int argc, char *argv[])
                 "┃  2. View Violation History                   ┃\n"
                 "┃  3. View Total Unpaid Fines                  ┃\n"
                 "┃  4. View Club Member List                    ┃\n"
-                "┃  5. Reset Password                           ┃\n"
-                "┃  6. Log Out                                  ┃\n"
-                "┃  7. Exit                                     ┃\n"
-                "┃  8. Switch to Admin Menu                     ┃\n"
-                "┃  9. View notification                        ┃\n"
+                "┃  5. Reset Your Password                      ┃\n"
+                "┃  6. View notification                        ┃\n"
+                "┃  7. Log Out                                  ┃\n"
+                "┃  8. Exit                                     ┃\n");
+            if (members.data[mIndex].role > 0){ printf(
+                "┃  9. Switch to Admin Menu                     ┃\n");}    
+             printf(
                 "┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛\n");
 
             inputIntegerInRange(&choice, 1, 9,
@@ -130,56 +132,54 @@ int main(int argc, char *argv[])
             clearScreen();
             switch (choice)
             {
-            case 1:
-                displayOneMemberInfo(members.data[mIndex]);
-                break;
-            case 2:
-                displayViolationByStudentId(studentID, &violations);
-                break;
-            case 3:
-                viewMyUnpaidFines(studentID, &violations);
-                break;
-            case 4:
-                displayMemberInSort(&members, 0);
-                break;
-            case 5:
-                changePassword(&accounts, studentID, menuRole);
-                break;
-            case 6:
-                isStayLogin = 0;
-                loginRole = -1;
-                menuRole = -1;
-                // mark as not login, reset menu role
-                continue;
-            case 7:
-                // if choice = 7, save the data end return.
-                isRunning = 0;
-                break;
-            case 8:
-                if ((loginRole == 1 || loginRole == 2))
-                {
-                    if (members.data[mIndex].isPending == PENDING)
-                    {
-                        uiError("Pending account. Can only use member menu now. ");
+                case 1:
+                    displayOneMemberInfo(members.data[mIndex]);
+                    break;
+                case 2:
+                    displayViolationByStudentId(studentID, &violations);
+                    break;
+                case 3:
+                    viewMyUnpaidFines(studentID, &violations);
+                    break;
+                case 4:
+                    displayMemberInSort(&members, 0);
+                    break;
+                case 5:
+                    changePassword(&accounts, studentID, menuRole);
+                    continue;
+                case 6:
+                    displayNotificationByMemberID(studentID, ADMIN_WARNING);
+                    // displayGlobalNotification();
+                    break;
+                case 7:
+                    isStayLogin = 0;
+                    loginRole = -1;
+                    menuRole = -1;
+                    // mark as not login, reset menu role
+                    continue; 
+                case 8:
+                    isRunning = 0;
+                    break;       
+                case 9: {
+                    if ((loginRole == 1 || loginRole == 2)) {
+                        if (members.data[mIndex].isPending == PENDING)
+                        {
+                            uiError("Pending account. Can only use member menu now. ");
+                            break;
+                        }
+                        else if (members.data[mIndex].isPending == NOT_PENDING)
+                        {
+                            menuRole = 1;
+                            continue;
+                        }
+                    }
+                    else {
+                        uiError("Permission denied. Try again.\n");
                         break;
                     }
-                    else if (members.data[mIndex].isPending == NOT_PENDING)
-                    {
-                        menuRole = 1;
-                        continue;
-                    }
                 }
-                else
-                {
-                    uiError("Permission denied. Try again.\n");
-                    break;
-                }
-            case 9:
-                displayNotificationByMemberID(studentID, ADMIN_WARNING);
-                // displayGlobalNotification();
-                break;
-            default:
-                uiError("Invalid option, please try again.");
+                default:
+                    uiError("Invalid option, please try again.");
             }
             break;
         }
