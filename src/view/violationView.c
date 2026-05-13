@@ -213,8 +213,7 @@ void markFineAsPaidView(ViolationList *violations, MemberList *members){
 
 void displayViolationsByTimeRange(const ViolationList *violations)
 {
-    // Allocate temporary memory for results based on current count
-    Violation *results = (Violation *)malloc(sizeof(Violation) * violations->count);
+    Violation *results ;
     if (results == NULL)
         return;
 
@@ -233,7 +232,6 @@ void displayViolationsByTimeRange(const ViolationList *violations)
     violationRowNumber = 0;
     displayViolationList(results,resultCount);
 
-    free(results);
 }
 
 // 1.3 View unpaid fines for a member

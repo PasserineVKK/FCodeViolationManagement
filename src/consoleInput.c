@@ -192,7 +192,7 @@ int inputPasswordOrCancel(char* target, const char* prompt) {
 }
 
 void inputValidTime(time_t* target, const char* prompt) {
-    char buf[50];
+    char buf[100];
 
     while (1) {
         printf("%s", prompt);
@@ -205,17 +205,42 @@ void inputValidTime(time_t* target, const char* prompt) {
 
         struct tm tm = {0};
 
-        int year, month, day, hour, minute;
+        // basic value
+        int year = 0;
+        int month = 1;
+        int day = 1;
+        int hour = 0;
+        int minute = 0;
 
-        if (sscanf(buf,
-                   "%d-%d-%d %d:%d",
-                   &year,
-                   &month,
-                   &day,
-                   &hour,
-                   &minute) != 5) {
+        int matched = 0;
 
-           uiError("Please enter a valid time in format YYYY-MM-DD HH:MM.\n");
+        matched = sscanf(buf, "%d-%d-%d %d:%d", &year, &month, &day, &hour, &minute);
+
+        if (matched < 5) {
+            matched = sscanf(buf, "%d-%d-%d %d", &year, &month, &day, hour);
+        }
+
+        if (matched < 4) {
+            matched = sscanf(buf, "%d-%d-%d", &year, &month, &day);
+        }
+
+        if (matched < 3) {
+            matched = sscanf(buf, "%d-%d", &year, &month);
+        }
+
+        if (matched < 2) {
+            matched = sscanf(buf, "%d", &year);
+        }
+
+        if (matched < 1) {
+            uiError("Invalid format. Use YYYY-MM-DD HH:MM\n");
+            continue;
+        }
+
+        if (!isValidDate(day, month, year) ||
+            hour < 0 || hour > 23 ||
+            minute < 0 || minute > 59) {
+            uiError("Invalid date/time value.\n");
             continue;
         }
 
