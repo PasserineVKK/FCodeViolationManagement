@@ -449,7 +449,7 @@ void updateMember(MemberList* members, ViolationList* violations, const char *ac
                                     vPtr->owner->isPending == NOT_PENDING &&
                                     vPtr->fine != 0) {
                                     
-                                    double newFine = calculateFine(role, vPtr->reason);
+                                    double newFine = calculateFine(role);
                                     vPtr->fine = newFine;
                                 }
                             }
@@ -491,6 +491,19 @@ Member* getMemberById(const char* studentId, MemberList* members) {
         }
     }
     return NULL;
+}
+
+int checkTotalBOD(MemberList *members)
+{
+    int bodCount = 0;
+    for (int i = 0; i < members->count; i++)
+    {
+        if (members->data[i].role == 2)
+        {
+            bodCount++;
+        }
+    }
+    return bodCount;
 }
 
 

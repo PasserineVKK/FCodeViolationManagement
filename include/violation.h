@@ -31,7 +31,7 @@ void initViolationList(ViolationList *list, int initialCapacity);
 int loadViolations(ViolationList *violations, MemberList *members);
 int saveViolations(ViolationList *violations);
 
-double calculateFine(int role, int reason);
+double calculateFine(int role);
 void refreshFineAfterRolechange(const char *memberId, int role, ViolationList *violations);
 
 Violation *findViolationById(const char *violationId, ViolationList *violations);

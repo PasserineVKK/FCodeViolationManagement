@@ -83,10 +83,8 @@ int saveViolations(ViolationList *violations)
     return saveToFile(VIOLATIONS_FILE, violations->data, sizeof(Violation) - sizeof(Member *), violations->count);
 }
 
-double calculateFine(int role, int reason)
+double calculateFine(int role)
 {
-    if (reason == REASON_VIOLENCE)
-        return 0;
     if (role == 0)
         return 20000;
     return 50000;
@@ -97,9 +95,9 @@ void refreshFineAfterRolechange(const char *memberId, int role, ViolationList *v
     for (int i = 0; i < violations->count; i++)
     {
         Violation *v = &violations->data[i];
-        if (strcmp(v->studentID, memberId) == 0 && v->isPaid == NOT_PAY)
+        if (strcmp(v->studentID, memberId) == 0 && v->isPaid == NOT_PAY )
         {
-            v->fine = calculateFine(role, v->reason);
+            v->fine = calculateFine(role);
         }
     }
 }
@@ -124,16 +122,6 @@ int getViolationIndexById(const ViolationList *violations, const char *violation
             return i;
     }
     return -1;
-}
-
-void getReason(int *reason)
-{
-    printf("Choose violate reason: \n"); // Fixed redundant format arg
-    printf("%d - Not uniform\n", REASON_NOT_UNIFORM);
-    printf("%d - Meeting absence\n", REASON_MEETING_ABSENCE);
-    printf("%d - Not join in Club activity\n", REASON_NO_CLUB_ACTIVITY);
-    printf("%d - Violence\n", REASON_VIOLENCE);
-    inputIntegerInRange(reason, 0, 3, "Please enter: ");
 }
 
 int addViolation(ViolationList *violations, const Violation *newV)
@@ -207,7 +195,7 @@ void deleteViolation(ViolationList *violations){
             int confirm;
             inputYesNo(&confirm, "Confirm to record this violation? (1: Yes, 0: No): ");
             if (!confirm){
-                printf("Violation not recorded.\n");
+                printf("Violation not Deleted.\n");
             }
             else{
                 if (violations->data[vIndex].owner != NULL) {
@@ -264,18 +252,6 @@ void handleSeriousViolation(const Member *m, const Violation *newV)
     }
 }
 
-int checkTotalBOD(MemberList *members)
-{
-    int bodCount = 0;
-    for (int i = 0; i < members->count; i++)
-    {
-        if (members->data[i].role == 2)
-        {
-            bodCount++;
-        }
-    }
-    return bodCount;
-}
 
 void recordViolationView(ViolationList *violations, MemberList *members, int actorIndex)
 {
@@ -331,12 +307,8 @@ void recordViolationView(ViolationList *violations, MemberList *members, int act
 
             }
             else {
-                printf("Reasons:\n");
-                printf("%d. Not uniform\n", REASON_NOT_UNIFORM);
-                printf("%d. Meeting absence\n", REASON_MEETING_ABSENCE);
-                printf("%d. No Club activity\n", REASON_NO_CLUB_ACTIVITY);
-                printf("%d. Violence\n", REASON_VIOLENCE);
-                inputIntegerInRange(&reason, 0, 3, "Enter reason: ");
+            	int reason;
+                getReason(&reason);
 
                 inputString(note, 100, "Enter note (optional): ");
 
@@ -360,7 +332,7 @@ void recordViolationView(ViolationList *violations, MemberList *members, int act
                         owner->isPending = 1;
                     }
                     else{
-                        fine = calculateFine(owner->role, reason);
+                        fine = calculateFine(owner->role);
                         isPaid = NOT_PAY;
                         penalty = PENALTY_FINANCIAL;
                     }

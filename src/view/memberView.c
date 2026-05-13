@@ -135,6 +135,7 @@ void displayMemberInSort(MemberList* list, int isAdmin){
     inputString(compareCommand, sizeof(compareCommand), "Enter your command: ");
     Member* sortPointerList[count];
     sortMember(list, sortPointerList, compareCommand);
+    
 	uiTableTitle("CLUB MEMBER SORTED LIST");
 	
 	    printf(
