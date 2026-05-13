@@ -7,6 +7,8 @@ int isIntegerBelongRange(const char *s, int min, int max);
 // Check double in range
 int isDoubleBelongRange(const char *s, double min, double max);
 
+int isValidDate(int d, int m, int y);
+
 // Check time is valid in the PAST
 int isValidPastDate(int d, int m, int y);
 

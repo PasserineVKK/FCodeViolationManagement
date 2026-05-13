@@ -138,12 +138,12 @@ void displayMemberInSort(MemberList* list, int isAdmin){
 	uiTableTitle("CLUB MEMBER SORTED LIST");
 	
 	    printf(
-        "┏━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━%s┓\n", (isAdmin)?"┳━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━":"");
+        "┏━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━%s┓\n", (isAdmin)?"┳━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━":"");
     printf("┃ %-10s ┃ %-22s ┃ %-10s ┃ %-18s ┃ ", "Student ID",
            "Full Name", "Team", "Role");
-           if (isAdmin) printf("%-18s ┃ %-18s ┃", "Violations", "TotalFine");
+           if (isAdmin) printf("%-19s ┃ %-19s ┃", "Violations", "TotalFine");
     printf(
-        "\n┣━━━━━━━━━━━━╋━━━━━━━━━━━━━━━━━━━━━━━━╋━━━━━━━━━━━━╋━━━━━━━━━━━━━━━━━━━━%s┫", (isAdmin)?"╋━━━━━━━━━━━━━━━━━━━━╋━━━━━━━━━━━━━━━━━━━�":"");
+        "\n┣━━━━━━━━━━━━╋━━━━━━━━━━━━━━━━━━━━━━━━╋━━━━━━━━━━━━╋━━━━━━━━━━━━━━━━━━━━%s┫", (isAdmin)?"╋━━━━━━━━━━━━━━━━━━━━━╋━━━━━━━━━━━━━━━━━━━━━":"");
     for (int i = 0; i < count; i++) {
         printf("\n┃ %-10s ┃ %-22s ┃ %-10s ┃ %-18s ┃",
                sortPointerList[i]->studentID, sortPointerList[i]->fullName, 
@@ -151,12 +151,12 @@ void displayMemberInSort(MemberList* list, int isAdmin){
 			if (isAdmin){
 				char formattedFine[20];
 				formatCurrency(sortPointerList[i]->totalFine, formattedFine, sizeof(formattedFine));
-				printf(" %-18d ┃ %-18s ┃", sortPointerList[i]->violationCount,formattedFine);
+				printf(" %-19d ┃ %-19s ┃", sortPointerList[i]->violationCount,formattedFine);
 			} 
                
     }
     printf(
-        "\n┗━━━━━━━━━━━━┻━━━━━━━━━━━━━━━━━━━━━━━━┻━━━━━━━━━━━━┻━━━━━━━━━━━━━━━━━━━━%s┛\n", (isAdmin)?"┻━━━━━━━━━━━━━━━━━━━━┻━━━━━━━━━━━━━━━━━━━━�":"");
+        "\n┗━━━━━━━━━━━━┻━━━━━━━━━━━━━━━━━━━━━━━━┻━━━━━━━━━━━━┻━━━━━━━━━━━━━━━━━━━━%s┛\n", (isAdmin)?"┻━━━━━━━━━━━━━━━━━━━━━┻━━━━━━━━━━━━━━━━━━━━━":"");
  
 	
 }

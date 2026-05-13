@@ -389,11 +389,9 @@ void freeNotificationList()
     free(notifications);
 }
 
-int listViolationsByTimeRange(Violation violations[], int vCount,
-                              Violation results[])
-{
+int listViolationsByTimeRange(Violation violations[], int vCount, Violation results[]){
     time_t start, end;
-    inputTimeRange(&start, &end, "Enter time range (YYYY-MM-DD HH:MM): ");
+    inputTimeRange(&start, &end, "TIME RANGE");
 
     int foundCount = 0;
     for (int i = 0; i < vCount; i++)

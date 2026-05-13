@@ -156,7 +156,7 @@ void displayViolationByStudentId(const char *id, const ViolationList *violations
             if (shown % VIOLATION_PAGE_SIZE == 0 && i < violations->count - 1)
             {
                 displayViolationTableFooter();
-                inputYesNo(&showMore, "\nShow next 500 violations? (1: Yes, 0: No): ");
+                inputYesNo(&showMore, "\nShow next violations? (1: Yes, 0: No): ");
                 if (!showMore) return;
                 displayViolationTableHeader();
             }
@@ -213,8 +213,7 @@ void markFineAsPaidView(ViolationList *violations, MemberList *members){
 
 void displayViolationsByTimeRange(const ViolationList *violations)
 {
-    // Allocate temporary memory for results based on current count
-    Violation *results = (Violation *)malloc(sizeof(Violation) * violations->count);
+    Violation *results ;
     if (results == NULL)
         return;
 
@@ -233,13 +232,12 @@ void displayViolationsByTimeRange(const ViolationList *violations)
     violationRowNumber = 0;
     displayViolationList(results,resultCount);
 
-    free(results);
 }
 
 // 1.3 View unpaid fines for a member
 void viewMyUnpaidFines(const char *myStudentID, const ViolationList *violations)
 {
-    printf("\n==== Unpaid Fines ====\n");
+    uiInfo("\nUNPAID FINES\n");
     printf("Student ID: %s\n", myStudentID);
 
     const char *reasonNames[] = {
@@ -337,32 +335,20 @@ void clearOption()
 
 void displayChangeFilterOptionMenu()
 {
-    printf("\n┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓"
-           "\n┃           CHANGE FILTER OPTION MENU          ┃"
-           "\n┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫"
-           "\n┃  1. Clear all option (ID Base)               ┃"
-           "\n┃  2. Sort option                              ┃"
-           "\n┃  3. Order change (ASC, DESC)                 ┃"
-           "\n┃  4. Team filter                              ┃"
-           "\n┃  5. Reason filter                            ┃"
-           "\n┃  6. Time filter                              ┃"
-           "\n┃  7. Is paid filter                           ┃"
-           "\n┃  8. Out service                              ┃"
-           "\n┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛\n");
-}
-
-void displayViolationManagerMenu()
-{
-    printf("\n┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓"
-           "\n┃           VIOLATION MANAGER MENU             ┃"
-           "\n┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫"
-           "\n┃  1. Display all violations                   ┃"
-           "\n┃  2. Add new violation                        ┃"
-           "\n┃  3. Change filter setting                    ┃"
-           "\n┃  4. Mark Fine as Paid                        ┃"
-           "\n┃  5. Delete violation                         ┃"
-           "\n┃  6. Out this service                         ┃"
-           "\n┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛\n");
+    printf("%s", UI_TABLE_HEADER);
+    printf("\nCHANGE FILTER OPTION MENU");
+    printf("%s", UI_RESET);
+    printf(
+            "\n┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓"
+            "\n┃  1. Clear all option (ID Base)               ┃"
+            "\n┃  2. Sort option                              ┃"
+            "\n┃  3. Order change (ASC, DESC)                 ┃"
+            "\n┃  4. Team filter                              ┃"
+            "\n┃  5. Reason filter                            ┃"
+            "\n┃  6. Time filter                              ┃"
+            "\n┃  7. Is paid filter                           ┃"
+            "\n┃  8. Out service                              ┃"
+            "\n┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛\n");
 }
 
 void changeFilterOption()
@@ -385,17 +371,26 @@ void changeFilterOption()
         case 2:
         {
             int option;
-            printf("Change sort option!\n");
-            printf("\n=== Sort Command Rules ===\n");
-            printf("| Command | Meaning                          |\n");
-            printf("|---------|----------------------------------|\n");
-            printf("| r       | Sort by reason ASC               |\n");
-            printf("| R       | Sort by reason DESC              |\n");
-            printf("| p       | Sort by paid ASC                 |\n");
-            printf("| P       | Sort by paid DESC                |\n");
-            printf("| t       | Sort by team ASC                 |\n");
-            printf("| T       | Sort by team DESC                |\n");
+            printf("%s", UI_TABLE_HEADER);
+            printf("CHANGE SORT OPTION\n");
+            printf("\nSort Command Rules\n");
+            printf("%s", UI_RESET);
+            printf(
+                "┏━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓\n"
+                "┃ Command ┃ Meaning                             ┃\n"
+                "┣━━━━━━━━━╋━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫\n"
+                "┃ r       ┃ Sort by reason ASC                  ┃\n"
+                "┃ R       ┃ Sort by reason DESC                 ┃\n"
+                "┃ p       ┃ Sort by paid ASC                    ┃\n"
+                "┃ P       ┃ Sort by paid DESC                   ┃\n"
+                "┃ t       ┃ Sort by team ASC                    ┃\n"
+                "┃ T       ┃ Sort by team DESC                   ┃\n"
+                "┗━━━━━━━━━┻━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛\n"
+            );
+
+            printf("%s", UI_TABLE_HEADER);
             printf("\nExamples of valid commands:\n");
+            printf("%s", UI_RESET);
             printf("  rtp   -> reason ASC, team ASC, paid ASC\n");
             printf("  prt   -> paid ASC, reason ASC, team ASC\n");
             printf("  PrT   -> paid DESC, reason ASC, team DESC\n");
@@ -424,7 +419,7 @@ void changeFilterOption()
             reasonFilter = 1;
             break;
         case 6:
-            inputTimeRange(&beginTimeFilterSetting, &endTimeFilterSetting, "Enter filter time range: ");
+            inputTimeRange(&beginTimeFilterSetting, &endTimeFilterSetting, "TIME FILTER");
             timeRangeFilter = 1;
             break;
         case 7:

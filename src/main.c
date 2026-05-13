@@ -44,8 +44,6 @@ int main(int argc, char *argv[])
     loadViolations(&violations, &members);
     loadAccounts(&accounts);
 
-    pauseProgram();
-
     // loginRole represent the role of this account
     // menuRole represent which menu will be open.
     int loginRole = -1, menuRole = -1;
@@ -341,9 +339,9 @@ void seedSampleData(MemberList *members, ViolationList *violations, AccountList 
     members->data[1].team = 2; // HR
     members->data[1].role = 1; // Leader/Vice -> fine = 50,000
     members->data[1].violationCount = 3;
-    members->data[1].consecutiveAbsences = 3;
+    members->data[1].consecutiveAbsences = 2;
     members->data[1].totalFine = 150000.0;
-    members->data[1].isPending = PENDING;
+    members->data[1].isPending = NOT_PENDING;
 
     // --- Member 2: BCN, Planning, warning ---
     strcpy(members->data[2].fullName, "Le Hoang Cuong");
