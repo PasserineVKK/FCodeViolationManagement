@@ -129,7 +129,7 @@ void displayMemberInSort(MemberList* list, int isAdmin){
 	char compareCommand[20];
 	
 	printf("Uppercase = ASC, Lowercase = DESC.\n");
-	printf("[T]eam - [R]ole - [N]ame %s", (isAdmin) ? "- Total[Fine] - [V]iolationCount" : "");
+	printf("[T]eam - [R]ole - [N]ame %s", (isAdmin) ? "- Total[F]ine - [V]iolationCount" : "");
 	printf("\ne.g: Tn - Team ascending, Name descending.\n");
 	printf("Press Enter if sort is not needed\n");
     inputString(compareCommand, sizeof(compareCommand), "Enter your command: ");

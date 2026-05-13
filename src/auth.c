@@ -231,18 +231,34 @@ void handleLockedAccount(AccountList *accounts)
         return;
     }
     char studentID[10];
-    inputStudentID(studentID, "Input student ID of account: ");
-    int aIndex = searchMemberByIdInA(accounts, studentID);
-    if (aIndex != -1)
-    {
-        accounts->data[aIndex].isLocked = 0;
-        accounts->data[aIndex].failCount = 0;
-        saveAccounts(accounts);
-        uiSuccess("unlock Successfully");
-    }
-    else
-    {
-        printf("Can not find corresponding account for %s", studentID);
-        return;
+    int continueUnlock = 1;
+
+    while (continueUnlock){
+        inputStudentID(studentID, "Input student ID of account: ");
+        int aIndex = searchMemberByIdInA(accounts, studentID);
+        
+        if (aIndex != -1) {
+            if (accounts->data[aIndex].isLocked != LOCKED_ACC){
+                printf ("The account with ID  %s is not locked\n", studentID);
+            }
+            else {
+                int confirm;
+                inputYesNo(&confirm, "Confirm to unlock this account? (1: Yes, 0: No): ");
+                if (!confirm){
+                    printf("Violation not recorded.\n");
+                }
+                else{
+                    accounts->data[aIndex].isLocked = NOT_LOCKED_ACC;
+                    accounts->data[aIndex].failCount = 0;
+                    saveAccounts(accounts);
+                    uiSuccess("Unlock Successfully");
+                }
+            }
+            
+        }
+        else{
+            printf("Can not find corresponding account for %s", studentID);
+        }
+        inputYesNo(&continueUnlock, "\nUnlock another account?\n1: Yes\n0: No\n=> Your choice: ");
     }
 }
