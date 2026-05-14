@@ -47,4 +47,6 @@ void inputTimeRange(time_t* start, time_t* end, const char* prompt);
 
 void inputValidTime (time_t* target, const char* prompt);
 
+void getReason(int *reason);
+
 #endif

@@ -36,4 +36,6 @@ Member* getMemberById(const char* studentId, MemberList* members);
 
 void removeOneMember (MemberList *members, AccountList *accounts, ViolationList *violations, const char *id, const char *actorID);
 
+int checkTotalBOD(MemberList *members);
+
 #endif

@@ -472,7 +472,7 @@ void flexibleDisplayViolationList(ViolationList* violations, MemberList* members
     }
 
     violationRowNumber = 0;
-    displayViolationTableHeader();
+    
 
     Violation *tempList[violations->count];
     if (enableSortOption)
@@ -482,6 +482,35 @@ void flexibleDisplayViolationList(ViolationList* violations, MemberList* members
             tempList[i] = &violations->data[i];
         }
         sortViolation(violations, tempList, currentSortCommand);
+        
+        int len = 3; // 3 is max factor of violation sort
+        if (strlen(currentSortCommand) < 3) len = strlen(currentSortCommand);
+        uiTableTitle("ORDER BY: ");
+        for (int i = 0; i < len; i++)
+        {
+        	switch(currentSortCommand[i]){
+        		case 'r':
+        			printf(" | DESC Role");
+        			break;
+        		case 'R':
+        			printf(" | ASC Role");
+        			break;
+        		case 'p':
+        			printf(" | DESC Paid");
+        			break;
+        		case 'P':
+        			printf(" | ASC Paid");
+        			break;
+        		case 't':
+        			printf(" | DESC Team ");
+        			break;
+        		case 'T':
+        			printf(" | ASC Team");
+        			break;
+			}
+		
+		}
+		printf(" |");
     }
     else
     {
@@ -491,6 +520,8 @@ void flexibleDisplayViolationList(ViolationList* violations, MemberList* members
         }
     }
 
+
+	displayViolationTableHeader();
     int shown = 0;
     int showMore = 1;
     for (int i = 0; i < violations->count; i++)

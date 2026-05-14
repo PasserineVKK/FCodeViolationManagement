@@ -135,6 +135,51 @@ void displayMemberInSort(MemberList* list, int isAdmin){
     inputString(compareCommand, sizeof(compareCommand), "Enter your command: ");
     Member* sortPointerList[count];
     sortMember(list, sortPointerList, compareCommand);
+    
+    int len = 5; // 3 is max factor of member sort
+        if (strlen(compareCommand) < 5) len = strlen(compareCommand);
+        uiTableTitle("ORDER BY: ");
+        for (int i = 0; i < len; i++)
+        {
+        	switch(compareCommand[i]){
+        		case 'r':
+        			printf(" | DESC Role");
+        			break;
+        		case 'R':
+        			printf(" | ASC Role");
+        			break;
+        		case 'n':
+        			printf(" | DESC Name");
+        			break;
+        		case 'N':
+        			printf(" | ASC Name");
+        			break;
+        		case 't':
+        			printf(" | DESC Team");
+        			break;
+        		case 'T':
+        			printf(" | ASC Team");
+        			break;
+        		case 'F':
+        			if (isAdmin)
+        			printf(" | ASC TotalFine");
+        			break;
+        		case 'f':
+        			if (isAdmin)
+        			printf(" | DESC TotalFine");
+        			break;
+        		case 'V':
+        			if (isAdmin)
+        			printf(" | ASC ViolationCount");
+        			break;
+        		case 'v':
+        			if (isAdmin)
+        			printf(" | DESC ViolationCount");
+        			break;
+			}
+		
+		}
+		printf(" |");
 	uiTableTitle("CLUB MEMBER SORTED LIST");
 	
 	    printf(

@@ -9,6 +9,8 @@
 #define LOCKED_ACC 1
 #define NOT_LOCKED_ACC 0
 
+
+
 int loadAccounts(AccountList *accounts);
 int saveAccounts(AccountList *accounts);
 
