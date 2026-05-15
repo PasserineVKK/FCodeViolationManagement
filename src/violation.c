@@ -103,7 +103,7 @@ void refreshFineAfterRolechange(const char *memberId, int role, ViolationList *v
         Violation *v = &violations->data[i];
         if (strcmp(v->studentID, memberId) == 0 && v->isPaid == NOT_PAY )
         {
-            v->fine = calculateFine(role, v->reason);
+            v->fine = calculateFine(role);
         }
     }
 }
@@ -343,7 +343,7 @@ void recordViolationView(ViolationList *violations, MemberList *members, int act
                         owner->isPending = 1;
                     }
                     else{
-                        fine = calculateFine(owner->role, reason);
+                        fine = calculateFine(owner->role);
                         isPaid = NOT_PAY;
                         penalty = PENALTY_FINANCIAL;
                     }
