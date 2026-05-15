@@ -325,7 +325,7 @@ Input ID => Find by ID => If found, show member info
 => If yes, update by assign new value to target member
 => Save to file
 */
-void updateMember(MemberList* members, ViolationList* violations, const char *actorID) {
+void updateMember(AccountList* accounts, MemberList* members, ViolationList* violations, const char *actorID) {
     // Check if member list is empty
     if (members->count == 0) {
         printf("No members available to update.\n");
@@ -337,7 +337,7 @@ void updateMember(MemberList* members, ViolationList* violations, const char *ac
     char phoneNumber[11];
     char studentID[10];  // SE000000\0
     int team;            // 0 = Academic, 1 = Planning, 2 = HR, 3 = Media
-    int role;            // 0 = Member, 1 = Leader/Vice, 2 = BOD
+    int role = -1;            // 0 = Member, 1 = Leader/Vice, 2 = BOD
 
     int continueUpdate = 1;
     while (continueUpdate) {
@@ -438,7 +438,7 @@ void updateMember(MemberList* members, ViolationList* violations, const char *ac
                     case 5: {
                         int oldRole = targetMem->role; // Save old role before assign new role
                         targetMem->role = role;        // Assign new role
-
+						accounts->data[searchMemberByIdInA(accounts, studentID)].role = role;
                         // If member change role (either upgrade or downgrade)
                         if ((oldRole == 0 && role > 0) || (oldRole > 0 && role == 0)) {
                             // Replace new fines for all unpaid and not pending violation of this member
@@ -453,11 +453,16 @@ void updateMember(MemberList* members, ViolationList* violations, const char *ac
                                     vPtr->fine = newFine;
                                 }
                             }
+                            
+                        	
+                            
                             // Update total fine for this member after change role
                             updateMemberTotalFine(members, violations, studentID);
                         }
 
                         saveViolations(violations);
+                        saveAccounts(accounts);
+                        
                         break;
                     }
                 }
