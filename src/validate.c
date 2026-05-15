@@ -59,14 +59,14 @@ int isValidDate(int d, int m, int y)
     // Check if year is < 1900
     if (y < 1900)
     {
-        printf("? Invalid date! Please check day/month/year values.");
+        printf("Invalid date. Check day, month, and year.");
         return 0;
     }
 
     // Check valid month
     if (m < 1 || m > 12)
     {
-        printf("? Invalid date! Please check day/month/year values.");
+        printf("Invalid date. Check day, month, and year.");
         return 0;
     }
 
@@ -81,7 +81,7 @@ int isValidDate(int d, int m, int y)
 
     if (d > maxDay)
     {
-        printf("? Invalid date! Please check day/month/year values.");
+        printf("Invalid date. Check day, month, and year.");
         return 0;
     }
 
@@ -108,7 +108,7 @@ int isValidPastDate(int d, int m, int y)
     if (y > curY || (y == curY && m > curM) ||
         (y == curY && m == curM && d > curD))
     {
-        printf(" Invalid date! Date must be in the past.");
+        printf("Invalid date. Must be in the past.");
         return 0;
     }
 
@@ -135,14 +135,14 @@ int isValidFutureDate(int d, int m, int y)
     if (y < curY || (y == curY && m < curM) ||
         (y == curY && m == curM && d < curD))
     {
-        printf(" Invalid date! Date must be in the future.");
+        printf("Invalid date. Must be in the future.");
         return 0;
     }
 
     return 1;
 }
 
-// Beautify name
+// Normalize name formatting
 void beautifyName(char name[])
 {
     int i = 0, j = 0;
@@ -206,14 +206,14 @@ int isValidName(const char *s)
     // Check empty name
     if (name[0] == '\0' || len == 0)
     {
-        printf("? Empty name.\n");
+        printf("Name is empty.\n");
         return 0;
     }
 
     // Check name length
     if (len > 50)
     {
-        printf("? Name longer than specified (max 50 characters).\n");
+        printf("Name is too long (max 50 chars).\n");
         return 0;
     }
 
@@ -224,7 +224,7 @@ int isValidName(const char *s)
 
         if (!((c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z') || c == ' '))
         {
-            printf("? Name contains invalid characters.\n");
+            printf("Name has invalid characters.\n");
             return 0;
         }
     }
@@ -248,14 +248,14 @@ int isValidEmail(const char *s)
         if (!((c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z') ||
               c >= '0' && c <= '9' || c == '@' || c == '.'))
         {
-            printf("Email contain invalid character\n");
+            printf("Email has invalid characters.\n");
             return 0;
         }
         if (c == '@')
             count++;
     }
 
-    // Check if don't have '@'
+    // Check if '@' is missing
     if (count == 0)
         return 0;
 
@@ -274,13 +274,13 @@ int isValidPhone(const char *s)
     // Check first digit is '0'
     if (s[i] != '0')
     {
-        printf("Invalid phone number\n");
+        printf("Invalid phone number.\n");
         return 0;
     }
 
     if (strlen(s) - i != 10)
     {
-        printf("Invalid phone number length\n");
+        printf("Phone number must be 10 digits.\n");
         return 0;
     }
 
@@ -290,7 +290,7 @@ int isValidPhone(const char *s)
         char c = s[i];
         if (!isdigit(c))
         {
-            printf("Invalid phone number\n");
+            printf("Invalid phone number.\n");
             return 0;
         }
     }

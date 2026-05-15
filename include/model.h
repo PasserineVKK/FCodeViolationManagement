@@ -22,9 +22,9 @@ typedef struct
     char studentID[10]; // SE000000\0
     char password[30];
     int role;          // 0 = Member, 1 = Leader/Vice, 2 = BOD
-    int isLocked;      // 1 = This account locked after 3 failed trials
-    int failCount;     // consecutive failed trials
-    time_t lockedFrom; // time start lock
+    int isLocked;      // 1 = Account is locked after failed attempts
+    int failCount;     // Consecutive failed attempts
+    time_t lockedFrom; // Lock start time
 } Account;
 
 typedef struct
@@ -45,8 +45,8 @@ typedef struct
 {
     char violationID[50];
     char studentID[10]; // SE000000\0
-    int reason;         // 0 = Not uniform, 1 = Meeting absence, 2 = Not join in Club
-                        // activity, 3 = Violence
+    int reason;         // 0 = Not uniform, 1 = Meeting absence, 2 = No club activity,
+                        // 3 = Violence
     time_t violationTime;
     double fine;
     int isPaid;  // 0 = Not yet, 1 = Already
@@ -91,7 +91,7 @@ typedef struct
 {
     char id[6];
     int type;
-    char memberId[10]; // Only for Admin waring;
+    char memberId[10]; // Only for admin warning
     char content[MAX_MESSAGE_LENGTH];
     time_t create_time;
     time_t deleteTime;

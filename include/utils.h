@@ -10,9 +10,9 @@
 
 int formatCurrency(double amount, char* outputString, size_t availableLen);
 
-// use: declare char outputString[], then call this function.
-// after this func operate, the value of this outputString is the desired
-// currency format
+// Usage: declare char outputString[], then call this function.
+// After this function executes, outputString contains the formatted
+// currency value.
 
 int normalizeName(char *name);
 
@@ -23,12 +23,12 @@ const char* translatePenalty(int penalty);
 
 char* getLastWord(char* inputString);
 
-// declare a sortPointerList first, then use it as OUTPUT param
+// Declare sortPointerList first, then pass it as an output parameter.
 // compare command:
 	// reason: r DESC, R ASC
 	// paid: p DESC, P ASC
 	// team: t DESC, T ASC
-	// valid command example: rtp, prt, PrT, tR, R, P, T, t,..
+	// valid command examples: rtp, prt, PrT, tR, R, P, T, t
 void sortViolation(ViolationList* list, Violation* sortPointerList[], char* compareCommand);
 
 void sortMember(MemberList* list, Member* sortPointerList[], char* compareCommand);
