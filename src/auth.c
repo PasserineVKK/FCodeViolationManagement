@@ -131,7 +131,7 @@ void changePassword(AccountList *accounts, char *actorID, int role)
 
     int aIndex = -1;
 
-    char studentID[9]; // SE000000\0
+    char studentID[10]; // SE000000\0
     char oldPassword[30];
 
     if (role == 0)
@@ -177,9 +177,9 @@ void changePassword(AccountList *accounts, char *actorID, int role)
     do
     {
         // Enter new password
-        inputPassword(newPassword, "Enter new password: ");
+        inputPassword(newPassword, sizeof(newPassword), "Enter new password: ");
         char confirmPassword[30];
-        inputPassword(confirmPassword, "Confirm new password: ");
+        inputPassword(confirmPassword, sizeof(confirmPassword), "Confirm new password: ");
 
         // Check if new password and confirm password match
         if (strcmp(newPassword, confirmPassword) == 0)

@@ -67,32 +67,38 @@ int main(int argc, char *argv[])
     {
         // If there is no data in .dat, trigger root admin account initialization
         if (accounts.count == 0 && violations.count == 0 && members.count == 0 && isStayLogin == 0){
-            uiWarning("CAN NOT FIND EXIST DATA!!! ENTRY BY ROOT ADMIN ACCOUNT\n");
-            char rootUsername[64]; 
-            char rootPassword[64];
-            inputStudentID(rootUsername, "ENTER ROOT USERNAME: ");
-            inputPassword(rootPassword, "ENTER ROOT PASSWORD: ");
-            if (strcmp(rootUsername, (char*)ADMIN_USER) == 0 && strcmp(rootPassword, (char*)ADMIN_PASS) == 0){
-                strcpy(members.data[0].studentID, rootUsername);
-                members.data[0].role = 2;
-                members.count++;
-                strcpy(accounts.data[0].password, rootPassword);
-                strcpy(accounts.data[0].studentID, rootUsername);
-                accounts.count++;
-                uiWarning("CREATE FIRST ADMIN. BE CAREFUL, YOU MUST SET FIRST ADMIN AS BOD\n");
-                addMember(&members, &accounts, rootUsername);
-                removeOneMember(&members, &accounts, &violations, rootUsername, rootUsername);
-                saveAccounts(&accounts);
-                saveMembers(&members);
-                uiSuccess("CREATE FIRST ADMIN SUCCESSFULLY\n");
-            } else return 0;
-        }
-
-        // Check login again only if the user is not staying logged in.
+        	uiWarning("CAN NOT FIND EXIST DATA!!! ENTRY BY ROOT ADMIN ACCOUNT\n");
+        	char rootUsername[64]; 
+        	char rootPassword[64];
+        	inputStudentID(rootUsername, "ENTER ROOT USERNAME: ");
+        	inputPassword(rootPassword, sizeof (rootPassword), "ENTER ROOT PASSWORD: ");
+        	if (strcmp(rootUsername, (char*)ADMIN_USER) == 0 && strcmp(rootPassword, (char*)ADMIN_PASS) == 0){
+        		strcpy(members.data[0].studentID, rootUsername);
+        		members.data[0].role = 2;
+        		members.count++;
+        		strcpy(accounts.data[0].password, rootPassword);
+        		strcpy(accounts.data[0].studentID, rootUsername);
+        		accounts.count++;
+                uiSuccess("TRUE USERNAME AND PASSWORD FOR ROOT ACCOUNT\n\n");
+        		uiWarning("CREATE FIRST ADMIN. BE CAREFUL, YOU MUST SET FIRST ADMIN AS BOD\n");
+        		addMember(&members, &accounts, rootUsername);
+        		removeOneMember(&members, &accounts, &violations, rootUsername, rootUsername);
+        		saveAccounts(&accounts);
+        		saveMembers(&members);
+        		uiSuccess("CREATE FIRST ADMIN SUCCESSFULLY\n");
+			} else{
+                uiError("WRONG USERNAME OR PASSWORD. EXIT PROGRAM\n");
+                pauseProgram();
+                return 0;
+            };
+		} 
+		
+		
         if (isStayLogin == 0)
         {
             loginRole = login(&accounts, studentID);
-            // -2 means the student ID was not found.
+            
+            // If loginRole = -2 => Student ID not found
             if (loginRole == -2)
             {
                 int isExit = 0;
@@ -135,7 +141,7 @@ int main(int argc, char *argv[])
                 clearScreen();
             }
         }
-
+		
         clearScreen();
         switch (menuRole)
         {

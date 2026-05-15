@@ -167,6 +167,7 @@ void removeOneMember (MemberList *members, AccountList *accounts, ViolationList 
 
 // CRUD / Features
 void addMember(MemberList* members, AccountList* accounts, const char *actorID) {
+    
     if (members->count >= MAX) {
         printf("Member list is full.\n");
         return;
