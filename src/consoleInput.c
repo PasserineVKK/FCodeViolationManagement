@@ -11,6 +11,15 @@
 #include "../include/view/viewUtil.h"
 #include "../include/model.h"
 
+#define CTRL_C 3
+/*ETX
+End of Text
+ASCII 3*/
+#define CTRL_V 22 
+/*22
+0x16
+SYN*/
+
 void inputIntegerInRange(int* target, int min, int max, const char* prompt) {
     char buf[50];
     while (1) {
@@ -153,7 +162,7 @@ void inputMemberTeam(int* target, const char* prompt) {
     inputIntegerInRange(target, 0, 3, prompt);
 }
 
-void inputPassword(char* password, int len, const char* prompt){
+int inputPasswordOrCancel(char* password, int len, const char* prompt){
     int i = 0;
     char ch;
     char buf[30];
@@ -182,7 +191,20 @@ void inputPassword(char* password, int len, const char* prompt){
 
             // Copy kết quả
             strcpy(password, buf);
-            return;
+            return 1;
+        }
+        if (ch == CTRL_C) { // Ctrl + C
+            uiError("\nCopy is not allowed.\n");
+            continue;
+        }
+        if (ch == CTRL_V) { // Ctrl + V
+            uiError("\nPasting is not allowed for password input.\n");
+            continue;
+        }
+
+        //To quit input
+        if (ch == 'q'){
+            return 0;
         }
 
         // Delete
@@ -199,30 +221,6 @@ void inputPassword(char* password, int len, const char* prompt){
             // In *
             printf("*");
         }
-    }
-}
-
-
-int inputPasswordOrCancel(char* target, const char* prompt) {
-    char buf[30];
-    while (1) {
-        if (!inputString(buf, sizeof(buf), prompt)) {
-            uiError("Please enter a valid password.\n");
-            continue;
-        }
-
-        if (strcmp(buf, "q") == 0 || strcmp(buf, "quit") == 0 ||
-            strcmp(buf, "back") == 0) {
-            return 0;
-        }
-
-        if (strlen(buf) < 6) {
-            uiError("Password must be at least 6 characters long. \nTry again: ");
-            continue;
-        }
-
-        strcpy(target, buf);
-        return 1;
     }
 }
 

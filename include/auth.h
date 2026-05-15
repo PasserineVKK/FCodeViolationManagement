@@ -18,7 +18,7 @@ int searchMemberByIdInA(AccountList *accounts, const char* id);
 int login(AccountList *accounts, char *studentID);
 
 // Change password of logged in account
-void changePassword(AccountList *accounts, char* actorID, int role);
+void changePassword(AccountList *accounts, char* actorID, int actorRole);
 
 long getRemainingLockTime(Account *acc);
 

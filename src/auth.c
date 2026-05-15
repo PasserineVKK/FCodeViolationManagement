@@ -79,7 +79,11 @@ int login(AccountList *accounts, char *studentID)
     }
 
     // Enter password
-    inputString(password, sizeof(password), "Enter password: ");
+    if (!inputPasswordOrCancel(password, sizeof(password), "Enter password (Press q to quit): "))
+    {
+        printf("Login cancelled.\n");
+        return -3;
+    }
 
     if (strcmp(password, acc->password) == 0)
     {
@@ -124,7 +128,7 @@ int login(AccountList *accounts, char *studentID)
 }
 
 // Change password of logged in account
-void changePassword(AccountList *accounts, char *actorID, int role)
+void changePassword(AccountList *accounts, char *actorID, int actorRole)
 {
     uiInfo("CHANGE PASSWORD\n");
 
@@ -133,10 +137,12 @@ void changePassword(AccountList *accounts, char *actorID, int role)
     char studentID[10]; // SE000000\0
     char oldPassword[30];
 
-    if (role == 0)
+    //Member menu
+    if (actorRole == 0)
     {
         strcpy(studentID, actorID);
     }
+    //admin menu
     else
     {
         // Input student ID which want to change password
@@ -152,42 +158,57 @@ void changePassword(AccountList *accounts, char *actorID, int role)
     }
 
     // Display student ID which want to change password
-    printf("Student ID: %s\n", studentID);
+    printf("Student ID will change password: %s\n", studentID);
 
     int targetRole = accounts->data[aIndex].role;
 
     // if actor is normal member OR actor is changing his/her own pass
-    if (role == 0 || strcmp(actorID, studentID) == 0)
+    if (actorRole == 0 || strcmp(actorID, studentID) == 0)
     {
-        // Enter old password
-        if (!inputPasswordOrCancel(oldPassword, "Enter old password (Press q, quit, or back to cancel): "))
-        {
-            printf("Password change cancelled");
-            return;
+        // Enter old password until finished or quit
+        while (1){
+            if (!inputPasswordOrCancel(oldPassword, sizeof(oldPassword), "Enter old password (Press q to quit): ")){
+                printf("Password change cancelled");
+                return;
+            }
+            //No exist pass 
+            if (strcmp(oldPassword, accounts->data[aIndex].password) != 0){
+                uiError("Incorrect old password. Please try again.\n");
+                continue;
+            }
+            else{
+                break;
+            }
         }
     }
-    else if (role < 2 && targetRole == 2)
+    else if (actorRole < 2 && targetRole == 2)
     {
         printf("You are not granted permission to change BOD password.\n");
         return;
     }
 
     char newPassword[30];
-    do
-    {
-        // Enter new password
-        inputPassword(newPassword, sizeof(newPassword), "Enter new password: ");
-        char confirmPassword[30];
-        inputPassword(confirmPassword, sizeof(confirmPassword), "Confirm new password: ");
-
-        // Check if new password and confirm password match
-        if (strcmp(newPassword, confirmPassword) == 0)
-        {
+    // Enter new password
+    if (!inputPasswordOrCancel(newPassword, sizeof(newPassword), "Enter new password (Press q to quit): ")){
+        printf("Password change cancelled");
+        return;
+    }
+    //Confirm new password
+    char confirmPassword[30];
+    while (1){
+        if (!inputPasswordOrCancel(confirmPassword, sizeof(confirmPassword), "Confirm new password (Press q to quit): ")){
+            printf("Password change cancelled");
+            return;
+        }
+        //No corect confirm pass
+        if (strcmp(confirmPassword, newPassword) != 0){
+            uiError("New password and confirm password do not match. Please try again.\n");
+            continue;
+        }
+        else{
             break;
         }
-
-        printf("New password and confirm password do not match.\n");
-    } while (1);
+    }
 
     // Update new password to account
     strcpy(accounts->data[aIndex].password, newPassword);
