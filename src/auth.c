@@ -130,7 +130,7 @@ void changePassword(AccountList *accounts, char *actorID, int role)
 
     int aIndex = -1;
 
-    char studentID[9]; // SE000000\0
+    char studentID[10]; // SE000000\0
     char oldPassword[30];
 
     if (role == 0)
@@ -160,7 +160,7 @@ void changePassword(AccountList *accounts, char *actorID, int role)
     if (role == 0 || strcmp(actorID, studentID) == 0)
     {
         // Enter old password
-        if (inputPasswordOrCancel(oldPassword, "Enter old password (Press q, quit, or back to cancel): "))
+        if (!inputPasswordOrCancel(oldPassword, "Enter old password (Press q, quit, or back to cancel): "))
         {
             printf("Password change cancelled");
             return;
