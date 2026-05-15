@@ -48,7 +48,7 @@ int main(int argc, char *argv[])
     loadMembers(&members);
     loadViolations(&violations, &members);
     loadAccounts(&accounts);
-	seedSampleData(&members, &violations, &accounts);
+	//seedSampleData(&members, &violations, &accounts);
     // loginRole represent the role of this account
     // menuRole represent which menu will be open.
     int loginRole = -1, menuRole = -1;
@@ -80,6 +80,8 @@ int main(int argc, char *argv[])
         		uiWarning("CREATE FIRST ADMIN. BE CAREFUL, YOU MUST SET FIRST ADMIN AS BOD\n");
         		addMember(&members, &accounts, rootUsername);
         		removeOneMember(&members, &accounts, &violations, rootUsername, rootUsername);
+        		saveAccounts(&accounts);
+        		saveMembers(&members);
         		uiSuccess("CREATE FIRST ADMIN SUCCESSFULLY\n");
 			} else return 0;
 		} 
@@ -88,6 +90,7 @@ int main(int argc, char *argv[])
         if (isStayLogin == 0)
         {
             loginRole = login(&accounts, studentID);
+            
             // If loginRole = -2 => Student ID not found
             if (loginRole == -2)
             {
@@ -131,12 +134,14 @@ int main(int argc, char *argv[])
                 clearScreen();
             }
         }
-
+		printf("\nDEBUG: ID=%s | loginRole=%d | menuRole=%d | isPending=%d | account %d\n", 
+        studentID, loginRole, menuRole, members.data[mIndex].isPending, accounts.data[mIndex].role);
+pauseProgram();
         clearScreen();
         switch (menuRole)
         {
         case 0:
-        {
+        {	
             printf("%s", UI_TABLE_HEADER);
             printf("\nMEMBER MENU\n");
             printf("%s", UI_RESET);
@@ -212,7 +217,7 @@ int main(int argc, char *argv[])
             }
             break;
         }
-
+		break;
         case 1:
         case 2:
         {
@@ -251,7 +256,7 @@ int main(int argc, char *argv[])
                 addMember(&members, &accounts, studentID);
                 break;
             case 2:
-                updateMember(&members, &violations, studentID);
+                updateMember(&accounts,&members, &violations, studentID);
                 break;
             case 3:
                 removeMember(&members, &accounts, &violations, studentID);
