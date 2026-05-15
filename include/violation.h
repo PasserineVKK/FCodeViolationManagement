@@ -26,38 +26,43 @@
 #define VIOLATIONS_FILE "data/violations.dat"
 #define MAX_VIOLATIONS 3000
 
+// Initialize and file I/O
 void initViolationList(ViolationList *list, int initialCapacity);
 
 int loadViolations(ViolationList *violations, MemberList *members);
 int saveViolations(ViolationList *violations);
 
-double calculateFine(int role);
-void refreshFineAfterRolechange(const char *memberId, int role, ViolationList *violations);
-
+// Finders / Accessors
 Violation *findViolationById(const char *violationId, ViolationList *violations);
-
 int getViolationIndexById(const ViolationList *violations, const char *violationId);
 
-void updateIsPaidField(const char *violationId, ViolationList *violations, int value);
-int addViolation(ViolationList *violations, const Violation *newV);
+// Calculations and refresh
+double calculateFine(int role, int reason);
+void refreshFineAfterRolechange(const char *memberId, int role, ViolationList *violations);
 
+// CRUD operations
+int addViolation(ViolationList *violations, const Violation *newV);
+void updateIsPaidField(const char *violationId, ViolationList *violations, int value);
 void deleteViolation(ViolationList *violations);
 
+// Views and recording
 void recordViolationView(ViolationList *violations, MemberList *members, int actorIndex);
+void simpleDisplayViolation(const Violation *v);
 
+// Serious-violation handlers and checks
 void handleSeriousViolation(const Member *member, const Violation *violation);
+int hasViolenceViolation(const char *studentID, const ViolationList *violations);
 
+// Lists and displays
 void displayWarningList(const MemberList *members, const ViolationList *violations);
 void displayKickList(const MemberList *members, const ViolationList *violations);
 int isMemberInWarningList(const Member *member, const ViolationList *violations);
 
-int hasViolenceViolation(const char *studentID, const ViolationList *violations);
-
+// Member-related cleanup due to violations
 void removeMemberById(const char *id, MemberList *members, AccountList *accounts, ViolationList *violations);
 void checkAndWarnOutClub(MemberList *members, AccountList *accounts, ViolationList *violations, const char *actorID);
 
+// Misc checks
 int checkTotalBOD(MemberList *members);
-
-void simpleDisplayViolation(const Violation *v);
 
 #endif

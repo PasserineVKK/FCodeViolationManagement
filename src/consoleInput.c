@@ -11,6 +11,8 @@
 #include "../include/view/viewUtil.h"
 #include "../include/model.h"
 
+// Prompt the user for an integer and enforce it lies within [min, max].
+// Re-prompts until a valid integer in range is entered and stores it in `target`.
 void inputIntegerInRange(int* target, int min, int max, const char* prompt) {
     char buf[50];
     while (1) {
@@ -20,7 +22,7 @@ void inputIntegerInRange(int* target, int min, int max, const char* prompt) {
         buf[strcspn(buf, "\n")] = '\0';
 
         if (!isIntegerBelongRange(buf, min, max)) {
-            uiError("Please enter a valid integer only from %d to %d.\n", min,
+                uiError("Enter a number from %d to %d.\n", min,
                     max);
             continue;
         }
@@ -29,6 +31,8 @@ void inputIntegerInRange(int* target, int min, int max, const char* prompt) {
     }
 }
 
+// Prompt the user for a double and enforce it lies within [min, max].
+// Re-prompts until a valid double in range is entered and stores it in `target`.
 void inputDoubleInRange(double* target, double min, double max,
                         const char* prompt) {
     char buf[50];
@@ -39,7 +43,7 @@ void inputDoubleInRange(double* target, double min, double max,
         buf[strcspn(buf, "\n")] = '\0';
 
         if (!isDoubleBelongRange(buf, min, max)) {
-            uiError("Please enter a valid number only from %.2f to %.2f.\n", min,
+                uiError("Enter a number from %.2f to %.2f.\n", min,
                     max);
             continue;
         }
@@ -48,12 +52,13 @@ void inputDoubleInRange(double* target, double min, double max,
     }
 }
 
-// Input yes no option
+// Prompt for a yes/no selection (0 or 1). Stores the result in `option`.
 void inputYesNo(int* option, const char* prompt) {
     inputIntegerInRange(option, 0, 1, prompt);
 }
 
-// Input string
+// Reads a line of text into `buf` up to `size - 1` characters.
+// Returns 1 on success, 0 if input was too long or failed.
 int inputString(char* buf, int size, const char* prompt) {
     printf("%s", prompt);
 
@@ -73,16 +78,17 @@ int inputString(char* buf, int size, const char* prompt) {
     return 1;
 }
 
-// Input member name
+// Reads and validates a member full name, repeating until valid.
+// The validated name is copied into `target`.
 void inputMemberName(char* target, const char* prompt) {
     char buf[50];
     while (1) {
         if (!inputString(buf, sizeof(buf), prompt)) {
-            uiError("Please enter a valid name.\n");
+            uiError("Enter a valid name.\n");
             continue;
         }
         if (!isValidName(buf)) {
-            uiError("Please enter a valid name.\n");
+            uiError("Enter a valid name.\n");
             continue;
         }
         strcpy(target, buf);
@@ -90,16 +96,17 @@ void inputMemberName(char* target, const char* prompt) {
     }
 }
 
-// Input  email
+// Reads and validates an email address, repeating until valid.
+// The validated email is copied into `target`.
 void inputMemberEmail(char* target, const char* prompt) {
     char buf[50];
     while (1) {
         if (!inputString(buf, sizeof(buf), prompt)) {
-            uiError("Please enter a valid name.\n");
+            uiError("Enter a valid email.\n");
             continue;
         }
         if (!isValidEmail(buf)) {
-            uiError("Please enter a valid email.\n");
+            uiError("Enter a valid email.\n");
             continue;
         }
         strcpy(target, buf);
@@ -107,17 +114,18 @@ void inputMemberEmail(char* target, const char* prompt) {
     }
 }
 
-// Input student ID
+// Reads and validates a student ID (format checked by `isValidStudentID`).
+// The validated ID is copied into `target`.
 void inputStudentID(char* target, const char* prompt) {
     char buf[10];
     while (1) {
         if (!inputString(buf, sizeof(buf), prompt)) {
-            uiError("Please enter a valid student ID.\n");
+            uiError("Enter a valid student ID.\n");
             continue;
         }
 
         if (!isValidStudentID(buf)) {
-            uiError("Please enter a valid student ID.\n");
+            uiError("Enter a valid student ID.\n");
             continue;
         }
         strcpy(target, buf);
@@ -125,17 +133,18 @@ void inputStudentID(char* target, const char* prompt) {
     }
 }
 
-// Input new phone number
+// Reads and validates a phone number, repeating until valid.
+// The validated phone number is copied into `target`.
 void inputMemberPhone(char* target, const char* prompt) {
     char buf[15];
     while (1) {
         if (!inputString(buf, sizeof(buf), prompt)) {
-            uiError("Please enter a valid phone number.\n");
+            uiError("Enter a valid phone number.\n");
             continue;
         }
 
         if (!isValidPhone(buf)) {
-            uiError("Please enter a valid phone number.\n");
+            uiError("Enter a valid phone number.\n");
             continue;
         }
         strcpy(target, buf);
@@ -143,12 +152,12 @@ void inputMemberPhone(char* target, const char* prompt) {
     }
 }
 
-// Input member role
+// Prompts for a member role integer (0..2) and stores into `target`.
 void inputMemberRole(int* target, const char* prompt) {
     inputIntegerInRange(target, 0, 2, prompt);
 }
 
-// Input member team
+// Prompts for a member team integer (0..3) and stores into `target`.
 void inputMemberTeam(int* target, const char* prompt) {
     inputIntegerInRange(target, 0, 3, prompt);
 }
@@ -203,11 +212,13 @@ void inputPassword(char* password, int len, const char* prompt){
 }
 
 
+// Reads a password or allows the user to cancel by typing 'q', 'quit', or 'back'.
+// Returns 1 when a password was provided, 0 when the user canceled.
 int inputPasswordOrCancel(char* target, const char* prompt) {
     char buf[30];
     while (1) {
         if (!inputString(buf, sizeof(buf), prompt)) {
-            uiError("Please enter a valid password.\n");
+            uiError("Enter a valid password.\n");
             continue;
         }
 
@@ -217,7 +228,7 @@ int inputPasswordOrCancel(char* target, const char* prompt) {
         }
 
         if (strlen(buf) < 6) {
-            uiError("Password must be at least 6 characters long. \nTry again: ");
+            uiError("Password must be at least 6 characters. Try again: ");
             continue;
         }
 
@@ -226,6 +237,9 @@ int inputPasswordOrCancel(char* target, const char* prompt) {
     }
 }
 
+// Parses a date/time string and converts it into a time_t stored in `target`.
+// Accepts several formats (YYYY, YYYY-MM, YYYY-MM-DD, YYYY-MM-DD HH, YYYY-MM-DD HH:MM).
+// Keeps prompting until a valid past/future date/time is entered according to `isValidDate`.
 void inputValidTime(time_t* target, const char* prompt) {
     char buf[100];
 
@@ -275,7 +289,7 @@ void inputValidTime(time_t* target, const char* prompt) {
         if (!isValidDate(day, month, year) ||
             hour < 0 || hour > 23 ||
             minute < 0 || minute > 59) {
-            uiError("Invalid date/time value.\n");
+            uiError("Invalid date or time.\n");
             continue;
         }
 
@@ -292,6 +306,8 @@ void inputValidTime(time_t* target, const char* prompt) {
     }
 }
 
+// Prompts the user for a start and end time using `inputValidTime` and validates the range.
+// Stores results in `start` and `end`.
 void inputTimeRange(time_t* start, time_t* end, const char* prompt) {
 
     while (1) {

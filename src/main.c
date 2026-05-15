@@ -23,13 +23,18 @@ const unsigned char ADMIN_USER[] = {0x53, 0x45, 0x30, 0x30, 0x30, 0x30, 0x30, 0x
 // Root password
 const unsigned char ADMIN_PASS[] = {0x4C, 0x45, 0x54, 0x4D, 0x45, 0x43, 0x00};
 
+// Performs basic console configuration (UTF-8 and ANSI colors).
 void config()
 {
     SetConsoleOutputCP(65001);
     enableAnsiColors();
 }
 
+// Creates a small set of sample members, violations, and accounts.
+// Used to populate `data/` during development or initial runs.
 void seedSampleData(MemberList *members, ViolationList *violations, AccountList *accounts);
+
+// Program entry point. Orchestrates module initialization, login flow, and the main menu loop.
 int main(int argc, char *argv[])
 {
 
@@ -48,22 +53,19 @@ int main(int argc, char *argv[])
     loadMembers(&members);
     loadViolations(&violations, &members);
     loadAccounts(&accounts);
-	//seedSampleData(&members, &violations, &accounts);
-    // loginRole represent the role of this account
-    // menuRole represent which menu will be open.
+
+    // seedSampleData(&members, &violations, &accounts);
+    // loginRole stores the current user's role.
+    // menuRole stores the active menu.
     int loginRole = -1, menuRole = -1;
     int choice = -1, isStayLogin = 0;
-    // isStayedLogin check whether user is auth-ed. 0 = No, 1 = Yes;
+    // isStayLogin tells whether the user stays logged in.
     int mIndex = -1, vIndex = -1;
 
     int isRunning = 1;
     do
-    
     {
-        // Firstly, auth. If stay login ==> do not check
-        //				  If not stay login =>> check again.
-        
-        // If there is not data in .dat, trigger root admin account
+        // If there is no data in .dat, trigger root admin account initialization
         if (accounts.count == 0 && violations.count == 0 && members.count == 0 && isStayLogin == 0){
         	uiWarning("CAN NOT FIND EXIST DATA!!! ENTRY BY ROOT ADMIN ACCOUNT\n");
         	char rootUsername[64]; 
@@ -102,7 +104,7 @@ int main(int argc, char *argv[])
                 int isExit = 0;
                 inputYesNo(
                     &isExit,
-                    "\nDo you want to exit? \n1. Yes\n 0. No\n=>Your choice: ");
+                    "\nExit now?\n1. Yes\n0. No\n=> Your choice: ");
                 printf("\n");
                 if (isExit == 1)
                     return 0;
@@ -220,7 +222,6 @@ int main(int argc, char *argv[])
             }
             break;
         }
-		break;
         case 1:
         case 2:
         {
@@ -326,6 +327,7 @@ int main(int argc, char *argv[])
                 // mark as not login, reset menu role
             case 21:
                 isRunning = 0;
+                break;
             case 22:
                 menuRole = 0;
                 continue;
