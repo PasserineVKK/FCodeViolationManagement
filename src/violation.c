@@ -88,7 +88,7 @@ int saveViolations(ViolationList *violations)
 }
 
 // Calculates the default fine for a given role and violation reason.
-double calculateFine(int role, int reason)
+double calculateFine(int role)
 {
     if (role == 0)
         return 20000;
