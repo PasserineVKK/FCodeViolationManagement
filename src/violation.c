@@ -132,17 +132,6 @@ int getViolationIndexById(const ViolationList *violations, const char *violation
     return -1;
 }
 
-// Prompts the user to select a violation reason.
-void getReason(int *reason)
-{
-    printf("Choose a violation reason:\n");
-    printf("%d - Not uniform\n", REASON_NOT_UNIFORM);
-    printf("%d - Meeting absence\n", REASON_MEETING_ABSENCE);
-    printf("%d - No club activity\n", REASON_NO_CLUB_ACTIVITY);
-    printf("%d - Violence\n", REASON_VIOLENCE);
-    inputIntegerInRange(reason, 0, 3, "Enter choice: ");
-}
-
 // Adds a new violation to the list and persists the updated data.
 int addViolation(ViolationList *violations, const Violation *newV)
 {
@@ -206,7 +195,7 @@ void deleteViolation(ViolationList *violations){
     char violationID[9];
 
     while (continueDelete){
-        inputString(violationID, 10, "Enter violation ID: ");
+        inputString(violationID, sizeof(violationID), "Enter violation ID: ");
         int vIndex = getViolationIndexById(violations, violationID);
         if (vIndex == -1){
             uiError ("This ID does not exist.\n");
