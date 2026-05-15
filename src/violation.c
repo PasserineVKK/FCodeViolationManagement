@@ -90,8 +90,6 @@ int saveViolations(ViolationList *violations)
 // Calculates the default fine for a given role and violation reason.
 double calculateFine(int role, int reason)
 {
-    if (reason == REASON_VIOLENCE)
-        return 0;
     if (role == 0)
         return 20000;
     return 50000;
@@ -103,7 +101,7 @@ void refreshFineAfterRolechange(const char *memberId, int role, ViolationList *v
     for (int i = 0; i < violations->count; i++)
     {
         Violation *v = &violations->data[i];
-        if (strcmp(v->studentID, memberId) == 0 && v->isPaid == NOT_PAY)
+        if (strcmp(v->studentID, memberId) == 0 && v->isPaid == NOT_PAY )
         {
             v->fine = calculateFine(role, v->reason);
         }
@@ -277,18 +275,6 @@ void handleSeriousViolation(const Member *m, const Violation *newV)
     }
 }
 
-int checkTotalBOD(MemberList *members)
-{
-    int bodCount = 0;
-    for (int i = 0; i < members->count; i++)
-    {
-        if (members->data[i].role == 2)
-        {
-            bodCount++;
-        }
-    }
-    return bodCount;
-}
 
 void recordViolationView(ViolationList *violations, MemberList *members, int actorIndex)
 {
@@ -330,8 +316,8 @@ void recordViolationView(ViolationList *violations, MemberList *members, int act
         
         if (members->data[actorIndex].role == 1 && members->data[mIndex].role == 2){
             uiError("You are a Leader/Vice only. You cannot record violations for BOD members.");
-        	return;
-	}
+            return;
+    }
         
         {
             // Pointer directly points to the member in array to avoid shallow copy
@@ -344,12 +330,7 @@ void recordViolationView(ViolationList *violations, MemberList *members, int act
 
             }
             else {
-                printf("Reasons:\n");
-                printf("%d. Not uniform\n", REASON_NOT_UNIFORM);
-                printf("%d. Meeting absence\n", REASON_MEETING_ABSENCE);
-                printf("%d. No club activity\n", REASON_NO_CLUB_ACTIVITY);
-                printf("%d. Violence\n", REASON_VIOLENCE);
-                inputIntegerInRange(&reason, 0, 3, "Enter reason: ");
+                getReason(&reason);
 
                 inputString(note, 100, "Enter note (optional): ");
 

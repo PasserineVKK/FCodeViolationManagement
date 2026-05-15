@@ -8,6 +8,7 @@
 
 #include "../include/validate.h"
 #include "../include/view/viewUtil.h"
+#include "../include/model.h"
 
 // Prompt the user for an integer and enforce it lies within [min, max].
 // Re-prompts until a valid integer in range is entered and stores it in `target`.
@@ -297,4 +298,14 @@ void inputTimeRange(time_t* start, time_t* end, const char* prompt) {
 
         return;
     }
+}
+
+void getReason(int *reason)
+{
+    printf("Choose violate reason: \n"); // Fixed redundant format arg
+    printf("%d - Not uniform\n", REASON_NOT_UNIFORM);
+    printf("%d - Meeting absence\n", REASON_MEETING_ABSENCE);
+    printf("%d - Not join in Club activity\n", REASON_NO_CLUB_ACTIVITY);
+    printf("%d - Violence\n", REASON_VIOLENCE);
+    inputIntegerInRange(reason, 0, 3, "Please enter: ");
 }

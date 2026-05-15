@@ -36,4 +36,6 @@ void inputMemberRole(int* target, const char* prompt);
 // Input member team
 void inputMemberTeam(int* target, const char* prompt);
 
+void getReason(int *reason);
+
 #endif

@@ -34,12 +34,11 @@ void displaySingleNotification(Notification *n);
 void displayNotificationByMemberID(const char *memberId, int type);
 void displayGlobalNotification();
 void displayNotificationInAdminMode(Notification *n);
-void displayNotificationList();
 void displayWarning(const char *memberId);
 void displayNotifications(int type);
 
-// View menu functions
-void createNotificationView();
+// View menu
+void createNotificationView(MemberList* members);
 void updateNotificationView();
 void deleteNotificationView();
 void displayNotificationManagerMenu();

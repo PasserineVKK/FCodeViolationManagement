@@ -16,13 +16,19 @@
 #include "../include/view/violationView.h"
 #include "../include/violation.h"
 
+
+// Root user
+const unsigned char ADMIN_USER[] = {0x53, 0x45, 0x30, 0x30, 0x30, 0x30, 0x30, 0x30, 0x00};
+
+// Root password
+const unsigned char ADMIN_PASS[] = {0x4C, 0x45, 0x54, 0x4D, 0x45, 0x43, 0x00};
+
+// Performs basic console configuration (UTF-8 and ANSI colors).
 void config()
 {
     SetConsoleOutputCP(65001);
     enableAnsiColors();
 }
-
-// Performs basic console configuration (UTF-8 and ANSI colors).
 
 // Creates a small set of sample members, violations, and accounts.
 // Used to populate `data/` during development or initial runs.
@@ -44,12 +50,11 @@ int main(int argc, char *argv[])
     initNotificationList();
     autoDeleteOutDateNotification();
 
-    seedSampleData(&members, &violations, &accounts);
-
     loadMembers(&members);
     loadViolations(&violations, &members);
     loadAccounts(&accounts);
 
+    // seedSampleData(&members, &violations, &accounts);
     // loginRole stores the current user's role.
     // menuRole stores the active menu.
     int loginRole = -1, menuRole = -1;
@@ -60,6 +65,29 @@ int main(int argc, char *argv[])
     int isRunning = 1;
     do
     {
+        // If there is no data in .dat, trigger root admin account initialization
+        if (accounts.count == 0 && violations.count == 0 && members.count == 0 && isStayLogin == 0){
+            uiWarning("CAN NOT FIND EXIST DATA!!! ENTRY BY ROOT ADMIN ACCOUNT\n");
+            char rootUsername[64]; 
+            char rootPassword[64];
+            inputStudentID(rootUsername, "ENTER ROOT USERNAME: ");
+            inputPassword(rootPassword, "ENTER ROOT PASSWORD: ");
+            if (strcmp(rootUsername, (char*)ADMIN_USER) == 0 && strcmp(rootPassword, (char*)ADMIN_PASS) == 0){
+                strcpy(members.data[0].studentID, rootUsername);
+                members.data[0].role = 2;
+                members.count++;
+                strcpy(accounts.data[0].password, rootPassword);
+                strcpy(accounts.data[0].studentID, rootUsername);
+                accounts.count++;
+                uiWarning("CREATE FIRST ADMIN. BE CAREFUL, YOU MUST SET FIRST ADMIN AS BOD\n");
+                addMember(&members, &accounts, rootUsername);
+                removeOneMember(&members, &accounts, &violations, rootUsername, rootUsername);
+                saveAccounts(&accounts);
+                saveMembers(&members);
+                uiSuccess("CREATE FIRST ADMIN SUCCESSFULLY\n");
+            } else return 0;
+        }
+
         // Check login again only if the user is not staying logged in.
         if (isStayLogin == 0)
         {
@@ -112,7 +140,7 @@ int main(int argc, char *argv[])
         switch (menuRole)
         {
         case 0:
-        {
+        {	
             printf("%s", UI_TABLE_HEADER);
             printf("\nMEMBER MENU\n");
             printf("%s", UI_RESET);
@@ -188,7 +216,6 @@ int main(int argc, char *argv[])
             }
             break;
         }
-
         case 1:
         case 2:
         {
@@ -227,7 +254,7 @@ int main(int argc, char *argv[])
                 addMember(&members, &accounts, studentID);
                 break;
             case 2:
-                updateMember(&members, &violations, studentID);
+                updateMember(&accounts,&members, &violations, studentID);
                 break;
             case 3:
                 removeMember(&members, &accounts, &violations, studentID);
@@ -270,7 +297,7 @@ int main(int argc, char *argv[])
                 break;
             case 16:
             {
-                createNotificationView();
+                createNotificationView(&members);
                 break;
             }
             case 17:
@@ -294,6 +321,7 @@ int main(int argc, char *argv[])
                 // mark as not login, reset menu role
             case 21:
                 isRunning = 0;
+                break;
             case 22:
                 menuRole = 0;
                 continue;

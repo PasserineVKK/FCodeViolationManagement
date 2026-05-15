@@ -26,6 +26,7 @@ int countUnpaidViolations(const char* id, const ViolationList* violations);
 // -------- Business utilities --------
 int updateConsecutiveAbsences(MemberList* members, const char* id);
 void removeOneMember (MemberList *members, AccountList *accounts, ViolationList *violations, const char *id, const char *actorID);
+int checkTotalBOD(MemberList *members);
 
 // -------- CRUD / Features --------
 // Feature 2.1: Adds a member.
@@ -33,6 +34,6 @@ void addMember(MemberList* members, AccountList* accounts, const char *actorID);
 // Feature 2.2: Removes a member.
 void removeMember(MemberList* members, AccountList* accounts, ViolationList* violations, const char *actorID);
 // Feature 2.3: Updates a member.
-void updateMember(MemberList* members, ViolationList* violations, const char *actorID);
+void updateMember(AccountList* accounts, MemberList* members, ViolationList* violations, const char *actorID);
 
 #endif

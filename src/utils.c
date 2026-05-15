@@ -4,7 +4,7 @@
 #include <ctype.h>
 #include "../include/model.h"
 #define VIOLATION_FACTORS 3
-#define MEMBER_FACTORS 3
+#define MEMBER_FACTORS 5
 #define TYPE_VIOLATION 1
 #define TYPE_MEMBER 2
 
@@ -195,7 +195,7 @@ static int violationComparator(Violation* v1, Violation* v2, char* compareComman
 // comparator, accept member data type
 // compare by team, role, violationCount, totalFine
 static int memberComparator(Member* m1, Member* m2, char* compareCommand){
-	int len = (strlen(compareCommand) > VIOLATION_FACTORS) ? VIOLATION_FACTORS : strlen(compareCommand);
+	int len = (strlen(compareCommand) > MEMBER_FACTORS) ? MEMBER_FACTORS : strlen(compareCommand);
 	int result = 0;
 	for (int i = 0; i < len; i++){
 			// upper = ASC, lower = DESC
