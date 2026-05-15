@@ -21,12 +21,14 @@
 
 static int maxCount;
 
+// Displays one violation using the shared violation list renderer.
 void simpleDisplayViolation(const Violation *v)
 {
     // Assuming displayViolationList handles a single item if count is 1
     displayViolationList((Violation *)v, 1);
 }
 
+// Initializes the dynamic violation list buffer.
 void initViolationList(ViolationList *list, int initialCapacity)
 {
     list->count = 0;
@@ -34,6 +36,7 @@ void initViolationList(ViolationList *list, int initialCapacity)
     list->data = malloc(sizeof(Violation) * list->capacity);
 }
 
+// Loads violations from disk and reconnects each violation to its owner member.
 int loadViolations(ViolationList *violations, MemberList *members){
     int isLoadSuccess = loadFromFile(VIOLATIONS_FILE, violations->data, sizeof(Violation) - sizeof(Member *),
                                      MAX_VIOLATIONS, &violations->count);
@@ -78,11 +81,13 @@ int loadViolations(ViolationList *violations, MemberList *members){
     return 1;
 }
 
+// Saves the current violation list to disk.
 int saveViolations(ViolationList *violations)
 {
     return saveToFile(VIOLATIONS_FILE, violations->data, sizeof(Violation) - sizeof(Member *), violations->count);
 }
 
+// Calculates the default fine for a given role and violation reason.
 double calculateFine(int role, int reason)
 {
     if (reason == REASON_VIOLENCE)
@@ -92,6 +97,7 @@ double calculateFine(int role, int reason)
     return 50000;
 }
 
+// Refreshes unpaid violation fines after a member role changes.
 void refreshFineAfterRolechange(const char *memberId, int role, ViolationList *violations)
 {
     for (int i = 0; i < violations->count; i++)
@@ -104,6 +110,7 @@ void refreshFineAfterRolechange(const char *memberId, int role, ViolationList *v
     }
 }
 
+// Finds a violation by ID and returns a direct pointer to it.
 Violation *findViolationById(const char *violationId, ViolationList *violations)
 {
     for (int i = 0; i < violations->count; i++)
@@ -116,6 +123,7 @@ Violation *findViolationById(const char *violationId, ViolationList *violations)
     return NULL;
 }
 
+// Returns the array index of a violation by ID, or -1 when missing.
 int getViolationIndexById(const ViolationList *violations, const char *violationId)
 {
     for (int i = 0; i < violations->count; i++)
@@ -126,16 +134,18 @@ int getViolationIndexById(const ViolationList *violations, const char *violation
     return -1;
 }
 
+// Prompts the user to select a violation reason.
 void getReason(int *reason)
 {
-    printf("Choose violate reason: \n"); // Fixed redundant format arg
+    printf("Choose a violation reason:\n");
     printf("%d - Not uniform\n", REASON_NOT_UNIFORM);
     printf("%d - Meeting absence\n", REASON_MEETING_ABSENCE);
-    printf("%d - Not join in Club activity\n", REASON_NO_CLUB_ACTIVITY);
+    printf("%d - No club activity\n", REASON_NO_CLUB_ACTIVITY);
     printf("%d - Violence\n", REASON_VIOLENCE);
-    inputIntegerInRange(reason, 0, 3, "Please enter: ");
+    inputIntegerInRange(reason, 0, 3, "Enter choice: ");
 }
 
+// Adds a new violation to the list and persists the updated data.
 int addViolation(ViolationList *violations, const Violation *newV)
 {
     simpleDisplayViolation(newV);
@@ -150,18 +160,20 @@ int addViolation(ViolationList *violations, const Violation *newV)
     return 1;
 }
 
+// Updates the payment status of an existing violation.
 void updateIsPaidField(const char *violationId, ViolationList *violations, int value)
 {
     Violation *v = findViolationById(violationId, violations);
     if (v == NULL) return;
     else if (v->isPaid == NOT_HAVE_TO_PAY)
     {
-        uiError("This violation don't have to pay, can't update paid");
+        uiError("This violation does not require payment, so its payment status cannot be updated.");
         return;
     }
     else v->isPaid = value;
 }
 
+// Expands the violation array when it reaches capacity.
 int ensureCapacity(ViolationList *list)
 {
     if (list == NULL)
@@ -185,29 +197,30 @@ int ensureCapacity(ViolationList *list)
 }
 
 // Only for user
+// Deletes a violation chosen by ID after confirmation.
 void deleteViolation(ViolationList *violations){
     printf ("=== DELETE VIOLATIONS ===\n");
     if (violations->count <= 0){
-        printf ("Don't have any violation to delete\n");
+        printf ("There are no violations to delete.\n");
         return;
     }
     int continueDelete = 1;
     char violationID[9];
 
     while (continueDelete){
-        inputString(violationID, 10, "Enter violation id: ");
+        inputString(violationID, 10, "Enter violation ID: ");
         int vIndex = getViolationIndexById(violations, violationID);
         if (vIndex == -1){
-            uiError ("This ID do not exist\n");
+            uiError ("This ID does not exist.\n");
         }
         else {
-            uiInfo ("The violation you choose: ");
+            uiInfo ("Selected violation: ");
             simpleDisplayViolation (&violations->data[vIndex]);
             
             int confirm;
-            inputYesNo(&confirm, "Confirm to record this violation? (1: Yes, 0: No): ");
+            inputYesNo(&confirm, "Confirm deletion of this violation? (1: Yes, 0: No): ");
             if (!confirm){
-                printf("Violation not recorded.\n");
+                printf("Violation was not deleted.\n");
             }
             else{
                 if (violations->data[vIndex].owner != NULL) {
@@ -311,12 +324,12 @@ void recordViolationView(ViolationList *violations, MemberList *members, int act
         mIndex = searchMemberByIdInM(members, studentID);
         
         if (mIndex == -1){
-            uiError("Error: Student ID not found.\n");
+            uiError("Student ID not found.\n");
             continue;
         }
         
         if (members->data[actorIndex].role == 1 && members->data[mIndex].role == 2){
-        	uiError("You are only Leader/Vice. Can not record violations for BOD");
+            uiError("You are a Leader/Vice only. You cannot record violations for BOD members.");
         	return;
 	}
         
@@ -334,7 +347,7 @@ void recordViolationView(ViolationList *violations, MemberList *members, int act
                 printf("Reasons:\n");
                 printf("%d. Not uniform\n", REASON_NOT_UNIFORM);
                 printf("%d. Meeting absence\n", REASON_MEETING_ABSENCE);
-                printf("%d. No Club activity\n", REASON_NO_CLUB_ACTIVITY);
+                printf("%d. No club activity\n", REASON_NO_CLUB_ACTIVITY);
                 printf("%d. Violence\n", REASON_VIOLENCE);
                 inputIntegerInRange(&reason, 0, 3, "Enter reason: ");
 

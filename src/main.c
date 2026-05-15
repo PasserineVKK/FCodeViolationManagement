@@ -22,7 +22,13 @@ void config()
     enableAnsiColors();
 }
 
+// Performs basic console configuration (UTF-8 and ANSI colors).
+
+// Creates a small set of sample members, violations, and accounts.
+// Used to populate `data/` during development or initial runs.
 void seedSampleData(MemberList *members, ViolationList *violations, AccountList *accounts);
+
+// Program entry point. Orchestrates module initialization, login flow, and the main menu loop.
 int main(int argc, char *argv[])
 {
 
@@ -44,28 +50,27 @@ int main(int argc, char *argv[])
     loadViolations(&violations, &members);
     loadAccounts(&accounts);
 
-    // loginRole represent the role of this account
-    // menuRole represent which menu will be open.
+    // loginRole stores the current user's role.
+    // menuRole stores the active menu.
     int loginRole = -1, menuRole = -1;
     int choice = -1, isStayLogin = 0;
-    // isStayedLogin check whether user is auth-ed. 0 = No, 1 = Yes;
+    // isStayLogin tells whether the user stays logged in.
     int mIndex = -1, vIndex = -1;
 
     int isRunning = 1;
     do
     {
-        // Firstly, auth. If stay login ==> do not check
-        //				  If not stay login =>> check again.
+        // Check login again only if the user is not staying logged in.
         if (isStayLogin == 0)
         {
             loginRole = login(&accounts, studentID);
-            // If loginRole = -2 => Student ID not found
+            // -2 means the student ID was not found.
             if (loginRole == -2)
             {
                 int isExit = 0;
                 inputYesNo(
                     &isExit,
-                    "\nDo you want to exit? \n1. Yes\n 0. No\n=>Your choice: ");
+                    "\nExit now?\n1. Yes\n0. No\n=> Your choice: ");
                 printf("\n");
                 if (isExit == 1)
                     return 0;

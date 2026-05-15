@@ -13,23 +13,23 @@ int formatCurrency(double amount, char* outputString, size_t availableLen){
 	char temp[64];
 	// 1. Prepare
 	
-	//parse amount (2 decimal) to string and set to temp
+	// Parse amount (2 decimals) to a string and store it in temp
 	snprintf(temp, sizeof(temp), "%.2f VND", amount);
 	int len = strlen(temp);
 
 	int dotIndex = len - 4 - 3;
-	// the number of comma, from begin to the dot
+	// Number of commas from the beginning to the dot
 	int commaCount = (dotIndex > 0) ? (dotIndex - 1) / 3 : 0;
 	int newLen = len + commaCount; 
 	
 
-	// check available len for string
+	// Check available buffer length for output string
 	if ((size_t)newLen > availableLen){
 		snprintf(outputString, availableLen, "Error: Format currency");
 		return 0;
 	}
 	
-	//j is the current writting index in outputString
+	// j is the current writing index in outputString
 	int j = newLen;
 	outputString[j--] = '\0';
 	int i;
@@ -55,6 +55,7 @@ int formatCurrency(double amount, char* outputString, size_t availableLen){
 
 }
 
+// Maps internal role values to display labels.
 const char *translateRole(int role) {
 	switch (role) {
 		case 0:
@@ -68,6 +69,7 @@ const char *translateRole(int role) {
 	}
 }
 
+// Maps internal team values to display labels.
 const char *translateTeam(int team) {
 	switch (team) {
 		case 0:
@@ -83,6 +85,7 @@ const char *translateTeam(int team) {
 	}
 }
 
+// Maps payment-state constants to display labels.
 const char *translateIsPaid(int isPaid) {
 	switch (isPaid) {
 		case 0:
@@ -90,12 +93,13 @@ const char *translateIsPaid(int isPaid) {
 		case 1:
 			return "Paid";
 		case 2:
-			return "not have to pay";	
+			return "No payment required";
 		default:
 			return "Unknown Payment Status";
 	}
 }
 
+// Maps penalty constants to display labels.
 const char *translatePenalty(int penalty) {
 	switch (penalty) {
 		case 0:
@@ -108,6 +112,7 @@ const char *translatePenalty(int penalty) {
 
 }
 
+// Normalizes whitespace and capitalization in a human name string.
 int normalizeName(char* name){
     int n = strlen(name);
     int j = 0;
@@ -135,6 +140,7 @@ int normalizeName(char* name){
     return 1;
 }
 
+// Returns the pointer to the last word in a name string for name-based sorting.
 char* getLastWord(char* inputString){
 	char* output;
 	int len = strlen(inputString);
@@ -223,6 +229,7 @@ static int memberComparator(Member* m1, Member* m2, char* compareCommand){
 	return 0;
 }
 
+// Builds a sorted pointer list over violations without moving the underlying data.
 void sortViolation(ViolationList* list, Violation* sortPointerList[], char* compareCommand){
 	if (list == NULL || list->count <= 1) return;
 	int count = list->count;
@@ -249,6 +256,7 @@ void sortViolation(ViolationList* list, Violation* sortPointerList[], char* comp
     }		
 }
 
+// Builds a sorted pointer list over members without moving the underlying data.
 void sortMember(MemberList* list, Member* sortPointerList[], char* compareCommand){
 	if (list == NULL || list->count <= 1) return;
 	int count = list->count;

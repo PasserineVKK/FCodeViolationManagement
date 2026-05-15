@@ -2,6 +2,7 @@
 
 #include <stdio.h>
 
+// Writes a fixed-size array to disk and verifies that every record was saved.
 int saveToFile(const char* filePath, const void* data, size_t elemSize,
                int count) {
     FILE* fp = fopen(filePath, "wb");
@@ -18,6 +19,7 @@ int saveToFile(const char* filePath, const void* data, size_t elemSize,
     return 1;
 }
 
+// Loads up to maxCount records from disk and stores the number read in count.
 int loadFromFile(const char* filePath, void* buffer, size_t elemSize,
                  int maxCount, int* count) {
     *count = 0;

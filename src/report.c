@@ -20,7 +20,7 @@ static int maxCount;
 
 #define MAX_NOTIFICATIONS 1000
 
-// Validate
+// Validates whether a notification contains a usable target and message.
 int isValidateNotification(Notification *n)
 {
     if (isBlank(n->content))
@@ -37,6 +37,7 @@ int isValidateNotification(Notification *n)
 int listViolationsByTimeRange(Violation violations[], int vCount,
                               Violation results[]);
 
+// Allocates the notification list and loads any saved notifications from disk.
 void initNotificationList()
 {
     notifications = malloc(sizeof(Notification) * MAX_NOTIFICATIONS);
@@ -48,12 +49,14 @@ void initNotificationList()
     maxCount = count;
 }
 
+// Persists the in-memory notification list to disk.
 void saveNotification()
 {
     saveToFile(NOTIFICATION_PATH, notifications, sizeof(Notification), count);
 }
 
 // 2.7 Show fine statistics by team
+// Aggregates paid and unpaid fines by team and prints a summary table.
 void showFineStatsByTeam(MemberList *members, ViolationList *violations)
 {
     const char *teamNames[] = {"Academic", "Planning", "HR", "Media"};
@@ -129,6 +132,7 @@ void showFineStatsByTeam(MemberList *members, ViolationList *violations)
         "━━┛\n\n");
 }
 
+// Displays notifications matching a specific type.
 void displayNotifications(int type)
 {
     for (int i = 0; i < count; i++)
@@ -136,6 +140,7 @@ void displayNotifications(int type)
             displaySingleNotification(&notifications[i]);
 }
 
+// Displays all notifications for one member ID.
 void displayWarning(const char *memberId)
 {
     for (int i = 0; i < count; i++)
@@ -143,6 +148,7 @@ void displayWarning(const char *memberId)
             displaySingleNotification(&notifications[i]);
 }
 
+// Displays notifications for one member and one notification type.
 void displayNotificationByMemberID(const char *studentId, int type)
 {
     for (int i = 0; i < count; i++)
@@ -153,6 +159,7 @@ void displayNotificationByMemberID(const char *studentId, int type)
     }
 }
 
+// Displays every global notification.
 void displayGlobalNotification()
 {
     for (int i = 0; i < count; i++)
@@ -160,6 +167,7 @@ void displayGlobalNotification()
             displaySingleNotification(&notifications[i]);
 }
 
+// Displays the admin notification list with stable IDs.
 void displayNotificationList()
 {
     for (int i = 0; i < count; i++)
@@ -172,6 +180,7 @@ void displayNotificationList()
     }
 }
 
+// Renders one notification in a human-readable card format.
 void displaySingleNotification(Notification *n)
 {
     char timeBuf[30];
@@ -604,7 +613,7 @@ void createNotificationView()
     {
         int type;
         inputIntegerInRange(&type, 0, 2,
-                            "Enter type of notification, global(0), notice(1), warning(2): ");
+                            "Notification type (0=global, 1=notice, 2=warning): ");
         char content[200];
         inputString(content, sizeof(content), "Enter notification content: ");
 
@@ -613,7 +622,7 @@ void createNotificationView()
         // Content must not be blank
         if (isBlank(content))
         {
-            notifyAdmin("Content must not be blank!", NULL, NOT_SAVE);
+            notifyAdmin("Content cannot be blank.", NULL, NOT_SAVE);
             return;
         }
 
@@ -624,35 +633,35 @@ void createNotificationView()
         if (type == ADMIN_NOTICE &&
             !isBlank(memberId) && !isValidStudentID(memberId))
         {
-            notifyAdmin("Invalid member id for ADMIN_NOTICE!", NULL, NOT_SAVE);
+            notifyAdmin("Invalid member ID for notice.", NULL, NOT_SAVE);
             valid = 0;
         }
         else if (type == ADMIN_WARNING &&
                  !isValidStudentID(memberId))
         {
-            notifyAdmin("Invalid member id for ADMIN_WARNING!", NULL, NOT_SAVE);
+            notifyAdmin("Invalid member ID for warning.", NULL, NOT_SAVE);
             valid = 0;
         }
         else if (type == GLOBAL_NOTICE &&
                  !isBlank(memberId))
         {
-            notifyAdmin("Global notification must not have member id!", NULL, NOT_SAVE);
+            notifyAdmin("Global notice should not have a member ID.", NULL, NOT_SAVE);
             valid = 0;
         }
 
         if (valid)
         {
             int confirm = 1;
-            inputYesNo(&confirm, "Are you sure to create this notification? Yes(1), No(0): ");
+            inputYesNo(&confirm, "Create this notification? (1: Yes, 0: No): ");
             if (confirm)
             {
                 createNotification((isBlank(memberId) ? NULL : memberId),
                                    type, content, time(NULL) + BASE_DELETE_TIME, 1);
-                notifyAdmin("Notification created successfully!", NULL, NOT_SAVE);
+                notifyAdmin("Notification created.", NULL, NOT_SAVE);
             }
         }
 
-        inputYesNo(&option, "\nDo you want to add another notification? Yes(1), No(0): ");
+        inputYesNo(&option, "\nAdd another notification? (1: Yes, 0: No): ");
         if (option)
             clearScreen();
     } while (option);
@@ -665,60 +674,62 @@ void updateNotificationView()
     {
         displayNotificationList();
         char id[16];
-        inputString(id, sizeof(id), "\nEnter notification id: ");
+        inputString(id, sizeof(id), "\nEnter notification ID: ");
         Notification *n = findNotificationById(id);
 
         if (n == NULL)
         {
-            notifyAdmin("Notification not found!", NULL, NOT_SAVE);
+            notifyAdmin("Notification not found.", NULL, NOT_SAVE);
         }
         else
         {
             Notification updateN;
             inputIntegerInRange(&updateN.type, 0, 2,
-                                "Enter type of notification, global(0), notice(1), warning(2): ");
+                                "Notification type (0=global, 1=notice, 2=warning): ");
             inputString(updateN.content, sizeof(updateN.content), "Enter notification content: ");
-            inputString(updateN.memberId, sizeof(updateN.memberId), "Enter member id: ");
+            inputString(updateN.memberId, sizeof(updateN.memberId), "Enter member ID: ");
 
             // Validate once
             int valid = 1;
             if (isBlank(updateN.content))
             {
-                notifyAdmin("Content must not be blank!", NULL, NOT_SAVE);
+                notifyAdmin("Content cannot be blank.", NULL, NOT_SAVE);
                 valid = 0;
             }
             else if (updateN.type == ADMIN_NOTICE &&
                      !isBlank(updateN.memberId) && !isValidStudentID(updateN.memberId))
             {
-                notifyAdmin("Invalid member id for ADMIN_NOTICE!", NULL, NOT_SAVE);
+                notifyAdmin("Invalid member ID for notice.", NULL, NOT_SAVE);
                 valid = 0;
             }
             else if (updateN.type == ADMIN_WARNING &&
                      !isValidStudentID(updateN.memberId))
             {
-                notifyAdmin("Invalid member id for ADMIN_WARNING!", NULL, NOT_SAVE);
+                notifyAdmin("Invalid member ID for warning.", NULL, NOT_SAVE);
                 valid = 0;
             }
             else if (updateN.type == GLOBAL_NOTICE &&
                      !isBlank(updateN.memberId))
             {
-                notifyAdmin("Global notification must not have member id!", NULL, NOT_SAVE);
+                notifyAdmin("Global notice should not have a member ID.", NULL, NOT_SAVE);
                 valid = 0;
             }
 
             if (valid)
             {
                 int confirm;
-                inputYesNo(&confirm, "Are you sure to update this notification? Yes(1), No(0): ");
+                inputYesNo(&confirm, "Update this notification? (1: Yes, 0: No): ");
                 if (confirm)
                 {
-                    updateNotification(n, updateN.memberId, updateN.type, updateN.content, n->deleteTime);
-                    notifyAdmin("Update notification successfully!", NULL, NOT_SAVE);
+                    updateNotification(n, NULL, updateN.type, updateN.content, n->deleteTime);
+                    if (updateN.type != GLOBAL_NOTICE)
+                        strncpy(n->memberId, updateN.memberId, sizeof(n->memberId) - 1);
+                    notifyAdmin("Notification updated.", NULL, NOT_SAVE);
                 }
             }
         }
 
-        inputYesNo(&option, "\nDo you want to update another notification? Yes(1), No(0): ");
+        inputYesNo(&option, "\nUpdate another notification? (1: Yes, 0: No): ");
         if (option)
             clearScreen();
     } while (option);
@@ -731,24 +742,24 @@ void deleteNotificationView()
     {
         displayNotificationList();
         char removeId[7];
-        inputString(removeId, sizeof(removeId), "\nEnter remove notification id: ");
+        inputString(removeId, sizeof(removeId), "\nEnter notification ID to remove: ");
         Notification *foundNotification = findNotificationById(removeId);
         if (foundNotification != NULL)
         {
             int confirm;
-            inputYesNo(&confirm, "Are you sure to delete this notification [Yes = 1; No = 0]: ");
+            inputYesNo(&confirm, "Delete this notification? (1: Yes, 0: No): ");
             if (confirm)
             {
                 deleteNotification(foundNotification);
-                notifyAdmin("Notification is deleted!!", NULL, NOT_SAVE);
+                notifyAdmin("Notification deleted.", NULL, NOT_SAVE);
             }
         }
         else
         {
-            notifyAdmin("Can not find this notification!!", NULL, NOT_SAVE);
+            notifyAdmin("Notification not found.", NULL, NOT_SAVE);
         }
 
-        inputYesNo(&option, "\nDo you want to delete another notification [Yes = 1; No = 0]: ");
+        inputYesNo(&option, "\nDelete another notification? (1: Yes, 0: No): ");
         if (option)
         {
             clearScreen();
