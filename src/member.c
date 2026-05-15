@@ -444,7 +444,7 @@ void updateMember(AccountList* accounts, MemberList* members, ViolationList* vio
                                     vPtr->owner->isPending == NOT_PENDING &&
                                     vPtr->fine != 0) {
                                     
-                                    double newFine = calculateFine(role, vPtr->reason);
+                                    double newFine = calculateFine(role);
                                     vPtr->fine = newFine;
                                 }
                             }
@@ -481,4 +481,17 @@ void updateMember(AccountList* accounts, MemberList* members, ViolationList* vio
             continueUpdate = 0;
         }
     }
+}
+
+int checkTotalBOD(MemberList *members)
+{
+    int bodCount = 0;
+    for (int i = 0; i < members->count; i++)
+    {
+        if (members->data[i].role == 2)
+        {
+            bodCount++;
+        }
+    }
+    return bodCount;
 }
