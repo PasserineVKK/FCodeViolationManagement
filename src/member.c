@@ -495,3 +495,15 @@ int checkTotalBOD(MemberList *members)
     }
     return bodCount;
 }
+
+
+Member* getMemberById(const char* studentId, MemberList* members) {
+    for (int i = 0; i < members->count; i++) {
+        if (strcmp(members->data[i].studentID, studentId) == 0) {
+            // Return pointer directly to the array's memory location
+            return &members->data[i];
+        }
+    }
+    return NULL;
+}
+

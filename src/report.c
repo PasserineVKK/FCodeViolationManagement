@@ -34,8 +34,6 @@ int isValidateNotification(Notification *n)
     return 1;
 }
 
-int listViolationsByTimeRange(Violation violations[], int vCount,
-                              Violation results[]);
 
 // Allocates the notification list and loads any saved notifications from disk.
 void initNotificationList()
