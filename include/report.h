@@ -50,7 +50,7 @@ Notification *warningMember(const char *content, const char *memberId,
 Notification *globalNotification(const char *content);
 
 // View menu
-void createNotificationView();
+void createNotificationView(MemberList* members);
 void updateNotificationView();
 void deleteNotificationView();
 void displayNotificationManagerMenu();

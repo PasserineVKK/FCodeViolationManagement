@@ -597,7 +597,7 @@ void displayNotificationManagerMenu()
            "\n┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛\n");
 }
 
-void createNotificationView()
+void createNotificationView(MemberList* members)
 {
     int option;
     do
@@ -616,11 +616,15 @@ void createNotificationView()
             notifyAdmin("Content must not be blank!", NULL, NOT_SAVE);
             return;
         }
-
+ 		int valid = 1;
         char memberId[10] = "";
         inputString(memberId, sizeof(memberId), "Enter member id: ");
+        if (searchMemberByIdInM(members, memberId) == -1){
+        	printf("This student ID does not exist!");
+        	valid = 0;
+		}
 
-        int valid = 1;
+       
         if (type == ADMIN_NOTICE &&
             !isBlank(memberId) && !isValidStudentID(memberId))
         {

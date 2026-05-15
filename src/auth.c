@@ -176,9 +176,9 @@ void changePassword(AccountList *accounts, char *actorID, int role)
     do
     {
         // Enter new password
-        inputPassword(newPassword, "Enter new password: ");
+        inputPassword(newPassword, sizeof(newPassword), "Enter new password: ");
         char confirmPassword[30];
-        inputPassword(confirmPassword, "Confirm new password: ");
+        inputPassword(confirmPassword, sizeof(confirmPassword), "Confirm new password: ");
 
         // Check if new password and confirm password match
         if (strcmp(newPassword, confirmPassword) == 0)

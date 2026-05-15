@@ -1,5 +1,6 @@
 #include "../include/consoleInput.h"
 
+#include <conio.h>
 #include <ctype.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -152,19 +153,52 @@ void inputMemberTeam(int* target, const char* prompt) {
     inputIntegerInRange(target, 0, 3, prompt);
 }
 
-void inputPassword(char* target, const char* prompt) {
+void inputPassword(char* password, int len, const char* prompt){
+    int i = 0;
+    char ch;
     char buf[30];
-    while (1) {
-        if (!inputString(buf, sizeof(buf), prompt)) {
-            uiError("Please enter a valid password.\n");
-            continue;
+
+    printf("%s", prompt);
+
+    while (1)
+    {
+        // For no echo
+        ch = _getch();
+
+        // Finish -> enter
+        if (ch == '\r' || ch == '\n')
+        {
+            if (i < 6) {
+                uiError("\nPassword must be at least 6 characters long.\n");
+                // Reset buffer
+                i = 0;
+                printf("%s", prompt);
+                continue;
+            }
+
+            // Add end to buffer
+            buf[i] = '\0';
+            printf("\n");
+
+            // Copy kết quả
+            strcpy(password, buf);
+            return;
         }
-        if (strlen(buf) < 6) {
-            uiError("Password must be at least 6 characters long.\n");
-            continue;
+
+        // Delete
+        if (ch == '\b'){
+            if (i > 0){
+                i--;
+                printf("\b \b"); // back->add black-> back again 
+            }
         }
-        strcpy(target, buf);
-        return;
+        //Add to buff
+        else if (i < len - 1){
+            buf[i++] = ch;
+
+            // In *
+            printf("*");
+        }
     }
 }
 
