@@ -134,9 +134,7 @@ int main(int argc, char *argv[])
                 clearScreen();
             }
         }
-		printf("\nDEBUG: ID=%s | loginRole=%d | menuRole=%d | isPending=%d | account %d\n", 
-        studentID, loginRole, menuRole, members.data[mIndex].isPending, accounts.data[mIndex].role);
-pauseProgram();
+		
         clearScreen();
         switch (menuRole)
         {
@@ -299,7 +297,7 @@ pauseProgram();
                 break;
             case 16:
             {
-                createNotificationView();
+                createNotificationView(&members);
                 break;
             }
             case 17:
