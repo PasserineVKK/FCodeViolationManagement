@@ -71,7 +71,11 @@ int main(int argc, char *argv[])
         	char rootUsername[64]; 
         	char rootPassword[64];
         	inputStudentID(rootUsername, "ENTER ROOT USERNAME: ");
-        	inputPassword(rootPassword, sizeof (rootPassword), "ENTER ROOT PASSWORD: ");
+        	if (!inputPasswordOrCancel(rootPassword, sizeof (rootPassword), "ENTER ROOT PASSWORD (Press q to quit): ")){
+        		uiError("\nRoot password entry cancelled.\n");
+        		return 0;
+        	}
+
         	if (strcmp(rootUsername, (char*)ADMIN_USER) == 0 && strcmp(rootPassword, (char*)ADMIN_PASS) == 0){
         		strcpy(members.data[0].studentID, rootUsername);
         		members.data[0].role = 2;
@@ -123,6 +127,10 @@ int main(int argc, char *argv[])
                     return 0;
                 else
                     continue;
+            }
+            else if (loginRole == -3){
+                uiError("Login cancelled. Exit program.\n");
+                continue;
             }
             else
             {

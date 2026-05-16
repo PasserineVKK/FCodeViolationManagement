@@ -11,8 +11,19 @@
 #include "../include/view/viewUtil.h"
 #include "../include/model.h"
 
+#define CTRL_C 3
+/*ETX
+End of Text
+ASCII 3*/
+#define CTRL_V 22 
+/*22
+0x16
+SYN*/
+
+
 // Prompt the user for an integer and enforce it lies within [min, max].
 // Re-prompts until a valid integer in range is entered and stores it in `target`.
+
 void inputIntegerInRange(int* target, int min, int max, const char* prompt) {
     char buf[50];
     while (1) {
@@ -162,7 +173,9 @@ void inputMemberTeam(int* target, const char* prompt) {
     inputIntegerInRange(target, 0, 3, prompt);
 }
 
-void inputPassword(char* password, int len, const char* prompt){
+// Reads a password or allows the user to cancel by typing 'q'.
+// Returns 1 when a password was provided, 0 when the user canceled.
+int inputPasswordOrCancel(char* password, int len, const char* prompt){
     int i = 0;
     char ch;
     char buf[30];
@@ -191,7 +204,20 @@ void inputPassword(char* password, int len, const char* prompt){
 
             // Copy kết quả
             strcpy(password, buf);
-            return;
+            return 1;
+        }
+        if (ch == CTRL_C) { // Ctrl + C
+            uiError("\nCopy is not allowed.\n");
+            continue;
+        }
+        if (ch == CTRL_V) { // Ctrl + V
+            uiError("\nPasting is not allowed for password input.\n");
+            continue;
+        }
+
+        //To quit input
+        if (ch == 'q'){
+            return 0;
         }
 
         // Delete
@@ -212,30 +238,6 @@ void inputPassword(char* password, int len, const char* prompt){
 }
 
 
-// Reads a password or allows the user to cancel by typing 'q', 'quit', or 'back'.
-// Returns 1 when a password was provided, 0 when the user canceled.
-int inputPasswordOrCancel(char* target, const char* prompt) {
-    char buf[30];
-    while (1) {
-        if (!inputString(buf, sizeof(buf), prompt)) {
-            uiError("Enter a valid password.\n");
-            continue;
-        }
-
-        if (strcmp(buf, "q") == 0 || strcmp(buf, "quit") == 0 ||
-            strcmp(buf, "back") == 0) {
-            return 0;
-        }
-
-        if (strlen(buf) < 6) {
-            uiError("Password must be at least 6 characters. Try again: ");
-            continue;
-        }
-
-        strcpy(target, buf);
-        return 1;
-    }
-}
 
 // Parses a date/time string and converts it into a time_t stored in `target`.
 // Accepts several formats (YYYY, YYYY-MM, YYYY-MM-DD, YYYY-MM-DD HH, YYYY-MM-DD HH:MM).

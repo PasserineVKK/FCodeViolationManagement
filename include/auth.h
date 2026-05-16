@@ -17,8 +17,8 @@ int searchMemberByIdInA(AccountList *accounts, const char* id);
 // Gets the role of the current user.
 int login(AccountList *accounts, char *studentID);
 
-// Changes the current user's password.
-void changePassword(AccountList *accounts, char* actorID, int role);
+// Change password of logged in account
+void changePassword(AccountList *accounts, char* actorID, int actorRole);
 
 long getRemainingLockTime(Account *acc);
 
