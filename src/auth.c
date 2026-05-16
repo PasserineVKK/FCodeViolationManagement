@@ -82,7 +82,6 @@ int login(AccountList *accounts, char *studentID)
     // Enter password
     if (!inputPasswordOrCancel(password, sizeof(password), "Enter password (Press q to quit): "))
     {
-        printf("Login cancelled.\n");
         return -3;
     }
 
