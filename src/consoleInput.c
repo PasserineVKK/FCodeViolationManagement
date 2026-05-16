@@ -11,16 +11,6 @@
 #include "../include/view/viewUtil.h"
 #include "../include/model.h"
 
-#define CTRL_C 3
-/*ETX
-End of Text
-ASCII 3*/
-#define CTRL_V 22 
-/*22
-0x16
-SYN*/
-
-
 // Prompt the user for an integer and enforce it lies within [min, max].
 // Re-prompts until a valid integer in range is entered and stores it in `target`.
 
@@ -205,14 +195,6 @@ int inputPasswordOrCancel(char* password, int len, const char* prompt){
             // Copy kết quả
             strcpy(password, buf);
             return 1;
-        }
-        if (ch == CTRL_C) { // Ctrl + C
-            uiError("\nCopy is not allowed.\n");
-            continue;
-        }
-        if (ch == CTRL_V) { // Ctrl + V
-            uiError("\nPasting is not allowed for password input.\n");
-            continue;
         }
 
         //To quit input
