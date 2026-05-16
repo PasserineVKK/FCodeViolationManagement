@@ -30,6 +30,7 @@ static long order = ASC;
 static int enableSortOption;
 static char currentSortCommand[3];
 
+// Draws the table header used by all violation list views.
 void displayViolationTableHeader()
 {
     printf("%s"
@@ -55,6 +56,7 @@ void displayViolationTableHeader()
         UI_TABLE_BORDER, UI_RESET);
 }
 
+// Draws the table footer for violation list views.
 void displayViolationTableFooter()
 {
     printf(
@@ -63,6 +65,7 @@ void displayViolationTableFooter()
     printf("%s", UI_RESET);
 }
 
+// Prints one violation row with formatted fields and alternating row style.
 void displayViolationRow(const Violation *v)
 {
     char timeField[30];
@@ -111,6 +114,7 @@ void displayViolationRow(const Violation *v)
     violationRowNumber++;
 }
 
+// Displays the full violation list with simple paging.
 void displayViolationList(const Violation violations[], int vCount)
 {
     int shown = 0;
@@ -140,6 +144,7 @@ void displayViolationList(const Violation violations[], int vCount)
     displayViolationTableFooter();
 }
 
+// Displays only violations that belong to the requested student ID.
 void displayViolationByStudentId(const char *id, const ViolationList *violations)
 {
     int shown = 0;
@@ -165,13 +170,14 @@ void displayViolationByStudentId(const char *id, const ViolationList *violations
     displayViolationTableFooter();
 }
 
+// Marks a selected violation as paid and refreshes the member fine total.
 void markFineAsPaidView(ViolationList *violations, MemberList *members){
     if (violations->count <= 0){
-        printf ("No violation recored\n");
+        printf ("No violations recorded.\n");
         return;
     }
     if (members->count <= 0){
-        printf ("No member in list\n");
+        printf ("No members in the list.\n");
         return;
     }
     int continueMarkFine = 1;
@@ -182,18 +188,18 @@ void markFineAsPaidView(ViolationList *violations, MemberList *members){
 
         int vIndex = getViolationIndexById(violations, violationID);
         if (vIndex == -1){
-            uiError("Error: Violation ID not found.\n");
+            uiError("Violation ID not found.\n");
         }
         else if (violations->data[vIndex].isPaid == ALREADY_PAID){
             printf("This violation is already paid.\n");
         }
         else if (violations->data[vIndex].isPaid == NOT_HAVE_TO_PAY){
-            printf("This violation is not have to pay\n");
+            printf("No payment needed.\n");
             continue;
         }
         else {
             int confirm;
-            inputYesNo(&confirm, "Confirm mark as paid? (1: Yes, 0: No): ");
+            inputYesNo(&confirm, "Mark as paid? (1: Yes, 0: No): ");
             if (confirm){
                 violations->data[vIndex].isPaid = ALREADY_PAID;
                 updateMemberTotalFine(members, violations, violations->data[vIndex].studentID);
@@ -203,14 +209,15 @@ void markFineAsPaidView(ViolationList *violations, MemberList *members){
                 uiSuccess("Marked as paid successfully.\n");
             }
             else {
-                printf ("Fine didn't mark as paid\n");
+                printf ("Fine not marked as paid.\n");
             }
         }     
         inputYesNo(&continueMarkFine, 
-            "\nContinue to mark as paid with another fine?\n1: Yes\n0: No\n=> Your choice: ");
+            "\nMark another fine?\n1: Yes\n0: No\n=> Your choice: ");
     }
 }
 
+// Shows violations in a time range using the filtered display pipeline.
 void displayViolationsByTimeRange(const ViolationList *violations)
 {
     Violation *results ;
@@ -235,6 +242,7 @@ void displayViolationsByTimeRange(const ViolationList *violations)
 }
 
 // 1.3 View unpaid fines for a member
+// Shows only unpaid fines for the current member.
 void viewMyUnpaidFines(const char *myStudentID, const ViolationList *violations)
 {
     uiInfo("\nUNPAID FINES\n");
@@ -243,7 +251,7 @@ void viewMyUnpaidFines(const char *myStudentID, const ViolationList *violations)
     const char *reasonNames[] = {
         "Not uniform",
         "Meeting absence",
-        "Not join in Club activity",
+        "No club activity",
         "Violence"};
 
     printf("\n┏━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━┓\n");
@@ -306,6 +314,7 @@ void viewMyUnpaidFines(const char *myStudentID, const ViolationList *violations)
     printf("┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┻━━━━━━━━━━━━━━━━━━┛\n");
 }
 
+// Prints the team menu used by the filter flow.
 void displayTeamSelected()
 {
     printf("\nAvailable Teams:\n");
@@ -315,6 +324,7 @@ void displayTeamSelected()
     printf("3. Media\n");
 }
 
+// Prints the violation-reason menu used by the filter flow.
 void displayReasonSelected()
 {
     printf("Reasons:\n");
@@ -324,6 +334,7 @@ void displayReasonSelected()
     printf("%d. Violence\n", REASON_VIOLENCE);
 }
 
+// Resets all filter and sort settings to their default state.
 void clearOption()
 {
     teamFilter = 0;
@@ -333,6 +344,7 @@ void clearOption()
     enableSortOption = 0;
 }
 
+// Renders the menu used to change filters and sorting options.
 void displayChangeFilterOptionMenu()
 {
     printf("%s", UI_TABLE_HEADER);
@@ -340,17 +352,18 @@ void displayChangeFilterOptionMenu()
     printf("%s", UI_RESET);
     printf(
             "\n┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓"
-            "\n┃  1. Clear all option (ID Base)               ┃"
-            "\n┃  2. Sort option                              ┃"
-            "\n┃  3. Order change (ASC, DESC)                 ┃"
+            "\n┃  1. Clear all options (ID-based)             ┃"
+            "\n┃  2. Sort options                             ┃"
+            "\n┃  3. Change order (ASC, DESC)                 ┃"
             "\n┃  4. Team filter                              ┃"
             "\n┃  5. Reason filter                            ┃"
             "\n┃  6. Time filter                              ┃"
             "\n┃  7. Is paid filter                           ┃"
-            "\n┃  8. Out service                              ┃"
+            "\n┃  8. Exit                                     ┃"
             "\n┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛\n");
 }
 
+// Lets the user configure sorting and filtering for the violation list.
 void changeFilterOption()
 {
     int choice;
@@ -366,14 +379,14 @@ void changeFilterOption()
         {
         case 1:
             clearOption();
-            printf("All filter is off!\n");
+            printf("All filters cleared.\n");
         break;
         case 2:
         {
             int option;
             printf("%s", UI_TABLE_HEADER);
             printf("CHANGE SORT OPTION\n");
-            printf("\nSort Command Rules\n");
+            printf("\nSort rules\n");
             printf("%s", UI_RESET);
             printf(
                 "┏━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓\n"
@@ -401,11 +414,11 @@ void changeFilterOption()
             printf("  t     -> team ASC\n");
 
             inputString(currentSortCommand, 4, "Enter sort command: ");
-            inputYesNo(&enableSortOption, "Do you want to enable sort. Yes (1), No (0): ");
+            inputYesNo(&enableSortOption, "Enable sorting? (1: Yes, 0: No): ");
         }
         break;
         case 3:
-            printf("Now is change order to %s\n", (order) ? "ASC" : "DESC");
+            printf("Sort order changed to %s.\n", (order) ? "ASC" : "DESC");
             order = !order;
             break;
         case 4:
@@ -415,7 +428,7 @@ void changeFilterOption()
             break;
         case 5:
             displayReasonSelected();
-            inputIntegerInRange(&reasonFilterSetting, 0, 3, "Enter your selected: ");
+            inputIntegerInRange(&reasonFilterSetting, 0, 3, "Enter choice: ");
             reasonFilter = 1;
             break;
         case 6:
@@ -424,27 +437,30 @@ void changeFilterOption()
             break;
         case 7:
             inputIntegerInRange(&paidFilterSetting, 0, 1, "Not paid (0), Is paid (1): ");
-            printf("\nPaid filter enable. Now is change to %s\n", (paidFilterSetting) ? "Is paid" : "Not paid");
+            printf("\nPaid filter on. Now: %s\n", (paidFilterSetting) ? "Is paid" : "Not paid");
             paidFilter = 1;
             break;
         case 8:
             return;
         default:
-            printf("\nThere is no service with this command code!");
+            printf("\nInvalid command.");
             break;
         }
         pauseProgram();
     } while (isContinue);
 }
 
+// Returns whether compareTime falls inside the supplied range.
 int isInTimeRange(time_t compareTime, time_t beginTime, time_t endTime) { return beginTime <= compareTime && compareTime <= endTime; }
 
+// Evaluates the active filter set for one violation row.
 int isFiltered(Violation *v, int team)
 {
     return (!teamFilter || team == teamFilterSetting) && (!reasonFilter || reasonFilterSetting == v->reason) &&
            (!timeRangeFilter || isInTimeRange(v->violationTime, beginTimeFilterSetting, endTimeFilterSetting)) && (!paidFilter || paidFilterSetting == v->isPaid);
 }
 
+// Displays the violation list using the active filter, time, and sort settings.
 void flexibleDisplayViolationList(ViolationList* violations, MemberList* members)
 {
     if (teamFilter)

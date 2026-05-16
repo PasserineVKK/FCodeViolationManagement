@@ -7,20 +7,21 @@
 #include "../include/fileio.h"
 #include "../include/member.h"
 #include "../include/view/viewUtil.h"
-// file
+
+// Loads the account list from the binary data file into memory.
 int loadAccounts(AccountList *accounts)
 {
     return loadFromFile(ACCOUNTS_FILE, accounts->data, sizeof(Account), MAX_ACCOUNTS,
                         &accounts->count);
 }
 
-//
+// Saves the current account list back to the binary data file.
 int saveAccounts(AccountList *accounts)
 {
     return saveToFile(ACCOUNTS_FILE, accounts->data, sizeof(Account), accounts->count);
 }
 
-// use struct pointer as param to avoid shallow copy
+// Searches for an account by student ID and returns its array index.
 int searchMemberByIdInA(AccountList *accounts, const char *id)
 {
     for (int i = 0; i < accounts->count; i++)
@@ -33,7 +34,7 @@ int searchMemberByIdInA(AccountList *accounts, const char *id)
     return -1;
 }
 
-// Return role of logged in account
+// Handles the full login flow, including lock checks and password validation.
 int login(AccountList *accounts, char *studentID)
 {
     uiInfo("===LOGIN===\n");
@@ -60,7 +61,7 @@ int login(AccountList *accounts, char *studentID)
     {
         acc->isLocked = 1;
         saveAccounts(accounts);
-        uiError("\nAccount is permanently locked. Please contact Admin.\n");
+        uiError("\nThis account is locked. Contact Admin.\n");
         return -1;
     }
 
@@ -69,7 +70,7 @@ int login(AccountList *accounts, char *studentID)
     {
         int turnback = 0;
         printf("\nAccount is temporarily locked.\n");
-        inputYesNo(&turnback, "Do you want to wait for countdown (Enter 0), or Turn Back (Enter 1): ");
+        inputYesNo(&turnback, "Wait for unlock time (0) or go back (1): ");
         if (turnback)
             return -1;
         while (getRemainingLockTime(acc) > 1)
@@ -102,7 +103,7 @@ int login(AccountList *accounts, char *studentID)
         if (acc->failCount >= 9)
         {
             acc->isLocked = 1;
-            uiError("\nToo many failed attempts. Account is now PERMANENTLY locked.\n");
+            uiError("\nToo many failed attempts. Account locked.\n");
             return -1;
         }
         else if (acc->failCount % 3 == 0)
@@ -111,7 +112,7 @@ int login(AccountList *accounts, char *studentID)
             long wait = (acc->failCount == 3) ? 5 : 60;
             printf("\nIncorrect password. Account locked for %ld minutes.\n", wait);
             int turnback = 0;
-            inputYesNo(&turnback, "\nDo you want to wait for countdown (Enter 0), or Turn Back (Enter 1): ");
+            inputYesNo(&turnback, "\nWait for unlock time (0) or go back (1): ");
             if (turnback)
                 return -1;
             while (getRemainingLockTime(acc) > 1)
@@ -121,7 +122,7 @@ int login(AccountList *accounts, char *studentID)
         }
         else
         {
-            printf("\nIncorrect password. (Attempt % d/9)\n", acc->failCount);
+            printf("\nIncorrect password. (Attempt %d/9)\n", acc->failCount);
         }
         return -1;
     }
@@ -145,8 +146,8 @@ void changePassword(AccountList *accounts, char *actorID, int actorRole)
     //admin menu
     else
     {
-        // Input student ID which want to change password
-        inputString(studentID, sizeof(studentID), "Enter student ID of the member you want to change password: ");
+        // Enter the student ID to change.
+        inputString(studentID, sizeof(studentID), "Enter student ID: ");
     }
 
     aIndex = searchMemberByIdInA(accounts, studentID);
@@ -183,7 +184,7 @@ void changePassword(AccountList *accounts, char *actorID, int actorRole)
     }
     else if (actorRole < 2 && targetRole == 2)
     {
-        printf("You are not granted permission to change BOD password.\n");
+        printf("You cannot change a BOD password.\n");
         return;
     }
 
@@ -219,6 +220,7 @@ void changePassword(AccountList *accounts, char *actorID, int actorRole)
 }
 
 #include <time.h>
+// Returns the remaining lock time after repeated failed login attempts.
 long getRemainingLockTime(Account *acc)
 {
     if (acc->isLocked)
@@ -244,41 +246,42 @@ long getRemainingLockTime(Account *acc)
     return 0;
 }
 
+// Lets an administrator unlock a locked account after confirmation.
 void handleLockedAccount(AccountList *accounts)
 {
     if (accounts == NULL)
     {
-        uiError("Can not open accounts data.");
+        uiError("Cannot open account data.");
         return;
     }
     char studentID[10];
     int continueUnlock = 1;
 
     while (continueUnlock){
-        inputStudentID(studentID, "Input student ID of account: ");
+        inputStudentID(studentID, "Enter student ID of account: ");
         int aIndex = searchMemberByIdInA(accounts, studentID);
         
         if (aIndex != -1) {
             if (accounts->data[aIndex].isLocked != LOCKED_ACC){
-                printf ("The account with ID  %s is not locked\n", studentID);
+                printf ("Account %s is not locked.\n", studentID);
             }
             else {
                 int confirm;
-                inputYesNo(&confirm, "Confirm to unlock this account? (1: Yes, 0: No): ");
+                inputYesNo(&confirm, "Unlock this account? (1: Yes, 0: No): ");
                 if (!confirm){
-                    printf("Violation not recorded.\n");
+                    printf("Account was not unlocked.\n");
                 }
                 else{
                     accounts->data[aIndex].isLocked = NOT_LOCKED_ACC;
                     accounts->data[aIndex].failCount = 0;
                     saveAccounts(accounts);
-                    uiSuccess("Unlock Successfully");
+                    uiSuccess("Account unlocked successfully.");
                 }
             }
             
         }
         else{
-            printf("Can not find corresponding account for %s", studentID);
+            printf("Cannot find account %s.\n", studentID);
         }
         inputYesNo(&continueUnlock, "\nUnlock another account?\n1: Yes\n0: No\n=> Your choice: ");
     }

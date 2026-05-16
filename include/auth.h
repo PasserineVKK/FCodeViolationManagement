@@ -14,7 +14,7 @@ int saveAccounts(AccountList *accounts);
 
 int searchMemberByIdInA(AccountList *accounts, const char* id);
 
-// Return role of logged in account
+// Gets the role of the current user.
 int login(AccountList *accounts, char *studentID);
 
 // Change password of logged in account

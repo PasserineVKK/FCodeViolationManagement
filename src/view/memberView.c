@@ -7,6 +7,7 @@
 #include "../../include/model.h"
 #include "../../include/consoleInput.h"
 
+// Prints a single member in a full-width profile table.
 void displayOneMemberInfo(Member member) {
     uiTableTitle("MEMBER PROFILE");
     printf(
@@ -27,6 +28,7 @@ void displayOneMemberInfo(Member member) {
         "┗━━━━━━━━━━━━┻━━━━━━━━━━━━━━━━━━━━━━━━━━┻━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┻━━━━━━━━━━━━━━┻━━━━━━━━━━━━━━┻━━━━━━━━━━━━━━━━━━━━┻━━━━━━━━━━┛\n");
 }
 
+// Prints a compact member list for general browsing.
 void displayMemberList(Member members[], int count) {
     printf("\n");
     uiTableTitle("CLUB MEMBER LIST");
@@ -52,6 +54,7 @@ void displayMemberList(Member members[], int count) {
 
 
 
+// Sorts members by violation count and prints the sorted table.
 void displayMemberInSortByVioCount(Member members[], int mCount, int sortMode) {
 	// 1. Prepare a copy list before sorting
     Member sortList[mCount];
@@ -99,6 +102,7 @@ void displayMemberInSortByVioCount(Member members[], int mCount, int sortMode) {
 	
 	// 3. Decide to show in ASC or DESC by sortMode: 1 is ASC, -1 is DESC
     int i, len;
+    // Lets the user choose a multi-key sort command before showing the member list.
     if (sortMode == 1) {
         i = 0;
         len = mCount - 1;
