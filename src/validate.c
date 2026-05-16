@@ -232,7 +232,7 @@ int isValidEmail(const char *email) {
             return 0;
         }
 
-        // Allow ".."
+        // Not allow ".."
         if (i < len - 1 && email[i] == '.' && email[i + 1] == '.') {
             return 0;
         }
