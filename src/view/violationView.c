@@ -220,7 +220,7 @@ void markFineAsPaidView(ViolationList *violations, MemberList *members){
 // Shows violations in a time range using the filtered display pipeline.
 void displayViolationsByTimeRange(const ViolationList *violations)
 {
-    Violation *results ;
+    Violation results[violations->count];
     if (results == NULL)
         return;
 
@@ -232,7 +232,7 @@ void displayViolationsByTimeRange(const ViolationList *violations)
     if (resultCount == 0)
     {
         uiError("No violations found in the specified time range.\n");
-        free(results);
+        
         return;
     }
 

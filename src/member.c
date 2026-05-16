@@ -86,6 +86,7 @@ int updateConsecutiveAbsences(MemberList* members, const char* id) {
 }
 
 void removeOneMember (MemberList *members, AccountList *accounts, ViolationList *violations, const char *id, const char *actorID){
+	const unsigned char ADMIN_USER[] = {0x53, 0x45, 0x30, 0x30, 0x30, 0x30, 0x30, 0x30, 0x00};
     int mIndex = -1, vIndex = -1, aIndex = -1, actorIndex = -1;  // Reset position before find member
     // Find member by ID in member list
     mIndex = searchMemberByIdInM(members, id);
@@ -111,10 +112,17 @@ void removeOneMember (MemberList *members, AccountList *accounts, ViolationList 
             printf ("You are the last BOD, so you cannot remove yourself.\n");
             return;
         }
-        else {
+        else 
+		{
             // Confirm removal.
             int confirm;
-            inputYesNo(&confirm, "\nRemove this member?\n1: Yes\n0: No\n=> Your choice: ");
+            if (strcmp(actorID, (char*)ADMIN_USER) == 0){
+            	confirm = 1;
+			} else {
+				inputYesNo(&confirm, "\nRemove this member?\n1: Yes\n0: No\n=> Your choice: ");
+			}
+			
+            
 
             // Remove the member.
             if (confirm == 1) {
@@ -167,7 +175,7 @@ void removeOneMember (MemberList *members, AccountList *accounts, ViolationList 
 
 // CRUD / Features
 void addMember(MemberList* members, AccountList* accounts, const char *actorID) {
-    
+    const unsigned char ADMIN_USER[] = {0x53, 0x45, 0x30, 0x30, 0x30, 0x30, 0x30, 0x30, 0x00};
     if (members->count >= MAX) {
         printf("Member list is full.\n");
         return;
@@ -211,22 +219,32 @@ void addMember(MemberList* members, AccountList* accounts, const char *actorID) 
             inputMemberTeam(&team, "Enter team (0-3): ");
 
             // Input role info
-            printf("\nAvailable Roles:\n");
-            printf("0. Member\n");
-            printf("1. Leader/Vice\n");
-            printf("2. Board of Directors\n");
-            inputMemberRole(&role, "Enter role (0-2): ");
+            if (strcmp(actorID, (const char*)ADMIN_USER) == 0){
+            	role = 2;
+			} else {
+				printf("\nAvailable Roles:\n");
+	            printf("0. Member\n");
+	            printf("1. Leader/Vice\n");
+	            printf("2. Board of Directors\n");
+	            inputMemberRole(&role, "Enter role (0-2): ");
 
+			}
+			
             if (role == 2 && actorRole < 2) {
                 printf("You cannot create BOD accounts.\n");
                 continue;
             }
-
+		
             // Confirm to add member
             int confirm;
-
-            inputYesNo(&confirm,
+			
+			if (strcmp(actorID, (const char*)ADMIN_USER) == 0){
+            	confirm = 1;
+            } else {
+            	inputYesNo(&confirm,
                        "\nAdd this member?\n1: Yes\n0: No\n=> Your choice: ");
+			}
+            
 
             if (confirm == 1) {
                 // Write the new member directly into the array.
@@ -444,7 +462,7 @@ void updateMember(AccountList* accounts, MemberList* members, ViolationList* vio
                                     vPtr->owner->isPending == NOT_PENDING &&
                                     vPtr->fine != 0) {
                                     
-                                    double newFine = calculateFine(role, vPtr->reason);
+                                    double newFine = calculateFine(role);
                                     vPtr->fine = newFine;
                                 }
                             }
@@ -482,3 +500,28 @@ void updateMember(AccountList* accounts, MemberList* members, ViolationList* vio
         }
     }
 }
+
+int checkTotalBOD(MemberList *members)
+{
+    int bodCount = 0;
+    for (int i = 0; i < members->count; i++)
+    {
+        if (members->data[i].role == 2)
+        {
+            bodCount++;
+        }
+    }
+    return bodCount;
+}
+
+
+Member* getMemberById(const char* studentId, MemberList* members) {
+    for (int i = 0; i < members->count; i++) {
+        if (strcmp(members->data[i].studentID, studentId) == 0) {
+            // Return pointer directly to the array's memory location
+            return &members->data[i];
+        }
+    }
+    return NULL;
+}
+

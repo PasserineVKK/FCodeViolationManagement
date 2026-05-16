@@ -21,14 +21,12 @@
 
 static int maxCount;
 
-// Displays one violation using the shared violation list renderer.
 void simpleDisplayViolation(const Violation *v)
 {
     // Assuming displayViolationList handles a single item if count is 1
     displayViolationList((Violation *)v, 1);
 }
 
-// Initializes the dynamic violation list buffer.
 void initViolationList(ViolationList *list, int initialCapacity)
 {
     list->count = 0;
@@ -36,7 +34,6 @@ void initViolationList(ViolationList *list, int initialCapacity)
     list->data = malloc(sizeof(Violation) * list->capacity);
 }
 
-// Loads violations from disk and reconnects each violation to its owner member.
 int loadViolations(ViolationList *violations, MemberList *members){
     int isLoadSuccess = loadFromFile(VIOLATIONS_FILE, violations->data, sizeof(Violation) - sizeof(Member *),
                                      MAX_VIOLATIONS, &violations->count);
@@ -81,13 +78,11 @@ int loadViolations(ViolationList *violations, MemberList *members){
     return 1;
 }
 
-// Saves the current violation list to disk.
 int saveViolations(ViolationList *violations)
 {
     return saveToFile(VIOLATIONS_FILE, violations->data, sizeof(Violation) - sizeof(Member *), violations->count);
 }
 
-// Calculates the default fine for a given role and violation reason.
 double calculateFine(int role)
 {
     if (role == 0)
@@ -95,7 +90,6 @@ double calculateFine(int role)
     return 50000;
 }
 
-// Refreshes unpaid violation fines after a member role changes.
 void refreshFineAfterRolechange(const char *memberId, int role, ViolationList *violations)
 {
     for (int i = 0; i < violations->count; i++)
@@ -103,12 +97,11 @@ void refreshFineAfterRolechange(const char *memberId, int role, ViolationList *v
         Violation *v = &violations->data[i];
         if (strcmp(v->studentID, memberId) == 0 && v->isPaid == NOT_PAY )
         {
-            v->fine = calculateFine(role, v->reason);
+            v->fine = calculateFine(role);
         }
     }
 }
 
-// Finds a violation by ID and returns a direct pointer to it.
 Violation *findViolationById(const char *violationId, ViolationList *violations)
 {
     for (int i = 0; i < violations->count; i++)
@@ -121,7 +114,6 @@ Violation *findViolationById(const char *violationId, ViolationList *violations)
     return NULL;
 }
 
-// Returns the array index of a violation by ID, or -1 when missing.
 int getViolationIndexById(const ViolationList *violations, const char *violationId)
 {
     for (int i = 0; i < violations->count; i++)
@@ -132,7 +124,6 @@ int getViolationIndexById(const ViolationList *violations, const char *violation
     return -1;
 }
 
-// Adds a new violation to the list and persists the updated data.
 int addViolation(ViolationList *violations, const Violation *newV)
 {
     simpleDisplayViolation(newV);
@@ -147,20 +138,18 @@ int addViolation(ViolationList *violations, const Violation *newV)
     return 1;
 }
 
-// Updates the payment status of an existing violation.
 void updateIsPaidField(const char *violationId, ViolationList *violations, int value)
 {
     Violation *v = findViolationById(violationId, violations);
     if (v == NULL) return;
     else if (v->isPaid == NOT_HAVE_TO_PAY)
     {
-        uiError("This violation does not require payment, so its payment status cannot be updated.");
+        uiError("This violation don't have to pay, can't update paid");
         return;
     }
     else v->isPaid = value;
 }
 
-// Expands the violation array when it reaches capacity.
 int ensureCapacity(ViolationList *list)
 {
     if (list == NULL)
@@ -184,30 +173,29 @@ int ensureCapacity(ViolationList *list)
 }
 
 // Only for user
-// Deletes a violation chosen by ID after confirmation.
 void deleteViolation(ViolationList *violations){
     printf ("=== DELETE VIOLATIONS ===\n");
     if (violations->count <= 0){
-        printf ("There are no violations to delete.\n");
+        printf ("Don't have any violation to delete\n");
         return;
     }
     int continueDelete = 1;
     char violationID[9];
 
     while (continueDelete){
-        inputString(violationID, sizeof(violationID), "Enter violation ID: ");
+        inputString(violationID, 10, "Enter violation id: ");
         int vIndex = getViolationIndexById(violations, violationID);
         if (vIndex == -1){
-            uiError ("This ID does not exist.\n");
+            uiError ("This ID do not exist\n");
         }
         else {
-            uiInfo ("Selected violation: ");
+            uiInfo ("The violation you choose: ");
             simpleDisplayViolation (&violations->data[vIndex]);
             
             int confirm;
-            inputYesNo(&confirm, "Confirm deletion of this violation? (1: Yes, 0: No): ");
+            inputYesNo(&confirm, "Confirm to record this violation? (1: Yes, 0: No): ");
             if (!confirm){
-                printf("Violation was not deleted.\n");
+                printf("Violation not Deleted.\n");
             }
             else{
                 if (violations->data[vIndex].owner != NULL) {
@@ -299,14 +287,14 @@ void recordViolationView(ViolationList *violations, MemberList *members, int act
         mIndex = searchMemberByIdInM(members, studentID);
         
         if (mIndex == -1){
-            uiError("Student ID not found.\n");
+            uiError("Error: Student ID not found.\n");
             continue;
         }
         
         if (members->data[actorIndex].role == 1 && members->data[mIndex].role == 2){
-            uiError("You are a Leader/Vice only. You cannot record violations for BOD members.");
-            return;
-    }
+        	uiError("You are only Leader/Vice. Can not record violations for BOD");
+        	return;
+	}
         
         {
             // Pointer directly points to the member in array to avoid shallow copy
@@ -319,6 +307,7 @@ void recordViolationView(ViolationList *violations, MemberList *members, int act
 
             }
             else {
+            	int reason;
                 getReason(&reason);
 
                 inputString(note, 100, "Enter note (optional): ");
@@ -343,7 +332,7 @@ void recordViolationView(ViolationList *violations, MemberList *members, int act
                         owner->isPending = 1;
                     }
                     else{
-                        fine = calculateFine(owner->role, reason);
+                        fine = calculateFine(owner->role);
                         isPaid = NOT_PAY;
                         penalty = PENALTY_FINANCIAL;
                     }
@@ -565,3 +554,4 @@ int isMemberInWarningList(const Member *member, const ViolationList *violations)
         return 1;
     return 0;
 }
+

@@ -37,7 +37,7 @@ Violation *findViolationById(const char *violationId, ViolationList *violations)
 int getViolationIndexById(const ViolationList *violations, const char *violationId);
 
 // Calculations and refresh
-double calculateFine(int role, int reason);
+double calculateFine(int role);
 void refreshFineAfterRolechange(const char *memberId, int role, ViolationList *violations);
 
 // CRUD operations
@@ -61,8 +61,5 @@ int isMemberInWarningList(const Member *member, const ViolationList *violations)
 // Member-related cleanup due to violations
 void removeMemberById(const char *id, MemberList *members, AccountList *accounts, ViolationList *violations);
 void checkAndWarnOutClub(MemberList *members, AccountList *accounts, ViolationList *violations, const char *actorID);
-
-// Misc checks
-int checkTotalBOD(MemberList *members);
 
 #endif
