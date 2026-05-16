@@ -62,7 +62,4 @@ int isMemberInWarningList(const Member *member, const ViolationList *violations)
 void removeMemberById(const char *id, MemberList *members, AccountList *accounts, ViolationList *violations);
 void checkAndWarnOutClub(MemberList *members, AccountList *accounts, ViolationList *violations, const char *actorID);
 
-// Misc checks
-int checkTotalBOD(MemberList *members);
-
 #endif

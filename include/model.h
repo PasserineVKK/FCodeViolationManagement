@@ -17,6 +17,8 @@
 
 #define PENALTY_FINANCIAL 0
 #define PENALTY_KICK 1
+
+
 typedef struct
 {
     char studentID[10]; // SE000000\0

@@ -72,7 +72,7 @@ int main(int argc, char *argv[])
         	char rootPassword[64];
         	inputStudentID(rootUsername, "ENTER ROOT USERNAME: ");
         	if (!inputPasswordOrCancel(rootPassword, sizeof (rootPassword), "ENTER ROOT PASSWORD (Press q to quit): ")){
-        		uiError("Root password entry cancelled.\n");
+        		uiError("\nRoot password entry cancelled.\n");
         		return 0;
         	}
 
@@ -84,7 +84,7 @@ int main(int argc, char *argv[])
         		strcpy(accounts.data[0].studentID, rootUsername);
         		accounts.count++;
                 uiSuccess("TRUE USERNAME AND PASSWORD FOR ROOT ACCOUNT\n\n");
-        		uiWarning("CREATE FIRST ADMIN. BE CAREFUL, YOU MUST SET FIRST ADMIN AS BOD\n");
+        		uiWarning("CREATE FIRST ADMIN\n");
         		addMember(&members, &accounts, rootUsername);
         		removeOneMember(&members, &accounts, &violations, rootUsername, rootUsername);
         		saveAccounts(&accounts);

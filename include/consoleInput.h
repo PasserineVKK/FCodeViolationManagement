@@ -11,8 +11,6 @@ int inputString(char* buf, int size, const char* prompt);
 void inputTimeRange(time_t* start, time_t* end, const char* prompt);
 void inputValidTime (time_t* target, const char* prompt);
 
-void inputPassword(char* target, const char* prompt);
-
 // ---- Numeric inputs ----
 // Input integer in range
 void inputIntegerInRange(int* target, int min, int max, const char* prompt);
@@ -37,12 +35,6 @@ void inputMemberTeam(int* target, const char* prompt);
 
 // Input password
 int inputPasswordOrCancel(char* password, int len, const char* prompt);
-
-int inputString(char* buf, int size, const char* prompt);
-
-void inputTimeRange(time_t* start, time_t* end, const char* prompt);
-
-void inputValidTime (time_t* target, const char* prompt);
 
 void getReason(int *reason);
 
