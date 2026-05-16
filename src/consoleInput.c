@@ -64,11 +64,13 @@ int inputString(char* buf, int size, const char* prompt) {
     printf("%s", prompt);
 
     if (!fgets(buf, size, stdin)) {
+        printf("11111");
         return 0;
     }
 
     // Input too long
     if (!strchr(buf, '\n')) {
+        printf ("2222");
         while (getchar() != '\n');
 
         return 0;
