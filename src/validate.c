@@ -258,10 +258,10 @@ int isValidEmail(const char *s)
     }
 
     // Check if '@' is missing
-    if (count == 0)
+    if (count == 0){
         uiError("Email is missing '@' symbol.\n");
         return 0;
-
+    }
     return 1;
 }
 
