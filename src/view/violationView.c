@@ -183,7 +183,7 @@ void markFineAsPaidView(ViolationList *violations, MemberList *members){
     int continueMarkFine = 1;
     while (continueMarkFine){
         char violationID[8];
-        printf("\n=== Mark Fine as Paid ===\n");
+        uiTableTitle("\nMARK FINE AS PAID\n");
         inputString(violationID, sizeof(violationID), "Enter Violation ID: ");
 
         int vIndex = getViolationIndexById(violations, violationID);
@@ -463,6 +463,7 @@ int isFiltered(Violation *v, int team)
 // Displays the violation list using the active filter, time, and sort settings.
 void flexibleDisplayViolationList(ViolationList* violations, MemberList* members)
 {
+    uiTableTitle("VIOLATION LIST");
     if (teamFilter)
     {
         char team[16];
