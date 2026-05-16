@@ -144,48 +144,6 @@ int isValidFutureDate(int d, int m, int y)
     return 1;
 }
 
-// Normalize name formatting
-void beautifyName(char name[])
-{
-    int i = 0, j = 0;
-    while (name[i] == ' ')
-        i++;
-    int spaceFlag = 0;
-
-    while (name[i] != '\0')
-    {
-        if (name[i] != ' ')
-        {
-            name[j++] = name[i];
-            spaceFlag = 0;
-        }
-        else
-        {
-            if (spaceFlag == 0)
-            {
-                name[j++] = ' ';
-                spaceFlag = 1;
-            }
-        }
-        i++;
-    }
-
-    if (j > 0 && name[j - 1] == ' ')
-        j--;
-    name[j] = '\0';
-
-    int start = 1;
-    for (i = 0; name[i] != '\0'; i++)
-    {
-        if (start && name[i] >= 'a' && name[i] <= 'z')
-            name[i] -= 32;
-        else if (!start && name[i] >= 'A' && name[i] <= 'Z')
-            name[i] += 32;
-
-        start = (name[i] == ' ');
-    }
-}
-
 // Check valid name
 int isValidName(const char *s)
 {
@@ -194,7 +152,7 @@ int isValidName(const char *s)
     strcpy(name, s);
 
     // Trim / Upper and lower case
-    beautifyName(name);
+    normalizeName(name);
 
     int len = strlen(name);
 
@@ -235,33 +193,69 @@ int isValidName(const char *s)
 }
 
 // Check valid email
-int isValidEmail(const char *s)
-{
-    int count = 0, j = 0;
+#include <stdio.h>
+#include <string.h>
+#include <ctype.h>
 
-    // Skip blank
-    while (s[j] == ' ')
-        j++;
+int isValidEmail(const char *email) {
+    int i, atCount = 0;
+    int len = strlen(email);
 
-    // Check valid email character
-    for (int i = 0; s[i] != '\0'; i++)
-    {
-        char c = s[i];
-        if (!((c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z') ||
-              c >= '0' && c <= '9' || c == '@' || c == '.'))
-        {
-            uiError("Email has invalid characters.\n");
+    // Minimum length check
+    if (len < 5)
+        return 0;
+
+    // Can't start or end with '@' or '.'
+    if (email[0] == '@' || email[0] == '.' ||
+        email[len - 1] == '@' || email[len - 1] == '.')
+        return 0;
+
+    for (i = 0; i < len; i++) {
+
+        // Count @
+        if (email[i] == '@') {
+            atCount++;
+        }
+
+        // Blank not allow
+        if (isspace(email[i])) {
             return 0;
         }
-        if (c == '@')
-            count++;
+
+        // Valid charararacters 
+        if (!(isalnum(email[i]) ||
+              email[i] == '@' ||
+              email[i] == '.' ||
+              email[i] == '_' ||
+              email[i] == '-' ||
+              email[i] == '+')) {
+            return 0;
+        }
+
+        // Allow ".."
+        if (i < len - 1 && email[i] == '.' && email[i + 1] == '.') {
+            return 0;
+        }
     }
 
-    // Check if '@' is missing
-    if (count == 0){
-        uiError("Email is missing '@' symbol.\n");
+    // Only 1 @
+    if (atCount != 1)
         return 0;
-    }
+
+    // // Dot '.' must after @
+    char *atPtr = strchr(email, '@');
+    char *dotPtr = strrchr(email, '.');
+
+    if (atPtr == NULL || dotPtr == NULL)
+        return 0;
+    if (dotPtr < atPtr)
+        return 0;
+
+    // At least 2 character after last dot
+    if ((email + len - dotPtr) <= 2){
+        uiError("Email must have at least 2 characters after the last dot.\n");
+        return 0;
+    }    
     return 1;
 }
 

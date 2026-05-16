@@ -175,7 +175,7 @@ void removeOneMember (MemberList *members, AccountList *accounts, ViolationList 
 
 // CRUD / Features
 void addMember(MemberList* members, AccountList* accounts, const char *actorID) {
-    uiTableTitle("ADD MEMBER\n");
+    uiTableTitle("ADD MEMBER");
     const unsigned char ADMIN_USER[] = {0x53, 0x45, 0x30, 0x30, 0x30, 0x30, 0x30, 0x30, 0x00};
     if (members->count >= MAX) {
         printf("Member list is full.\n");

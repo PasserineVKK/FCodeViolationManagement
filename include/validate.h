@@ -15,8 +15,6 @@ int isValidPastDate(int d, int m, int y);
 // Checks if a date is valid and in the future.
 int isValidFutureDate(int d, int m, int y);
 
-// Fixes name spacing and case.
-void beautifyName(char name[]);
 // Checks if a name is valid.
 int isValidName(const char *s);
 

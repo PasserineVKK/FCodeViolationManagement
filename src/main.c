@@ -17,10 +17,7 @@
 #include "../include/violation.h"
 
 
-// Root user
 const unsigned char ADMIN_USER[] = {0x53, 0x45, 0x30, 0x30, 0x30, 0x30, 0x30, 0x30, 0x00};
-
-// Root password
 const unsigned char ADMIN_PASS[] = {0x4C, 0x45, 0x54, 0x4D, 0x45, 0x43, 0x00};
 
 // Performs basic console configuration (UTF-8 and ANSI colors).
@@ -50,6 +47,7 @@ int main(int argc, char *argv[])
     initNotificationList();
     autoDeleteOutDateNotification();
 
+    //seedSampleData(&members, &violations, &accounts);
     loadMembers(&members);
     loadViolations(&violations, &members);
     loadAccounts(&accounts);
@@ -84,7 +82,7 @@ int main(int argc, char *argv[])
         		strcpy(accounts.data[0].studentID, rootUsername);
         		accounts.count++;
                 uiSuccess("TRUE USERNAME AND PASSWORD FOR ROOT ACCOUNT\n\n");
-        		uiWarning("CREATE FIRST ADMIN\n");
+        		uiWarning("CREATE FIRST ADMIN WITH BOD PRIVILEGES\n");
         		addMember(&members, &accounts, rootUsername);
         		removeOneMember(&members, &accounts, &violations, rootUsername, rootUsername);
         		saveAccounts(&accounts);
@@ -193,7 +191,7 @@ int main(int argc, char *argv[])
                     break;
                 case 5:
                     changePassword(&accounts, studentID, menuRole);
-                    continue;
+                    break;
                 case 6:
                     displayNotificationByMemberID(studentID, ADMIN_WARNING);
                     // displayGlobalNotification();
