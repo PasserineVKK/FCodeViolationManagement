@@ -273,7 +273,6 @@ void inputValidTime(time_t* target, const char* prompt) {
         if (!isValidDate(day, month, year) ||
             hour < 0 || hour > 23 ||
             minute < 0 || minute > 59) {
-            uiError("Invalid date or time.\n");
             continue;
         }
 

@@ -82,7 +82,6 @@ int login(AccountList *accounts, char *studentID)
     // Enter password
     if (!inputPasswordOrCancel(password, sizeof(password), "Enter password (Press q to quit): "))
     {
-        printf("Login cancelled.\n");
         return -3;
     }
 
@@ -169,7 +168,7 @@ void changePassword(AccountList *accounts, char *actorID, int actorRole)
         // Enter old password until finished or quit
         while (1){
             if (!inputPasswordOrCancel(oldPassword, sizeof(oldPassword), "Enter old password (Press q to quit): ")){
-                printf("Password change cancelled");
+                printf("Password change cancelled\n");
                 return;
             }
             //No exist pass 

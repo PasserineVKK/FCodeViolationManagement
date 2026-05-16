@@ -1,5 +1,7 @@
 #include "../include/validate.h"
 #include "../include/model.h"
+#include "../include/utils.h"
+#include "../include/view/viewUtil.h"
 
 #include <ctype.h>
 #include <stdio.h>
@@ -59,14 +61,14 @@ int isValidDate(int d, int m, int y)
     // Check if year is < 1900
     if (y < 1900)
     {
-        printf("Invalid date. Check day, month, and year.");
+        uiError("Invalid date. Check day, month, and year.\n"); 
         return 0;
     }
 
     // Check valid month
     if (m < 1 || m > 12)
     {
-        printf("Invalid date. Check day, month, and year.");
+        uiError("Invalid date. Check day, month, and year.\n");
         return 0;
     }
 
@@ -81,7 +83,7 @@ int isValidDate(int d, int m, int y)
 
     if (d > maxDay)
     {
-        printf("Invalid date. Check day, month, and year.");
+        uiError("Invalid date. Check day, month, and year.\n");
         return 0;
     }
 
@@ -108,7 +110,7 @@ int isValidPastDate(int d, int m, int y)
     if (y > curY || (y == curY && m > curM) ||
         (y == curY && m == curM && d > curD))
     {
-        printf("Invalid date. Must be in the past.");
+        uiError("Invalid date. Must be in the past.\n");
         return 0;
     }
 
@@ -135,7 +137,7 @@ int isValidFutureDate(int d, int m, int y)
     if (y < curY || (y == curY && m < curM) ||
         (y == curY && m == curM && d < curD))
     {
-        printf("Invalid date. Must be in the future.");
+        uiError("Invalid date. Must be in the future.\n");
         return 0;
     }
 
@@ -206,14 +208,14 @@ int isValidName(const char *s)
     // Check empty name
     if (name[0] == '\0' || len == 0)
     {
-        printf("Name is empty.\n");
+        uiError("Name is empty.\n");
         return 0;
     }
 
     // Check name length
     if (len > 50)
     {
-        printf("Name is too long (max 50 chars).\n");
+        uiError("Name is too long (max 50 chars).\n");
         return 0;
     }
 
@@ -224,7 +226,7 @@ int isValidName(const char *s)
 
         if (!((c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z') || c == ' '))
         {
-            printf("Name has invalid characters.\n");
+            uiError("Name has invalid characters.\n");
             return 0;
         }
     }
@@ -248,7 +250,7 @@ int isValidEmail(const char *s)
         if (!((c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z') ||
               c >= '0' && c <= '9' || c == '@' || c == '.'))
         {
-            printf("Email has invalid characters.\n");
+            uiError("Email has invalid characters.\n");
             return 0;
         }
         if (c == '@')
@@ -257,6 +259,7 @@ int isValidEmail(const char *s)
 
     // Check if '@' is missing
     if (count == 0)
+        uiError("Email is missing '@' symbol.\n");
         return 0;
 
     return 1;
@@ -274,13 +277,13 @@ int isValidPhone(const char *s)
     // Check first digit is '0'
     if (s[i] != '0')
     {
-        printf("Invalid phone number.\n");
+        uiError("Invalid phone number.\n");
         return 0;
     }
 
     if (strlen(s) - i != 10)
     {
-        printf("Phone number must be 10 digits.\n");
+        uiError("Phone number must be 10 digits.\n");
         return 0;
     }
 
@@ -290,7 +293,7 @@ int isValidPhone(const char *s)
         char c = s[i];
         if (!isdigit(c))
         {
-            printf("Invalid phone number.\n");
+            uiError("Invalid phone number.\n");
             return 0;
         }
     }
@@ -313,7 +316,7 @@ int isValidStudentID(const char *s)
           s[i] == 'D' ||
           s[i] == 'C' ))
     {
-        printf("Invalid first character in student ID\n");
+        uiError("Invalid first character in student ID\n");
         return 0;
     }
     i++;
@@ -321,7 +324,7 @@ int isValidStudentID(const char *s)
           s[i] == 'E' ||
           s[i] == 'A' ))
     {
-        printf("Invalid second character in student ID\n");
+        uiError("Invalid second character in student ID\n");
         return 0;
     }
     i++;
@@ -334,13 +337,13 @@ int isValidStudentID(const char *s)
     while (isspace((unsigned char)s[i])) i++;
 
     if (s[i] != '\0'){
-        printf("Student ID must contain only digits after prefix\n");
+        uiError("Student ID must contain only digits after prefix\n");
         return 0;
     }
 
     if (count != 8)
     {
-        printf("Student ID must contain 2 prefix characters exactly 6 digits\n");
+        uiError("Student ID must contain 2 prefix characters exactly 6 digits\n");
         return 0;
     }
 

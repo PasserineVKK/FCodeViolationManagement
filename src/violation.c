@@ -174,7 +174,7 @@ int ensureCapacity(ViolationList *list)
 
 // Only for user
 void deleteViolation(ViolationList *violations){
-    printf ("=== DELETE VIOLATIONS ===\n");
+    uiTableTitle("DELETE VIOLATIONS\n");
     if (violations->count <= 0){
         printf ("Don't have any violation to delete\n");
         return;
@@ -281,7 +281,7 @@ void recordViolationView(ViolationList *violations, MemberList *members, int act
         char note[100];
         char violationID[7];
 
-        uiTableTitle("   RECORD VIOLATION");
+        uiTableTitle("RECORD VIOLATION");
         inputStudentID(studentID, "Enter Student ID: ");
 
         mIndex = searchMemberByIdInM(members, studentID);
